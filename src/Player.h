@@ -15,31 +15,29 @@ Player:
     - owns territories
     - owns a hand of cards ===== Hand is a collection of cards from the Deck --> 2 classes to be implemented
     - owns a list of orders
-
-
     toDefend() -- list of terr
-
     issueOrder() -- creates an order object, adds to the list of orders
 
 */
 class Player{
 
     private:
+        int playerID;
+        string name;
         vector<int>* territoriesToDefend;
         Hand* currHand;
         OrderList* orders;
-        int playerID;
-        string name;
+        Map& currMap;
     
     public:
-        Player(int, string);
-        Player(Player&);
+        Player(int, string, int, Map&);
+        Player(const Player&);
         ~Player();
 
-        vector<int>* toDefend();
-        vector<int> toAttack(Map* m);
-        Hand* getHand();
-        OrderList* getOrderList();
+        vector<int>& toDefend();
+        vector<int> toAttack();
+        Hand& getHand();
+        OrderList& getOrderList();
         void issueOrder(Order* o);
 
         // getters
@@ -52,6 +50,5 @@ class Player{
         // overloaded stream insertion
         friend std::ostream& operator<<(std::ostream& os, Player& obj);
         
-
 
 };
