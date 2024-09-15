@@ -33,14 +33,70 @@ class loadMapCommand : public Command
     public:
         void executeCommand(GameEngine& engine) override
         {
-            
+           //engine.getMap().loadMap();
+           //TODO: see with prof if we can skip this or if we should make a separate function for its initialization
         }
 };
+
+class validateMapCommand : public Command
+{
+    public:
+        void executeCommand(GameEngine& engine) override
+        {
+            engine.getMap().validate();
+        }
+};
+
+class addPlayerCommand : public Command
+{
+    public:
+        void executeCommand(GameEngine& engine)
+        {
+            engine.addPlayer();
+        }
+};
+
+class assignCountriesCommand : public Command
+{
+    public:
+        void executeCommand(GameEngine& engine)
+        {
+            engine.assignCountries();
+        }
+};
+
+class assignReinforcementCommand : public Command
+{
+    public:
+        void executeCommand(GameEngine& engine)
+        {
+            engine.assignReinforcement();
+        }
+};
+
 
 
 class CommandManager
 {
     public:
+        void addCommand(const std::string& s_command_name, std::unique_ptr<Command> s_command)
+        {
+            mCommandMap[s_command_name] = std::move(s_command);
+        }
+
+        void execute(const std::string& s_command_name, GameEngine& engine)
+        {
+            // check if command is in the map
+            auto it = mCommandMap.find(s_command_name);
+            if(it != mCommandMap.end())
+            {
+                it->second->executeCommand(engine);
+            }
+            else
+            {
+                std::cerr << "[ERROR]: Command not found." << std::endl;
+            }
+        }
 
     private:
         std::unordered_map<std::string, std::unique_ptr<Command>> mCommandMap;
@@ -59,18 +115,20 @@ class GameEngine
         // -- accessors & mutators --
         bool getQuit();
         Map& getMap();
+        Player& getPlayer();
     
         // -- initializer functions --
         void loadMap();
-        void validateMap();
         void addPlayer();
 
         // --  main functions --
         void userQuery();
 
-        void assignReinforcements();
-        void issueOrders();
+        void assignCountries();
+        void assignReinforcement();
         void execOrder();
+        void endExecOrder();
+        void endIssueOrders();
         void run(); // game loop
 
     private:
@@ -82,8 +140,8 @@ class GameEngine
         // -- in-game objects --
         const std::string& mMapFileName;
 
-        Map* mMap;
-        Player* mPlayer;
+        std::unique_ptr<Map> mMap_ptr;
+        std::unique_ptr<Player> mPlayer_ptr;
 };
 
 #endif // !GAME_ENGINE_H

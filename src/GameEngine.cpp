@@ -8,20 +8,19 @@ GameEngine::GameEngine(const std::string& map_name)
     mGameIsWon = false;
 
     // -- run all of the initializer functions --
-    mPlayer = new Player(1,"-");
+    mMap_ptr = std::make_unique<Map>(mMapFileName);
+    mPlayer_ptr = std::make_unique<Player>(1,"-",1,*mMap_ptr);
 
-    loadMap();
-    validateMap();
-    addPlayer();
 }
 
 GameEngine::~GameEngine()
 {
-    // -- deallocate memory --
+
 }
 
 // -- accessors & mutators --
-Map& GameEngine::getMap() {return *mMap;}
+Map& GameEngine::getMap() {return *mMap_ptr;}
+Player& GameEngine::getPlayer() {return *mPlayer_ptr;}
 
 
 
