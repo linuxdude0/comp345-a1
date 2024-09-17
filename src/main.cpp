@@ -1,6 +1,7 @@
 #include <iostream>
 #include <ostream>
 #include "Map.h"
+#include "GameEngine.h"
 
 int main() {
 	try {
@@ -16,5 +17,9 @@ int main() {
 	} catch(std::string e) {
 		std::cout << e << std::endl;
 	}
+
+	GameEngine game("Atlantis.map");
+	game.run();
+
 	return 0;
 }

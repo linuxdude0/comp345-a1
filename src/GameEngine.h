@@ -44,6 +44,7 @@ class validateMapCommand : public Command
         void executeCommand(GameEngine& engine) override
         {
             engine.getMap().validate();
+            std::cout << ">>[EXECUTED]: validateMap()" << std::endl;
         }
 };
 
@@ -53,6 +54,7 @@ class addPlayerCommand : public Command
         void executeCommand(GameEngine& engine)
         {
             engine.addPlayer();
+            std::cout << ">>[EXECUTED]: addPlayer()" << std::endl;
         }
 };
 
@@ -62,6 +64,7 @@ class assignCountriesCommand : public Command
         void executeCommand(GameEngine& engine)
         {
             engine.assignCountries();
+            std::cout << ">>[EXECUTED]: assignCountries()" << std::endl;
         }
 };
 
@@ -71,6 +74,7 @@ class assignReinforcementCommand : public Command
         void executeCommand(GameEngine& engine)
         {
             engine.assignReinforcement();
+            std::cout << ">>[EXECUTED]: assignReinforcements()" << std::endl;
         }
 };
 
@@ -78,6 +82,8 @@ class assignReinforcementCommand : public Command
 
 class CommandManager
 {
+    using CommandMap = std::unordered_map<std::string, std::unique_ptr<Command>>;
+
     public:
         void addCommand(const std::string& s_command_name, std::unique_ptr<Command> s_command)
         {
@@ -97,9 +103,12 @@ class CommandManager
                 std::cerr << "[ERROR]: Command not found." << std::endl;
             }
         }
+    
+        // -- accessors & mutators --
+        CommandMap& getCommandMap() {return mCommandMap;}
 
     private:
-        std::unordered_map<std::string, std::unique_ptr<Command>> mCommandMap;
+        CommandMap mCommandMap;
 };
 
 
@@ -118,6 +127,8 @@ class GameEngine
         Player& getPlayer();
     
         // -- initializer functions --
+        void initializeCommands();        
+        
         void loadMap();
         void addPlayer();
 
@@ -136,6 +147,9 @@ class GameEngine
         CurrentState mCurrentState;
         bool mGameIsWon;
         bool mIsRunning;
+
+        // -- other --
+        CommandManager mCommandManager;
 
         // -- in-game objects --
         const std::string& mMapFileName;
