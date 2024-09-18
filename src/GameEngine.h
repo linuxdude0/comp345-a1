@@ -14,9 +14,14 @@ class GameEngine;
 
 enum CurrentState
 {
-    STARTUP,
-    PLAY,
-    END
+    START,
+    MAP_LOADED,
+    MAP_VALIDATED,
+    PLAYERS_ADDED,
+    ASSIGN_REINFORCEMENTS,
+    ISSUE_ORDERS,
+    EXECUTE_ORDERS,
+    WIN
 };
 
 class Command
@@ -44,6 +49,7 @@ class validateMapCommand : public Command
         void executeCommand(GameEngine& engine) override
         {
             engine.getMap().validate();
+            engine.setState(MAP_VALIDATED);
             std::cout << ">>[EXECUTED]: validateMap()" << std::endl;
         }
 };
@@ -54,6 +60,7 @@ class addPlayerCommand : public Command
         void executeCommand(GameEngine& engine)
         {
             engine.addPlayer();
+            engine.setState(PLAYERS_ADDED);
             std::cout << ">>[EXECUTED]: addPlayer()" << std::endl;
         }
 };
@@ -64,6 +71,7 @@ class assignCountriesCommand : public Command
         void executeCommand(GameEngine& engine)
         {
             engine.assignCountries();
+            engine.setState(ASSIGN_REINFORCEMENTS);
             std::cout << ">>[EXECUTED]: assignCountries()" << std::endl;
         }
 };
@@ -134,13 +142,17 @@ class GameEngine
 
         // --  main functions --
         void userQuery();
-
+        void updateGame();
+        CurrentState getState();
+        void setState(CurrentState state);
+        void run(); // game loop
+        
+        // -- game commands --
         void assignCountries();
         void assignReinforcement();
         void execOrder();
         void endExecOrder();
         void endIssueOrders();
-        void run(); // game loop
 
     private:
         // -- logic --

@@ -31,7 +31,8 @@ void GameEngine::initializeCommands()
 // -- accessors & mutators --
 Map& GameEngine::getMap() {return *mMap_ptr;}
 Player& GameEngine::getPlayer() {return *mPlayer_ptr;}
-
+CurrentState GameEngine::getState() {return mCurrentState;}
+void GameEngine::setState(CurrentState state) {mCurrentState = state;}
 
 
 // -- main functions --
