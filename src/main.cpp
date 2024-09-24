@@ -19,15 +19,8 @@ int main() {
 		std::cout << e << std::endl;
 	}
 
-<<<<<<< HEAD
-	GameEngine game("Atlantis.map");
-	game.testGameStates();
-=======
-	testOrdersLists();
-
 	/*GameEngine game("Atlantis.map");*/
-	/*game.run();*/
->>>>>>> aeee0485f75bc08950a4f7b443d3132a5899aca4
-
+	/*game.testGameStates();*/
+	testOrdersLists();
 	return 0;
 }

@@ -234,7 +234,7 @@ bool Map::validate() {
 		visited[0] = true;
 		queue.push(0);
 		int current = 0;
-		int count = 1;
+		size_t count = 1;
 		while (!queue.empty()) {
 			std::cout << current << ", ";
 			current = queue.front();
@@ -250,11 +250,11 @@ bool Map::validate() {
 		if (count != this->num_territories) {
 			return false;
 		}
-		for(int i=0; i<this->num_continents; i++) {
+		for(size_t i=0; i<this->num_continents; i++) {
 			std::queue<int> queue;
-			bool visited[MAX_TERRITORIES]{};
+			/*bool visited[MAX_TERRITORIES]{};*/
 			std::vector<int> continent_territories;
-			unsigned continent_count = 0;
+			/*unsigned continent_count = 0;*/
 			for (size_t j=0; j<this->num_territories; j++) {
 				if (this->territories[j].continent_index == i) {
 					continent_territories.push_back(j);
