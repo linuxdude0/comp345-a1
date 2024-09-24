@@ -5,7 +5,6 @@
 #include "Map.h"
 #include "Cards.h"
 #include "Orders.h"
-#include "Cards.h"
 
 using std::string;
 using std::vector;
