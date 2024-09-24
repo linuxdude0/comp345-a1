@@ -2,6 +2,7 @@
 #include <ostream>
 #include "Map.h"
 #include "GameEngine.h"
+#include "CardsDriver.h"
 
 int main() {
 	try {
@@ -18,8 +19,10 @@ int main() {
 		std::cout << e << std::endl;
 	}
 
-	GameEngine game("Atlantis.map");
-	game.run();
+	testOrdersLists();
+
+	/*GameEngine game("Atlantis.map");*/
+	/*game.run();*/
 
 	return 0;
 }

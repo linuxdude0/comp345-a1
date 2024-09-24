@@ -72,8 +72,8 @@ void Hand::playAll(Deck& deck) {
 
 // testCards function implementation
 void testCards() {
-    Deck deck; // Create a deck
-    Hand hand; // Create a hand
+    Deck deck{}; // Create a deck
+    Hand hand{}; // Create a hand
 
     // Draw 5 cards from the deck and add to hand
     for (int i = 0; i < 5; ++i) {

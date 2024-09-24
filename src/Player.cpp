@@ -53,7 +53,7 @@ vector<int> Player::toAttack(){
         
         Map::Territory ownedTerr = this->currMap.getTerritory(terrID);
         
-        for(int i = 0; i < ownedTerr.num_adjacent_territories; i++){
+        for(size_t i = 0; i < ownedTerr.num_adjacent_territories; i++){
 
             int candidateTerr = ownedTerr.adjacent_territories_indexes[i];
 
@@ -68,7 +68,7 @@ vector<int> Player::toAttack(){
 
 
 void Player::issueOrder(Order* o){
-    // TO DO --> would append the Order object to whatever structure the OrderList is
+    // TODO: --> would append the Order object to whatever structure the OrderList is
     // or an order reference ....
 }
 
@@ -93,12 +93,12 @@ std::ostream& operator<<(std::ostream& os, Player& obj){
     os << "\n\nTo Defend:";
 
     vector<int>& toDefend = obj.toDefend();
-    for(int i = 0; i < toDefend.size(); i++){
+    for(size_t i = 0; i < toDefend.size(); i++){
         os << i << ": " << toDefend[i];
     }
 
     vector<int> toAttack = obj.toAttack();
-    for(int i = 0; i < toAttack.size(); i++){
+    for(size_t i = 0; i < toAttack.size(); i++){
         os << i << ": " << toAttack[i];
     }
 

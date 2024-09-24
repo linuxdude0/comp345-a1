@@ -1,0 +1,167 @@
+[
+  {
+    "arguments": [
+      "/usr/lib64/ccache/g++",
+      "-c",
+      "-Wall",
+      "-fsanitize=address",
+      "-g",
+      "-o",
+      "./bin/project",
+      "src/Cards.cpp"
+    ],
+    "directory": "/home/yacine/programming/C++/comp345-a1",
+    "file": "/home/yacine/programming/C++/comp345-a1/src/Cards.cpp",
+    "output": "/home/yacine/programming/C++/comp345-a1/bin/project"
+  },
+  {
+    "arguments": [
+      "/usr/lib64/ccache/g++",
+      "-c",
+      "-Wall",
+      "-fsanitize=address",
+      "-g",
+      "-o",
+      "./bin/project",
+      "src/Cards.h"
+    ],
+    "directory": "/home/yacine/programming/C++/comp345-a1",
+    "file": "/home/yacine/programming/C++/comp345-a1/src/Cards.h",
+    "output": "/home/yacine/programming/C++/comp345-a1/bin/project"
+  },
+  {
+    "arguments": [
+      "/usr/lib64/ccache/g++",
+      "-c",
+      "-Wall",
+      "-fsanitize=address",
+      "-g",
+      "-o",
+      "./bin/project",
+      "src/GameEngine.cpp"
+    ],
+    "directory": "/home/yacine/programming/C++/comp345-a1",
+    "file": "/home/yacine/programming/C++/comp345-a1/src/GameEngine.cpp",
+    "output": "/home/yacine/programming/C++/comp345-a1/bin/project"
+  },
+  {
+    "arguments": [
+      "/usr/lib64/ccache/g++",
+      "-c",
+      "-Wall",
+      "-fsanitize=address",
+      "-g",
+      "-o",
+      "./bin/project",
+      "src/GameEngine.h"
+    ],
+    "directory": "/home/yacine/programming/C++/comp345-a1",
+    "file": "/home/yacine/programming/C++/comp345-a1/src/GameEngine.h",
+    "output": "/home/yacine/programming/C++/comp345-a1/bin/project"
+  },
+  {
+    "arguments": [
+      "/usr/lib64/ccache/g++",
+      "-c",
+      "-Wall",
+      "-fsanitize=address",
+      "-g",
+      "-o",
+      "./bin/project",
+      "src/main.cpp"
+    ],
+    "directory": "/home/yacine/programming/C++/comp345-a1",
+    "file": "/home/yacine/programming/C++/comp345-a1/src/main.cpp",
+    "output": "/home/yacine/programming/C++/comp345-a1/bin/project"
+  },
+  {
+    "arguments": [
+      "/usr/lib64/ccache/g++",
+      "-c",
+      "-Wall",
+      "-fsanitize=address",
+      "-g",
+      "-o",
+      "./bin/project",
+      "src/Map.cpp"
+    ],
+    "directory": "/home/yacine/programming/C++/comp345-a1",
+    "file": "/home/yacine/programming/C++/comp345-a1/src/Map.cpp",
+    "output": "/home/yacine/programming/C++/comp345-a1/bin/project"
+  },
+  {
+    "arguments": [
+      "/usr/lib64/ccache/g++",
+      "-c",
+      "-Wall",
+      "-fsanitize=address",
+      "-g",
+      "-o",
+      "./bin/project",
+      "src/Map.h"
+    ],
+    "directory": "/home/yacine/programming/C++/comp345-a1",
+    "file": "/home/yacine/programming/C++/comp345-a1/src/Map.h",
+    "output": "/home/yacine/programming/C++/comp345-a1/bin/project"
+  },
+  {
+    "arguments": [
+      "/usr/lib64/ccache/g++",
+      "-c",
+      "-Wall",
+      "-fsanitize=address",
+      "-g",
+      "-o",
+      "./bin/project",
+      "src/Orders.cpp"
+    ],
+    "directory": "/home/yacine/programming/C++/comp345-a1",
+    "file": "/home/yacine/programming/C++/comp345-a1/src/Orders.cpp",
+    "output": "/home/yacine/programming/C++/comp345-a1/bin/project"
+  },
+  {
+    "arguments": [
+      "/usr/lib64/ccache/g++",
+      "-c",
+      "-Wall",
+      "-fsanitize=address",
+      "-g",
+      "-o",
+      "./bin/project",
+      "src/Orders.h"
+    ],
+    "directory": "/home/yacine/programming/C++/comp345-a1",
+    "file": "/home/yacine/programming/C++/comp345-a1/src/Orders.h",
+    "output": "/home/yacine/programming/C++/comp345-a1/bin/project"
+  },
+  {
+    "arguments": [
+      "/usr/lib64/ccache/g++",
+      "-c",
+      "-Wall",
+      "-fsanitize=address",
+      "-g",
+      "-o",
+      "./bin/project",
+      "src/Player.cpp"
+    ],
+    "directory": "/home/yacine/programming/C++/comp345-a1",
+    "file": "/home/yacine/programming/C++/comp345-a1/src/Player.cpp",
+    "output": "/home/yacine/programming/C++/comp345-a1/bin/project"
+  },
+  {
+    "arguments": [
+      "/usr/lib64/ccache/g++",
+      "-c",
+      "-Wall",
+      "-fsanitize=address",
+      "-g",
+      "-o",
+      "./bin/project",
+      "src/Player.h"
+    ],
+    "directory": "/home/yacine/programming/C++/comp345-a1",
+    "file": "/home/yacine/programming/C++/comp345-a1/src/Player.h",
+    "output": "/home/yacine/programming/C++/comp345-a1/bin/project"
+  }
+]
