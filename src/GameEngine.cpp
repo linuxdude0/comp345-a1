@@ -3,9 +3,9 @@
 
 // -- constructor & destructor --
 GameEngine::GameEngine(const std::string& map_name)
-    : mCurrentState{CurrentState::STARTUP}, mMapFileName{map_name}
+    : mCurrentState{CurrentState::START}, mMapFileName{map_name}
 {
-    mGameIsWon = false;
+    mIsRunning = true;
 
     // -- run all of the initializer functions --
     mMap_ptr = std::make_unique<Map>(mMapFileName);
@@ -26,6 +26,11 @@ void GameEngine::initializeCommands()
     mCommandManager.addCommand("add_player",std::make_unique<addPlayerCommand>());
     mCommandManager.addCommand("assign_countries",std::make_unique<assignCountriesCommand>());
     mCommandManager.addCommand("assign_reinforcements",std::make_unique<assignReinforcementCommand>());
+    mCommandManager.addCommand("issue_orders",std::make_unique<issueOrderCommand>());
+    mCommandManager.addCommand("exec_orders",std::make_unique<execOrdersCommand>());
+    
+    
+    mCommandManager.addCommand("exit",std::make_unique<endGameCommand>());
 }
 
 // -- accessors & mutators --
@@ -33,7 +38,26 @@ Map& GameEngine::getMap() {return *mMap_ptr;}
 Player& GameEngine::getPlayer() {return *mPlayer_ptr;}
 CurrentState GameEngine::getState() {return mCurrentState;}
 void GameEngine::setState(CurrentState state) {mCurrentState = state;}
+const bool GameEngine::isRunning() const {return mIsRunning;}
 
+// -- testing --
+void GameEngine::testGameStates()
+{
+    while(isRunning())
+    {
+        userQuery(); // run user input 
+    } 
+}
+
+void GameEngine::closeGame()
+{
+    // -- perform cleanup here --
+}
+
+void GameEngine::updateGame()
+{
+    // switch cases here for all of the game states
+}
 
 // -- main functions --
 void GameEngine::userQuery()
@@ -47,7 +71,7 @@ void GameEngine::userQuery()
 
 void GameEngine::run()
 {
-    while(mIsRunning)
+    while(isRunning())
     {
        userQuery(); 
     }

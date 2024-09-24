@@ -11,6 +11,8 @@
 #include <memory>
 
 class GameEngine;
+class CommandManager;
+class Command;
 
 enum CurrentState
 {
@@ -24,14 +26,100 @@ enum CurrentState
     WIN
 };
 
+
 class Command
 {
     // -- commands base class --
     public:
         virtual ~Command();
         virtual void executeCommand(GameEngine& engine);
-
 };
+
+class CommandManager
+{
+    using CommandMap = std::unordered_map<std::string, std::unique_ptr<Command>>;
+
+    public:
+        void addCommand(const std::string& s_command_name, std::unique_ptr<Command> s_command)
+        {
+            mCommandMap[s_command_name] = std::move(s_command);
+        }
+
+        void execute(const std::string& s_command_name, GameEngine& engine)
+        {
+            // check if command is in the map
+            auto it = mCommandMap.find(s_command_name);
+            if(it != mCommandMap.end())
+            {
+                it->second->executeCommand(engine);
+            }
+            else
+            {
+                std::cerr << "[ERROR]: Command not found." << std::endl;
+            }
+        }
+    
+        // -- accessors & mutators --
+        CommandMap& getCommandMap() {return mCommandMap;}
+
+    private:
+        CommandMap mCommandMap;
+};
+
+
+class GameEngine
+{
+    public:
+
+        // -- constructor & destructor --
+        GameEngine(const std::string& map_name);
+        ~GameEngine();
+
+        // -- accessors & mutators --
+        bool mIsRunning;
+        Map& getMap();
+        Player& getPlayer();
+        const bool isRunning() const;
+        const bool getEndGame() const;
+    
+        // -- initializer functions --
+        void initializeCommands();        
+        
+        void loadMap();
+        void addPlayer();
+
+        // --  main functions --
+        void userQuery();
+        void updateGame();
+        CurrentState getState();
+        void setState(CurrentState state);
+        void run(); // game loop
+        void closeGame();
+        
+        // -- game commands --
+        void assignCountries();
+        void assignReinforcement();
+        void execOrder();
+        void endExecOrder();
+        void endIssueOrders();
+
+        // -- testing --
+        void testGameStates();
+
+    private:
+        // -- logic --
+        CurrentState mCurrentState;
+
+        // -- other --
+        CommandManager mCommandManager;
+
+        // -- in-game objects --
+        const std::string& mMapFileName;
+
+        std::unique_ptr<Map> mMap_ptr;
+        std::unique_ptr<Player> mPlayer_ptr;
+};
+
 
 class loadMapCommand : public Command
 {
@@ -86,88 +174,41 @@ class assignReinforcementCommand : public Command
         }
 };
 
-
-
-class CommandManager
+class issueOrderCommand : public Command
 {
-    using CommandMap = std::unordered_map<std::string, std::unique_ptr<Command>>;
-
     public:
-        void addCommand(const std::string& s_command_name, std::unique_ptr<Command> s_command)
+        void executeCommand(GameEngine& engine)
         {
-            mCommandMap[s_command_name] = std::move(s_command);
+            // engine.getPlayer().issueOrder();
+            engine.setState(ISSUE_ORDERS);
+            std::cout << ">>[EXECUTED]: issueOrder()" << std::endl;
         }
+};
 
-        void execute(const std::string& s_command_name, GameEngine& engine)
+class execOrdersCommand : public Command
+{
+    public:
+        void executeCommand(GameEngine& engine)
         {
-            // check if command is in the map
-            auto it = mCommandMap.find(s_command_name);
-            if(it != mCommandMap.end())
-            {
-                it->second->executeCommand(engine);
-            }
-            else
-            {
-                std::cerr << "[ERROR]: Command not found." << std::endl;
-            }
+            // execute orders
+            engine.setState(EXECUTE_ORDERS);
+            std::cout << ">>[EXECUTED]: execOrder()" << std::endl;
         }
-    
-        // -- accessors & mutators --
-        CommandMap& getCommandMap() {return mCommandMap;}
-
-    private:
-        CommandMap mCommandMap;
 };
 
 
 
-class GameEngine
+class endGameCommand : public Command
 {
     public:
-
-        // -- constructor & destructor --
-        GameEngine(const std::string& map_name);
-        ~GameEngine();
-
-        // -- accessors & mutators --
-        bool getQuit();
-        Map& getMap();
-        Player& getPlayer();
-    
-        // -- initializer functions --
-        void initializeCommands();        
-        
-        void loadMap();
-        void addPlayer();
-
-        // --  main functions --
-        void userQuery();
-        void updateGame();
-        CurrentState getState();
-        void setState(CurrentState state);
-        void run(); // game loop
-        
-        // -- game commands --
-        void assignCountries();
-        void assignReinforcement();
-        void execOrder();
-        void endExecOrder();
-        void endIssueOrders();
-
-    private:
-        // -- logic --
-        CurrentState mCurrentState;
-        bool mGameIsWon;
-        bool mIsRunning;
-
-        // -- other --
-        CommandManager mCommandManager;
-
-        // -- in-game objects --
-        const std::string& mMapFileName;
-
-        std::unique_ptr<Map> mMap_ptr;
-        std::unique_ptr<Player> mPlayer_ptr;
+        void executeCommand(GameEngine& engine)
+        {
+            engine.mIsRunning = false;
+            std::cout << ">>[EXECUTED]: endGame()." << std::endl;
+            engine.closeGame();
+            std::exit(EXIT_SUCCESS); 
+        }
 };
+ 
 
 #endif // !GAME_ENGINE_H

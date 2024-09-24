@@ -19,7 +19,7 @@ int main() {
 	}
 
 	GameEngine game("Atlantis.map");
-	game.run();
+	game.testGameStates();
 
 	return 0;
 }
