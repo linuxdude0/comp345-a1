@@ -104,7 +104,7 @@ std::ostream& operator<<(std::ostream& os, Player& obj){
 
 
 
-    // TO DO --> 
+    // TODO: --> 
     // when implemented
     // os << "\nHand: " 
     // os << "\nOrders: " 

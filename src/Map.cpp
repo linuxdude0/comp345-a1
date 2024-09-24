@@ -8,35 +8,61 @@
 #include <string>
 #include <vector>
 
-/**/
 /*class Map {*/
-/*private:*/
-/*	std::string author;*/
-/*	bool warn;*/
-/*	std::string image_filename;*/
-/*	bool wrap;*/
+/*public:*/
+/*	struct Continent {*/
+/*		std::string name;*/
+/*		unsigned score;*/
+/*	};*/
+/*	class Territory {*/
+/*	public:*/
+/*		std::string name;*/
+/*		unsigned continent_index;*/
+/*		unsigned pos_x;*/
+/*		unsigned pos_y;*/
+/*		unsigned adjacent_territories_indexes[MAX_ADJACENT_TERRITORIES];*/
+/*		size_t num_adjacent_territories;*/
+/*	};*/
 /*	enum class ScrollDirection {*/
 /*		NONE,*/
 /*		HORIZONTAL,*/
 /*		VERTICAL,*/
 /*	} scroll;*/
-/*	std::string continents[32];*/
-/*	unsigned scores_to_own_continent[32];*/
-/*	size_t num_continents;*/
-/*	struct Territory {*/
-/*		std::string name;*/
-/*		unsigned continent_index;*/
-/*		unsigned pos_x;*/
-/*		unsigned pos_y;*/
-/*		unsigned adjacent_territories_indexes[10];*/
-/*		size_t num_adjacent_territories;*/
-/*	};*/
-/*	Territory territories[256];*/
-/*	size_t num_territories;*/
+/*private:*/
+/*	std::string author;*/
+/*	bool warn;*/
+/*	std::string image_filename;*/
+/*	bool wrap;*/
+/*	std::string continents[MAX_CONTINENTS];*/
+/*	unsigned scores_to_own_continent[MAX_CONTINENTS];*/
+/*	size_t num_continents = 0;*/
+/*	Territory territories[MAX_TERRITORIES];*/
+/*	size_t num_territories = 0;*/
 /*public:*/
 /*	Map(std::string filename);*/
-/*	void validate();*/
+/*	Map(Map* map);*/
+/*	bool validate();*/
+/*	Territory getTerritory(unsigned index);*/
+/*	Continent getContinent(unsigned index);*/
+/*	friend std::ostream& operator<<(std::ostream& os, const Map& map);*/
 /*};*/
+
+Map::Map(Map* map) {
+	this->author = map->author;
+	this->warn = map->warn;
+	this->image_filename = map->image_filename;
+	this->wrap = map->wrap;
+	this->scroll = map->scroll;
+	this->num_territories = map->num_territories;
+	this->num_continents = map->num_continents;
+	for (size_t i=0; i<this->num_continents; i++) {
+		this->scores_to_own_continent[i] = map->scores_to_own_continent[i];
+		this->continents[i] = map->continents[i];
+	}
+	for (size_t i=0; i<this->num_territories; i++) {
+		this->territories[i] = map->territories[i];
+	}
+}
 
 Map::Map(std::string filename) {
 	std::ifstream file;

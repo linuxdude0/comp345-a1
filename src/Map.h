@@ -40,6 +40,7 @@ private:
 	size_t num_territories = 0;
 public:
 	Map(std::string filename);
+	Map(Map* map);
 	bool validate();
 	Territory getTerritory(unsigned index);
 	Continent getContinent(unsigned index);
