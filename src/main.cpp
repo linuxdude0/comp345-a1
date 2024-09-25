@@ -4,6 +4,7 @@
 #include "MapDriver.h"
 #include "GameEngine.h"
 #include "CardsDriver.h"
+#include "Player.h"
 
 int main() {
 	testLoadMaps("./maps/Atlantis.map");

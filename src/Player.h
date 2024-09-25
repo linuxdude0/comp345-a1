@@ -19,7 +19,6 @@ Player:
 
 */
 class Player{
-
     private:
         int playerID;
         string name;
@@ -29,7 +28,7 @@ class Player{
         Map& currMap;
     
     public:
-        Player(int, string, int, Map&);
+        Player(int playerID, string name, int startTerrIndex, Map& map);
         Player(const Player&);
         ~Player();
 

@@ -1,3 +1,4 @@
+#include "Orders.h"
 #include <iostream>
 #include <vector>
 #include <string>
@@ -5,13 +6,13 @@
 #include <cstdlib>
 
 // Enum for card types
-enum CardType { BOMB, REINFORCEMENT, BLOCKADE, AIRLIFT, DIPLOMACY };
+enum CardType { DEPLOY, ADVANCE, BOMB, BLOCKADE, AIRLIFT, NEGOTIATE };
 
 // Card class definition
 class Card {
 public:
     Card(CardType type); // Constructor to initialize card type
-    void play(); // Method to play the card
+    Order* play();
     CardType getType() const; // Getter for card type
 
 private:
@@ -22,21 +23,21 @@ private:
 class Deck {
 public:
     Deck(); // Constructor to initialize the deck with cards
-    Card draw(); // Method to draw a card at random
+    Card* draw(); // Method to draw a card at random
     void returnCard(const Card& card); // Method to return a card to the deck
-
+    Order* play(Card* card);
 private:
-    std::vector<Card> cards; // Vector to store cards
+    std::vector<Card*> cards; // Vector to store cards
 };
 
 // Hand class definition
 class Hand {
 public:
-    void addCard(const Card& card); // Method to add a card to the hand
+    void addCard(Card* card); // Method to add a card to the hand
+    Order* playCard(Card* card);
     void playAll(Deck& deck); // Method to play all cards in the hand
-
-private:
-    std::vector<Card> handCards; // Vector to store cards in hand
+    std::vector<Card*> handCards; // Vector to store cards in hand
 };
+
 // Function to test the card functionality
 void testCards();
