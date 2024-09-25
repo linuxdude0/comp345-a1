@@ -8,8 +8,10 @@
 int main() {
 	testLoadMaps("./maps/Atlantis.map");
 	testLoadMaps("./maps/USA.map");
-	/*GameEngine game("Atlantis.map");*/
-	/*game.testGameStates();*/
+
+	GameEngine game("Atlantis.map");
+	game.testGameStates();
+	
 	testOrdersLists();
 	return 0;
 }
