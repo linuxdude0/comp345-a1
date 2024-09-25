@@ -9,7 +9,7 @@ int main() {
 	testLoadMaps("./maps/Atlantis.map");
 	testLoadMaps("./maps/USA.map");
 
-	GameEngine game("Atlantis.map");
+	GameEngine game("./maps/Atlantis.map");
 	game.testGameStates();
 	
 	testOrdersLists();
