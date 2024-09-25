@@ -7,12 +7,12 @@
 #include "Orders.h"
 
 int main() {
-    testOrderLists();
-	//testLoadMaps("./maps/Atlantis.map");
-	//testLoadMaps("./maps/USA.map");
+	testOrderLists();
+	testLoadMaps("./maps/Atlantis.map");
+	testLoadMaps("./maps/USA.map");
 
-	//GameEngine game("./maps/Atlantis.map");
-	//game.testGameStates();
+	GameEngine game("./maps/Atlantis.map");
+	game.testGameStates();
 
 
 	return 0;
