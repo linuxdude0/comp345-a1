@@ -6,12 +6,25 @@
 using std::vector;
 using std::ostream;
 
+enum class OrderKind{
+    DEPLOY,
+    ADVANCE,
+    BOMB,
+    BLOCKADE,
+    AIRLIFT,
+    NEGOTIATE
+};
+
 class Order{
+
+protected:
+    OrderKind orderKind;
 
 public:
     Order();
     virtual bool validate() = 0 ;
     virtual void execute() = 0;
+    friend ostream & operator << (ostream & out, const Order & order);
 
     virtual ~Order();
 
@@ -19,6 +32,7 @@ public:
 
 class DeployOrder : public Order {
 public:
+    DeployOrder();
     bool validate() override;
     void execute() override;
     friend ostream & operator << (ostream & out, const DeployOrder & deployOrder);
@@ -27,6 +41,7 @@ public:
 
 class AdvanceOrder : public Order {
 public:
+    AdvanceOrder();
     bool validate() override;
     void execute() override;
     friend ostream & operator << (ostream & out, const AdvanceOrder & advanceOrder);
@@ -34,6 +49,7 @@ public:
 
 class BombOrder : public Order {
 public:
+    BombOrder();
     bool validate() override;
     void execute() override;
     friend ostream & operator << (ostream & out, const BombOrder & bombOrder);
@@ -41,6 +57,7 @@ public:
 
 class BlockadeOrder : public Order {
 public:
+    BlockadeOrder();
     bool validate() override;
     void execute() override;
     friend ostream & operator << (ostream & out, const BlockadeOrder & blockadeOrder);
@@ -48,6 +65,7 @@ public:
 
 class AirliftOrder : public Order {
 public:
+    AirliftOrder();
     bool validate() override;
     void execute() override;
     friend ostream & operator << (ostream & out, const AirliftOrder & airliftOrder);
@@ -55,6 +73,7 @@ public:
 
 class NegotiateOrder : public Order {
 public:
+    NegotiateOrder();
     bool validate() override;
     void execute() override;
     friend ostream & operator << (ostream & out, const NegotiateOrder & negotiateOrder);
@@ -74,7 +93,12 @@ public:
     void add(Order* order);
     void remove(unsigned index);
     void move(unsigned oldPosition, unsigned newPosition);
+    void executeAll();
+
+    friend ostream & operator << (ostream & out, const OrderList & orderList);
 
 };
+
+int testOrderLists();
 
 #endif
