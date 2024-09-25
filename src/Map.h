@@ -28,7 +28,6 @@ public:
 		HORIZONTAL,
 		VERTICAL,
 	} scroll;
-private:
 	std::string author;
 	bool warn;
 	std::string image_filename;
@@ -38,7 +37,6 @@ private:
 	size_t num_continents = 0;
 	Territory territories[MAX_TERRITORIES];
 	size_t num_territories = 0;
-public:
 	Map(std::string filename);
 	Map(Map* map);
 	bool validate();

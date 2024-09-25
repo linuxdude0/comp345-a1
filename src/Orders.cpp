@@ -219,7 +219,6 @@ void OrderList::move(unsigned int oldPosition, unsigned int newPosition) {
 
 void OrderList::executeAll() {
     for (int i = 0; i < this->orders.size(); ++i) {
-
         if ((unsigned)this->orders[i].index >= 0){
             orders[i].order->execute();
             orders[i].index = -1;
@@ -229,6 +228,17 @@ void OrderList::executeAll() {
     }
 }
 
+
+
+OrderList::~OrderList() {
+    for (int i = 0; i < this->orders.size(); ++i) {
+        if ((unsigned)this->orders[i].index >= 0){
+            orders[i].index = -1;
+            delete orders[i].order;
+            orders[i].order = nullptr;
+        }
+    }
+}
 
  ostream & operator << (ostream & out, const OrderList & orderList){
      for (OrderList::OrderListItem item: orderList.orders){

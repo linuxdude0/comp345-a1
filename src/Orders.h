@@ -94,6 +94,7 @@ public:
     void remove(unsigned index);
     void move(unsigned oldPosition, unsigned newPosition);
     void executeAll();
+    ~OrderList();
 
     friend ostream & operator << (ostream & out, const OrderList & orderList);
 
