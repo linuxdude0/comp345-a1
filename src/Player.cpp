@@ -67,10 +67,19 @@ vector<int> Player::toAttack(){
 }
 
 
-void Player::issueOrder(Order* o){
+
+
+/*TODO: would accept a card or an integer (index of card in player's hand), call a play() method internally, 
+    play() method puts the Card back to the Deck and returns an Order*, the Order*
+    would then be placed into the OrderList for the current tour
+*/ void Player::issueOrder(Order* o){
     // TODO: --> would append the Order object to whatever structure the OrderList is
     // or an order reference ....
 }
+
+
+/*TODO: would be used to clear the list of orders when a stage of the game is over */
+bool Player::clearOrders(){};
 
 
 Hand& Player::getHand(){return *currHand;}
@@ -82,6 +91,9 @@ int Player::getID(){return playerID;}
 void Player::setID(int newID){this->playerID = newID;}
 void Player::setName(std::string newName){this->name = newName;}
 
+
+
+/*TODO: finish the overload for stream insertion*/
 std::ostream& operator<<(std::ostream& os, Player& obj){
 
     os 
@@ -104,12 +116,18 @@ std::ostream& operator<<(std::ostream& os, Player& obj){
 
 
 
-    // TODO: --> 
     // when implemented
     // os << "\nHand: " 
     // os << "\nOrders: " 
 
 
     return os;
+};
+    
+/*TODO: creates players and demonstrates that the above
+features are available - toDefend(), toAttack(), issueOrder()*/
 
-}
+void testPlayers(){};
+
+
+

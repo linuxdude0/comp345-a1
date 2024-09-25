@@ -46,8 +46,13 @@ class Player{
         void setID(int);
         void setName(string);
 
+        bool clearOrders();
+
         // overloaded stream insertion
         friend std::ostream& operator<<(std::ostream& os, Player& obj);
         
 
 };
+
+
+void testPlayers();
