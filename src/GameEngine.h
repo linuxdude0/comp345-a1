@@ -11,6 +11,7 @@
 #include <unordered_map>
 #include <functional>
 #include <memory>
+#include <limits>
 
 class Command;
 class GameEngine;
@@ -38,7 +39,7 @@ class GameEngine
     public:
 
         // -- constructor & destructor --
-        GameEngine(const std::string& map_name);
+        GameEngine(const std::string map_name);
         ~GameEngine();
 
         // -- accessors & mutators --
@@ -88,10 +89,11 @@ class GameEngine
         // -- other --
 
         // -- in-game objects --
-        const std::string& mMapFileName;
+        const std::string mMapFileName;
 
-        std::unique_ptr<Map> mMap_ptr;
-        std::unique_ptr<Player> mPlayer_ptr;
+        Map* mMap_ptr;
+
+        std::vector<std::unique_ptr<Player>> mPlayer_v;
         std::unordered_map<std::string,CommandFunction> commandMap;
 };
 

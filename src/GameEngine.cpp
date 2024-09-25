@@ -1,5 +1,39 @@
 #include "GameEngine.h"
 
+void clear_extra()
+{
+  // ignores all of the characters up until newline
+	std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+}
+
+template <typename T>
+T prompt_for_numeric(std::string message)
+{
+  while(1)
+  {
+    T tEntry;
+    bool bIsNumeric {false};
+    std::cout << message;
+    if(std::cin >> tEntry)
+    {
+      bIsNumeric = true;
+      if(tEntry < 0)
+      {
+        std::cerr << "ERROR: Cannot be (less than) < 0. \n";
+        continue;
+      }
+      clear_extra();
+      return tEntry;
+    } else {
+      bIsNumeric = false;
+      std::cerr << "ERROR: Invalid entry. \n";
+      std::cin.clear();
+      clear_extra();
+      continue;
+    }
+  }
+}
+
 
 std::ostream& operator<<(std::ostream& out, const CurrentState value){
     static const auto strings = []{
@@ -18,14 +52,12 @@ std::ostream& operator<<(std::ostream& out, const CurrentState value){
 
 
 // -- constructor & destructor --
-GameEngine::GameEngine(const std::string& map_name)
+GameEngine::GameEngine(const std::string map_name)
     : mCurrentState{CurrentState::START}, mMapFileName{map_name}
 {
     mIsRunning = true;
 
-    // -- run all of the initializer functions --
-    mMap_ptr = std::make_unique<Map>(mMapFileName);
-    mPlayer_ptr = std::make_unique<Player>(1,"-",1,*mMap_ptr);
+    // initialize commands
     initializeCommands();
 }
 
@@ -40,11 +72,17 @@ void GameEngine::initializeCommands()
     commandMap["load_map"] = std::bind(&GameEngine::loadMap, this);
     commandMap["validate_map"] = std::bind(&GameEngine::validateMap, this);
     commandMap["add_player"] = std::bind(&GameEngine::addPlayer, this);
+    commandMap["assign_countries"] = std::bind(&GameEngine::assignCountries, this);
+    commandMap["issue_order"] = std::bind(&GameEngine::issueOrder, this);
+    commandMap["end_issue_orders"] = std::bind(&GameEngine::endIssueOrders, this); 
+    commandMap["exec_orders"] = std::bind(&GameEngine::execOrder, this);
+    commandMap["win"] = std::bind(&GameEngine::win, this);
+    commandMap["play"] = std::bind(&GameEngine::play, this);
 }
 
 // -- accessors & mutators --
 Map& GameEngine::getMap() {return *mMap_ptr;}
-Player& GameEngine::getPlayer() {return *mPlayer_ptr;}
+//Player& GameEngine::getPlayer() {return *mPlayer_ptr;}
 CurrentState GameEngine::getState() {return mCurrentState;}
 void GameEngine::setState(CurrentState state) {mCurrentState = state;}
 bool GameEngine::isRunning() {return mIsRunning;}
@@ -113,24 +151,65 @@ void GameEngine::run()
 
 // -- game commands --
 void GameEngine::loadMap()
-{
-    //engine.getMap().loadMap();
+{   
+    this->mMap_ptr = new Map(mMapFileName);
+    
+    // mMap_ptr = std::make_unique<Map>(mMapFileName);
     setState(MAP_LOADED);
-    //TODO: see with prof if we can skip this or if we should make a separate function for its initialization
 }
 
 void GameEngine::validateMap()
 {
-    getMap().validate();
+    mMap_ptr->validate();
     setState(MAP_VALIDATED);
 }
 
 void GameEngine::addPlayer()
 {
+    int n_playerId{1};
+    int n_numberOfPlayers = prompt_for_numeric<int>(">> How many players? : ");
+    for(int i{0}; i!=n_numberOfPlayers; ++i)
+    {
+        std::unique_ptr<Player> mPlayer_ptr;
+        std::string s_name;
+        std::cout << ">> Enter player name: ";
+        std::cin >> s_name;
+
+        // TODO: -- make player choose in which territory to start: --
+        mPlayer_ptr = std::make_unique<Player>(n_playerId,s_name,1,*mMap_ptr);
+
+        n_playerId ++;
+    }
+
     setState(PLAYERS_ADDED);
 }
 
 void GameEngine::assignCountries()
 {
     setState(ASSIGN_REINFORCEMENTS);
+}
+
+void GameEngine::issueOrder()
+{
+
+}
+
+void GameEngine::endIssueOrders()
+{
+
+}
+
+void GameEngine::execOrder()
+{
+
+}
+
+void GameEngine::win()
+{
+
+}
+
+void GameEngine::play()
+{
+
 }
