@@ -13,6 +13,8 @@ public:
     virtual bool validate() = 0 ;
     virtual void execute() = 0;
 
+    virtual ~Order();
+
 };
 
 class DeployOrder : public Order {
@@ -61,9 +63,15 @@ public:
 class OrderList{
 
 private:
-    vector<Order*> orders;
+    struct OrderListItem {
+        Order* order;
+        int index;
+    };
+    vector<OrderListItem> orders;
+
 
 public:
+    void add(Order* order);
     void remove(unsigned index);
     void move(unsigned oldPosition, unsigned newPosition);
 
