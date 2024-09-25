@@ -1,6 +1,6 @@
  #include "Cards.h"
 
-int testCardHand() {
+int testCard() {
     testCards(); // Call testCards function to test the card functionality
     return 0;
 }

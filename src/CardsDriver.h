@@ -1,3 +1,3 @@
 #pragma once
 
-int testOrdersLists(void);
+int testCard(void);
