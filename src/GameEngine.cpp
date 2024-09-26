@@ -167,6 +167,8 @@ void GameEngine::validateMap()
 void GameEngine::addPlayer()
 {
     int n_playerId{1};
+    int n_territoryIndex;
+    int n_prevIndex{0};
     int n_numberOfPlayers = prompt_for_numeric<int>(">> How many players? : ");
     for(int i{0}; i!=n_numberOfPlayers; ++i)
     {
@@ -174,10 +176,25 @@ void GameEngine::addPlayer()
         std::string s_name;
         std::cout << ">> Enter player name: ";
         std::cin >> s_name;
+        if(n_numberOfPlayers > 1)
+        {
+            while(true)
+            {
+                n_territoryIndex = prompt_for_numeric<int>(">> Enter territory index: ");
+                if(n_territoryIndex == mPlayer_v[n_prevIndex].get()->toDefend()[0])
+                {
+                    // check if player chose already taken territory
+                    std::cout << ">> [WARNING]: Cannot choose start territory already taken by enemy player.";
+                    break;
+                }
+            }
+        }
+        n_prevIndex ++;
+        clear_extra(); // clear input buffer
 
-        // TODO: -- make player choose in which territory to start: --
+        // allocate memory for new player object
         mPlayer_ptr = std::make_unique<Player>(n_playerId,s_name,1,*mMap_ptr);
-
+        mPlayer_v.push_back(mPlayer_ptr);
         n_playerId ++;
     }
 
@@ -191,17 +208,17 @@ void GameEngine::assignCountries()
 
 void GameEngine::issueOrder()
 {
-
+    setState(ISSUE_ORDERS);
 }
 
 void GameEngine::endIssueOrders()
 {
-
+    setState(EXECUTE_ORDERS);
 }
 
 void GameEngine::execOrder()
 {
-
+    setState(ASSIGN_REINFORCEMENTS);
 }
 
 void GameEngine::win()
