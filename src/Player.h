@@ -26,33 +26,30 @@ class Player{
         vector<int>* territoriesToDefend;
         Hand* currHand;
         OrderList* orders;
-        Map& currMap;
+        Map* currMap;
     
     public:
-        Player(int, string, int, Map&);
+        Player(int, string, int, Map*);
         Player(const Player&);
         ~Player();
 
         vector<int>& toDefend();
         vector<int> toAttack();
-        Hand& getHand();
-        OrderList& getOrderList();
-        void issueOrder(Order* o);
+        Hand* getHand();
+        OrderList* getOrderList();
+        bool issueOrder(OrderKind ok);
+
 
         // getters
         int getID();
-        string getName();
+        string& getName();
         // setters
         void setID(int);
         void setName(string);
 
-        bool clearOrders();
 
         // overloaded stream insertion
         friend std::ostream& operator<<(std::ostream& os, Player& obj);
         
 
 };
-
-
-void testPlayers();
