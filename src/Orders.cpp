@@ -1,12 +1,13 @@
 #include "Orders.h"
 
+#define UNUSED(x) (void)(x)
+
 //Default constructor
 Order::Order() = default;
 
 
-Order::~Order() {
+Order::~Order() {}
 
-}
 ostream & operator << (ostream & out, const Order & order){
     switch (order.orderKind) {
         case OrderKind::DEPLOY:
@@ -41,14 +42,13 @@ bool DeployOrder::validate() {
 }
 
 void DeployOrder::execute() {
-
     if (validate()){
         std::cout << "Executing Deploy\n";
-
     }
 }
 
 ostream & operator << (ostream & out, const DeployOrder & deployOrder){
+    UNUSED(deployOrder);
     out << "Deploy Order";
     return out;
 }
@@ -63,14 +63,13 @@ bool AdvanceOrder::validate() {
 }
 
 void AdvanceOrder::execute() {
-
     if (validate()){
         std::cout << "Executing Advance\n";
-
     }
 }
 
 ostream & operator << (ostream & out, const AdvanceOrder & advanceOrder){
+    UNUSED(advanceOrder);
     out << "Advance Order";
     return out;
 }
@@ -85,14 +84,13 @@ bool BombOrder::validate() {
 }
 
 void BombOrder::execute() {
-
     if (validate()){
         std::cout << "Executing Bomb\n";
-
     }
 }
 
 ostream & operator << (ostream & out, const BombOrder & bombOrder){
+    UNUSED(bombOrder);
     out << "Bomb Order";
     return out;
 }
@@ -107,14 +105,13 @@ bool BlockadeOrder::validate() {
 }
 
 void BlockadeOrder::execute() {
-
     if (validate()){
         std::cout << "Executing Blockade\n";
-
     }
 }
 
 ostream & operator << (ostream & out, const BlockadeOrder & blockadeOrder){
+    UNUSED(blockadeOrder);
     out << "Blockade Order";
     return out;
 }
@@ -129,14 +126,13 @@ bool AirliftOrder::validate() {
 }
 
 void AirliftOrder::execute() {
-
     if (validate()){
         std::cout << "Executing Airlift\n";
-
     }
 }
 
 ostream & operator << (ostream & out, const AirliftOrder & airliftOrder){
+    UNUSED(airliftOrder);
     out << "Airlift Order";
     return out;
 }
@@ -151,13 +147,12 @@ bool NegotiateOrder::validate() {
 }
 
 void NegotiateOrder::execute() {
-
     if (validate()){
         std::cout << "Executing Negotiate\n";
-
     }
 }
 ostream & operator << (ostream & out, const NegotiateOrder & negotiateOrder){
+    UNUSED(negotiateOrder);
     out << "Negotiate Order";
     return out;
 }
@@ -165,15 +160,13 @@ ostream & operator << (ostream & out, const NegotiateOrder & negotiateOrder){
 //Implementing OrderList
 //Add an order to the list
 void OrderList::add(Order* order) {
-
     OrderListItem item = {order, (int)orders.size()};
     orders.push_back(item);
 }
 
 //Remove an order from the list
 void OrderList::remove(unsigned int index) {
-    for (int i = 0; i < this->orders.size(); ++i) {
-
+    for (size_t i = 0; i < this->orders.size(); ++i) {
         if ((unsigned)this->orders[i].index == index){
             orders[i].index = -1;
             delete orders[i].order;
@@ -190,7 +183,7 @@ void OrderList::move(unsigned int oldPosition, unsigned int newPosition) {
 
     int source_index = -1;
     int destination_index = -1;
-    for (int i = 0; i < this->orders.size(); ++i){
+    for (size_t i = 0; i < this->orders.size(); ++i){
         if ((unsigned)orders[i].index == oldPosition){
             source_index = i;
             foundSource = true;
@@ -218,8 +211,8 @@ void OrderList::move(unsigned int oldPosition, unsigned int newPosition) {
 }
 
 void OrderList::executeAll() {
-    for (int i = 0; i < this->orders.size(); ++i) {
-        if ((unsigned)this->orders[i].index >= 0){
+    for (size_t i = 0; i < this->orders.size(); ++i) {
+        if (this->orders[i].index >= 0){
             orders[i].order->execute();
             orders[i].index = -1;
             delete orders[i].order;
@@ -231,8 +224,8 @@ void OrderList::executeAll() {
 
 
 OrderList::~OrderList() {
-    for (int i = 0; i < this->orders.size(); ++i) {
-        if ((unsigned)this->orders[i].index >= 0){
+    for (size_t i = 0; i < this->orders.size(); ++i) {
+        if (this->orders[i].index >= 0){
             orders[i].index = -1;
             delete orders[i].order;
             orders[i].order = nullptr;

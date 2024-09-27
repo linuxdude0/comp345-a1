@@ -6,17 +6,14 @@ void clear_extra()
 	std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 }
 
-template <typename T>
-T prompt_for_numeric(std::string message)
+int prompt_for_numeric(std::string message)
 {
   while(1)
   {
-    T tEntry;
-    bool bIsNumeric {false};
+    int tEntry;
     std::cout << message;
     if(std::cin >> tEntry)
     {
-      bIsNumeric = true;
       if(tEntry < 0)
       {
         std::cerr << "ERROR: Cannot be (less than) < 0. \n";
@@ -25,7 +22,6 @@ T prompt_for_numeric(std::string message)
       clear_extra();
       return tEntry;
     } else {
-      bIsNumeric = false;
       std::cerr << "ERROR: Invalid entry. \n";
       std::cin.clear();
       clear_extra();
@@ -166,10 +162,10 @@ void GameEngine::validateMap()
 
 void GameEngine::addPlayer()
 {
-    int n_playerId{1};
-    int n_territoryIndex;
+    /*int n_playerId{1};*/
+    int n_territoryIndex{-1};
     int n_prevIndex{0};
-    int n_numberOfPlayers = prompt_for_numeric<int>(">> How many players? : ");
+    int n_numberOfPlayers = prompt_for_numeric(">> How many players? : ");
     for(int i{0}; i!=n_numberOfPlayers; ++i)
     {
         std::unique_ptr<Player> mPlayer_ptr;
@@ -180,7 +176,7 @@ void GameEngine::addPlayer()
         {
             while(true)
             {
-                n_territoryIndex = prompt_for_numeric<int>(">> Enter territory index: ");
+                n_territoryIndex = prompt_for_numeric(">> Enter territory index: ");
                 if(n_territoryIndex == mPlayer_v[n_prevIndex].get()->toDefend()[0])
                 {
                     // check if player chose already taken territory
@@ -192,10 +188,10 @@ void GameEngine::addPlayer()
         n_prevIndex ++;
         clear_extra(); // clear input buffer
 
-        // allocate memory for new player object
-        mPlayer_ptr = std::make_unique<Player>(n_playerId,s_name,1,*mMap_ptr);
-        mPlayer_v.push_back(mPlayer_ptr);
-        n_playerId ++;
+        // TODO: -- make player choose in which territory to start: --
+        //Player_ptr = std::make_unique<Player>(n_playerId,s_name,1,*mMap_ptr);
+
+        //n_playerId ++;
     }
 
     setState(PLAYERS_ADDED);

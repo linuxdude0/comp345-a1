@@ -1,3 +1,4 @@
+#pragma once
 #include <iostream>
 #include <vector>
 #include <string>
@@ -5,7 +6,7 @@
 #include <cstdlib>
 
 // Enum for card types
-enum CardType { BOMB, REINFORCEMENT, BLOCKADE, AIRLIFT, DIPLOMACY };
+enum class CardType { BOMB, REINFORCEMENT, BLOCKADE, AIRLIFT, DIPLOMACY };
 
 // Forward declaration of Deck class
 class Deck;
@@ -13,7 +14,7 @@ class Deck;
 class Card {
 public:
     Card(CardType type); // Constructor to initialize card type
-    void play(Deck& deck); // Method to play the card
+    void play(Deck* deck); // Method to play the card
     CardType getType() const; // Getter for card type
 
 private:
@@ -34,10 +35,13 @@ private:
 
 // Hand class definition
 class Hand {
+private:
+    Deck* deck;
 public:
+    Hand(Deck* deck);
     ~Hand(); // Destructor to clean up dynamically allocated cards
     void addCard(Card* card); // Method to add a card to the hand
-    void playAll(Deck& deck); // Method to play all cards in the hand
+    void playAll(void); // Method to play all cards in the hand
     
     std::vector<Card*> handCards; // Vector to store cards in hand
 };

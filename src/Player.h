@@ -27,9 +27,10 @@ class Player{
         Hand* currHand;
         OrderList* orders;
         Map* currMap;
+        Deck* currDeck;
     
     public:
-        Player(int, string, int, Map*);
+        Player(int, string, int, Map*, Deck*);
         Player(const Player&);
         ~Player();
 
@@ -50,6 +51,5 @@ class Player{
 
         // overloaded stream insertion
         friend std::ostream& operator<<(std::ostream& os, Player& obj);
-        
 
 };

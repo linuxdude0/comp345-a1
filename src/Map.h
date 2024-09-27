@@ -16,6 +16,7 @@ public:
 	};
 	class Territory {
 	public:
+		unsigned index;
 		std::string name;
 		unsigned continent_index;
 		unsigned pos_x;

@@ -7,45 +7,6 @@
 #include <string>
 #include <vector>
 
-/*class Map {*/
-/*public:*/
-/*	struct Continent {*/
-/*		std::string name;*/
-/*		unsigned score;*/
-/*	};*/
-/*	class Territory {*/
-/*	public:*/
-/*		std::string name;*/
-/*		unsigned continent_index;*/
-/*		unsigned pos_x;*/
-/*		unsigned pos_y;*/
-/*		unsigned adjacent_territories_indexes[MAX_ADJACENT_TERRITORIES];*/
-/*		size_t num_adjacent_territories;*/
-/*	};*/
-/*	enum class ScrollDirection {*/
-/*		NONE,*/
-/*		HORIZONTAL,*/
-/*		VERTICAL,*/
-/*	} scroll;*/
-/*private:*/
-/*	std::string author;*/
-/*	bool warn;*/
-/*	std::string image_filename;*/
-/*	bool wrap;*/
-/*	std::string continents[MAX_CONTINENTS];*/
-/*	unsigned scores_to_own_continent[MAX_CONTINENTS];*/
-/*	size_t num_continents = 0;*/
-/*	Territory territories[MAX_TERRITORIES];*/
-/*	size_t num_territories = 0;*/
-/*public:*/
-/*	Map(std::string filename);*/
-/*	Map(Map* map);*/
-/*	bool validate();*/
-/*	Territory getTerritory(unsigned index);*/
-/*	Continent getContinent(unsigned index);*/
-/*	friend std::ostream& operator<<(std::ostream& os, const Map& map);*/
-/*};*/
-
 Map::Map(Map* map) {
 	this->author = map->author;
 	this->warn = map->warn;
@@ -224,6 +185,7 @@ Map::Map(std::string filename) {
 					throw "invalid continent: \"" + territory_continent + "\"";
 				}
 				this->territories[num_territories].num_adjacent_territories = curr_index-4;
+				this->territories[num_territories].index = this->num_territories;
 				this->num_territories++;
 			}
 				break;
@@ -306,10 +268,11 @@ Map::Continent Map::getContinent(unsigned index) {
 	if (index >= this->num_continents) {
 		throw "invalid continent index";
 	}
-	return (Continent) {
+	Continent continent = {
 		.name = this->continents[index],
 		.score = this->scores_to_own_continent[index],
 	};
+	return continent;
 }
 
 std::ostream& operator<<(std::ostream& os, const Map& map) {
