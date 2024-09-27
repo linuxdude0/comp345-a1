@@ -77,7 +77,11 @@ GameEngine::GameEngine(const std::string map_name)
 
 GameEngine::~GameEngine()
 {
+    delete mMap_ptr;
 
+    for(auto p : mPlayer_v)
+        delete p;
+    
 }
 
 // -- initializer functions --
@@ -188,36 +192,38 @@ void GameEngine::addPlayer()
     std::uniform_int_distribution<int> distrib{1,42};
     //std::uniform_int_distribution<int> distrib{1,mMap_ptr->getTerritory(1).index};
 
-    int n_playerId{1};
+    static int n_playerId{1};
     int n_territoryIndex{-1};
-    int n_numberOfPlayers = prompt_for_numeric(">> How many players? : ");
-    for(int i{0}; i!=n_numberOfPlayers; ++i)
-    {
-        //std::unique_ptr<Player> mPlayer_ptr;
-        Player *mPlayer_ptr;
-        Deck *mDeck_ptr;
-        std::string s_name = getPlayerInput(">> Enter name: ");
-        n_territoryIndex = distrib(mt);
-        std::cout << ">> Territory given: " << n_territoryIndex << std::endl;
+     
+    Player *mPlayer_ptr;
+    Deck *mDeck_ptr;
+    std::string s_name = getPlayerInput(">> Enter name: ");
+    n_territoryIndex = distrib(mt);
+    std::cout << ">> Territory given: " << n_territoryIndex << std::endl;
 
-        // TODO: -- make player choose in which territory to start: --
-        //mPlayer_ptr = std::make_unique<Player>(n_playerId,s_name,1,*mMap_ptr);
-        mDeck_ptr = new Deck();
-        mPlayer_ptr = new Player(n_playerId,s_name,n_territoryIndex,mMap_ptr,mDeck_ptr);
-        mPlayer_v.push_back(mPlayer_ptr);
-        n_playerId ++;
-    }
+    mDeck_ptr = new Deck();
+    mPlayer_ptr = new Player(n_playerId,s_name,n_territoryIndex,mMap_ptr,mDeck_ptr);
+    mPlayer_v.push_back(mPlayer_ptr);
+    n_playerId ++;
 
     setState(PLAYERS_ADDED);
 }
 
 void GameEngine::assignCountries()
 {
+    std::cout << ">>[DEBUG]: Assigned countries." << std::endl;
     setState(ASSIGN_REINFORCEMENTS);
 }
 
 void GameEngine::issueOrder()
 {
+    OrderList* orderList_ptr;
+    for(auto const p : mPlayer_v)
+    {
+        orderList_ptr = p->getOrderList();
+        std::cout << *orderList_ptr << std::endl;
+        //p->issueOrder();   
+    }
     setState(ISSUE_ORDERS);
 }
 
