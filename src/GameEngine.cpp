@@ -29,7 +29,25 @@ int prompt_for_numeric(std::string message)
     }
   }
 }
+std::string getPlayerInput(const std::string& message)
+{
+  std::string sInput;
+  while(true)
+  {
+    std::cout << message;
+    std::getline(std::cin, sInput);
 
+    if(std::cin.fail())
+    {
+      std::cin.clear();
+      std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+      std::cout << ">> ERROR: Invalid input, please try again." << std::endl;
+    }
+    else
+      break;   
+  }
+  return sInput;
+}
 
 std::ostream& operator<<(std::ostream& out, const CurrentState value){
     static const auto strings = []{
@@ -122,18 +140,22 @@ void GameEngine::execute(const std::string& s_command_name)
 // -- main functions --
 void GameEngine::userQuery()
 {
-    std::string s_command;
+    std::string sCommand;
     while(true)
     {
         std::cout << "Current state:[" << mCurrentState << "]" << std::endl;
         std::cout << ">>Enter command: ";
-        std::getline(std::cin, s_command);
-        if(s_command == "quit")
-        {
+        std::getline(std::cin, sCommand);
+        if(sCommand == "quit")
             mIsRunning = false;
-        }
-        std::cout << s_command << std::endl;
-        execute(s_command);
+
+        if(std::cin.fail())
+        {
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            std::cout << ">> [ERROR]: Invalid input, please try again." << std::endl;
+        } 
+        execute(sCommand);
     }
 }
 
@@ -162,36 +184,28 @@ void GameEngine::validateMap()
 
 void GameEngine::addPlayer()
 {
-    /*int n_playerId{1};*/
+    std::mt19937_64 mt{std::random_device{}()}; // seeds generator
+    std::uniform_int_distribution<int> distrib{1,42};
+    //std::uniform_int_distribution<int> distrib{1,mMap_ptr->getTerritory(1).index};
+
+    int n_playerId{1};
     int n_territoryIndex{-1};
-    int n_prevIndex{0};
     int n_numberOfPlayers = prompt_for_numeric(">> How many players? : ");
     for(int i{0}; i!=n_numberOfPlayers; ++i)
     {
-        std::unique_ptr<Player> mPlayer_ptr;
-        std::string s_name;
-        std::cout << ">> Enter player name: ";
-        std::cin >> s_name;
-        if(n_numberOfPlayers > 1)
-        {
-            while(true)
-            {
-                n_territoryIndex = prompt_for_numeric(">> Enter territory index: ");
-                if(n_territoryIndex == mPlayer_v[n_prevIndex].get()->toDefend()[0])
-                {
-                    // check if player chose already taken territory
-                    std::cout << ">> [WARNING]: Cannot choose start territory already taken by enemy player.";
-                    break;
-                }
-            }
-        }
-        n_prevIndex ++;
-        clear_extra(); // clear input buffer
+        //std::unique_ptr<Player> mPlayer_ptr;
+        Player *mPlayer_ptr;
+        Deck *mDeck_ptr;
+        std::string s_name = getPlayerInput(">> Enter name: ");
+        n_territoryIndex = distrib(mt);
+        std::cout << ">> Territory given: " << n_territoryIndex << std::endl;
 
         // TODO: -- make player choose in which territory to start: --
-        //Player_ptr = std::make_unique<Player>(n_playerId,s_name,1,*mMap_ptr);
-
-        //n_playerId ++;
+        //mPlayer_ptr = std::make_unique<Player>(n_playerId,s_name,1,*mMap_ptr);
+        mDeck_ptr = new Deck();
+        mPlayer_ptr = new Player(n_playerId,s_name,n_territoryIndex,mMap_ptr,mDeck_ptr);
+        mPlayer_v.push_back(mPlayer_ptr);
+        n_playerId ++;
     }
 
     setState(PLAYERS_ADDED);

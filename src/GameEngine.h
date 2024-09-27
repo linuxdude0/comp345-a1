@@ -3,6 +3,7 @@
 
 #include "Map.h"
 #include "Player.h"
+#include "Cards.h"
 
 #include <iostream>
 #include <string>
@@ -12,6 +13,7 @@
 #include <functional>
 #include <memory>
 #include <limits>
+#include <random>
 
 class Command;
 class GameEngine;
@@ -93,7 +95,7 @@ class GameEngine
 
         Map* mMap_ptr;
 
-        std::vector<std::unique_ptr<Player>> mPlayer_v;
+        std::vector<Player*> mPlayer_v;
         std::unordered_map<std::string,CommandFunction> commandMap;
 };
 
