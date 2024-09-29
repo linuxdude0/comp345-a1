@@ -8,48 +8,85 @@ void clear_extra()
 
 int prompt_for_numeric(std::string message)
 {
-  while(1)
-  {
-    int tEntry;
-    std::cout << message;
-    if(std::cin >> tEntry)
+    while(1)
     {
-      if(tEntry < 0)
-      {
-        std::cerr << "ERROR: Cannot be (less than) < 0. \n";
-        continue;
-      }
-      clear_extra();
-      return tEntry;
-    } else {
-      std::cerr << "ERROR: Invalid entry. \n";
-      std::cin.clear();
-      clear_extra();
-      continue;
+        int tEntry;
+        std::cout << message;
+        if(std::cin >> tEntry)
+        {
+            if(tEntry < 0)
+            {
+            std::cerr << "ERROR: Cannot be (less than) < 0. \n";
+            continue;
+        }
+        clear_extra();
+        return tEntry;
+        } else {
+            std::cerr << "ERROR: Invalid entry. \n";
+            std::cin.clear();
+            clear_extra();
+            continue;
+        }
     }
-  }
 }
 std::string getPlayerInput(const std::string& message)
 {
-  std::string sInput;
-  while(true)
-  {
-    std::cout << message;
-    std::getline(std::cin, sInput);
-
-    if(std::cin.fail())
+    std::string sInput;
+    while(true)
     {
-      std::cin.clear();
-      std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-      std::cout << ">> ERROR: Invalid input, please try again." << std::endl;
+        std::cout << message;
+        std::getline(std::cin, sInput);
+
+        if(std::cin.fail())
+        {
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            std::cout << ">> ERROR: Invalid input, please try again." << std::endl;
+        }
+        else
+            break;   
     }
-    else
-      break;   
-  }
-  return sInput;
+    return sInput;
 }
 
+OrderKind prompt_order_kind(const std::string message)
+{
+    std::cout << "1.DEPLOY\n2.ADVANCE\n3.BOMB\n4.BLOCKADE\n5.AIRLIFT\n6.NEGOTIATE" << std::endl;
+    while(1)
+    {
+        int tEntry;
+        std::cout << message;
+        if(std::cin >> tEntry)
+        {
+            switch(tEntry)
+            {
+                case(1):
+                    return OrderKind::DEPLOY;
+                case(2):
+                    return OrderKind::ADVANCE;
+                case(3):
+                    return OrderKind::BOMB;
+                case(4):
+                    return OrderKind::BLOCKADE;
+                case(5):
+                    return OrderKind::AIRLIFT;
+                case(6):
+                    return OrderKind::NEGOTIATE;
+                default:
+                {
+                    std::cout << "[WARNING]: Unknown order." << std::endl;
+                    std::cin.clear();
+                    clear_extra();
+                    continue;
+                }
+            }   
+        }
+    }
+}
+
+// << operator overload with to print out states in std::string_view form
 std::ostream& operator<<(std::ostream& out, const CurrentState value){
+    // lambda function that creates a map of states corresponding to their string-form representation
     static const auto strings = []{
         std::map<CurrentState, std::string_view> result;
         result.emplace(START,"START");     
@@ -61,6 +98,7 @@ std::ostream& operator<<(std::ostream& out, const CurrentState value){
         result.emplace(WIN,"WIN");             
         return result;
     };
+    // print out the string corresponding to the enum
     return out << strings()[value];
 }
 
@@ -129,10 +167,11 @@ void GameEngine::updateGame()
 
 void GameEngine::execute(const std::string& s_command_name)
 {
-    // check if command is in the map
+    // check if bound command is in the map
     auto it = commandMap.find(s_command_name);
     if(it != commandMap.end())
     {
+        // if command is found, call the bound function
         it->second();
     }
     else
@@ -215,25 +254,31 @@ void GameEngine::assignCountries()
     setState(ASSIGN_REINFORCEMENTS);
 }
 
+
 void GameEngine::issueOrder()
 {
-    OrderList* orderList_ptr;
+    OrderKind m_orderKind;
     for(auto const p : mPlayer_v)
     {
-        orderList_ptr = p->getOrderList();
-        std::cout << *orderList_ptr << std::endl;
-        //p->issueOrder();   
+        std::cout << "" << std::endl;
+        m_orderKind = prompt_order_kind("Enter the order to issue (1-6): ");
+        p->issueOrder(m_orderKind);   
     }
     setState(ISSUE_ORDERS);
 }
 
 void GameEngine::endIssueOrders()
 {
+    std::cout << "Finished issuing orders." << std::endl;
     setState(EXECUTE_ORDERS);
 }
 
 void GameEngine::execOrder()
 {
+    for(auto const p : mPlayer_v)
+    {
+        p->getOrderList()->executeAll();
+    }
     setState(ASSIGN_REINFORCEMENTS);
 }
 

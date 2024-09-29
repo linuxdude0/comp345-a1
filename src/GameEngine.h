@@ -14,6 +14,7 @@
 #include <memory>
 #include <limits>
 #include <random>
+#include <ranges>
 
 class Command;
 class GameEngine;
