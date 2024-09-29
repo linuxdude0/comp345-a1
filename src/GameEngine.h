@@ -22,6 +22,9 @@ class GameEngine;
 using CommandFunction = std::function<void()>;
 using CommandMap = std::unordered_map<std::string,CommandFunction>;
 
+// Game Engine class:
+//      - 
+
 enum CurrentState
 {
     START,
@@ -41,30 +44,30 @@ class GameEngine
 {
     public:
 
-        // -- constructor & destructor --
+        // -- constructors & destructor --
         GameEngine(const std::string map_name);
+        GameEngine(const GameEngine&);
         ~GameEngine();
 
+        // -- overloaded stream input function --
+        friend std::ostream& operator<<(std::ostream& out, const GameEngine& ge);
+
         // -- accessors & mutators --
-        bool mIsRunning;
         Map& getMap();
         Player& getPlayer();
         bool isRunning();
+        CommandMap& getCommandMap(); 
+        CurrentState getState();
+        void setState(CurrentState state);
 
-        CommandMap& getCommandMap();
-    
         // -- initializer functions --
         void initializeCommands();        
         
-
         // --  main functions --
         void userQuery();
         void updateGame();
-
         void execute(const std::string& s_command_name);
 
-        CurrentState getState();
-        void setState(CurrentState state);
         void run(); // game loop
         void closeGame();
         
@@ -72,13 +75,11 @@ class GameEngine
         void loadMap();
         void validateMap();
         void addPlayer();
-
         void assignCountries();
         void issueOrder();
         void execOrder();
         void endExecOrder();
         void endIssueOrders();
-
         void win();
         void play();
 
@@ -88,16 +89,13 @@ class GameEngine
     private:
         // -- logic --
         CurrentState mCurrentState;
-
-        // -- other --
-
+        bool mIsRunning;
         // -- in-game objects --
         const std::string mMapFileName;
-
         Map* mMap_ptr;
-
         std::vector<Player*> mPlayer_v;
         std::unordered_map<std::string,CommandFunction> commandMap;
+
 };
 
 
