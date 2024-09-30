@@ -82,9 +82,7 @@ class GameEngine
         void endIssueOrders();
         void win();
         void play();
-
-        // -- testing --
-        void testGameStates();
+        void quit();
 
     private:
         // -- logic --

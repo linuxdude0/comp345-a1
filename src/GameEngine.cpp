@@ -144,8 +144,7 @@ GameEngine::~GameEngine()
     delete mMap_ptr;
 
     for(auto p : mPlayer_v)
-        delete p;
-    
+        delete p;         
 }
 
 // -- initializer functions --
@@ -162,6 +161,7 @@ void GameEngine::initializeCommands()
     commandMap["exec_orders"] = std::bind(&GameEngine::execOrder, this);
     commandMap["win"] = std::bind(&GameEngine::win, this);
     commandMap["play"] = std::bind(&GameEngine::play, this);
+    commandMap["quit"] = std::bind(&GameEngine::quit, this);
 }
 
 // -- accessors & mutators --
@@ -172,18 +172,14 @@ bool GameEngine::isRunning() {return mIsRunning;}
 
 CommandMap& GameEngine::getCommandMap() {return commandMap;}
 
-// -- testing --
-void GameEngine::testGameStates()
-{
-    while(isRunning())
-    {
-        userQuery(); // run user input 
-    } 
-}
 
 void GameEngine::closeGame()
 {
     // -- perform cleanup here --
+    std::cout << ">> [DEBUG]: Quitting game" << std::endl;
+    mIsRunning = false;
+
+    std::exit(EXIT_SUCCESS);
 }
 
 void GameEngine::updateGame()
@@ -227,7 +223,8 @@ void GameEngine::userQuery()
             std::cin.clear();
             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
             std::cout << ">> [ERROR]: Invalid input, please try again." << std::endl;
-        } 
+        }
+        std::cout << sCommand << std::endl; // !! test function output !! 
         execute(sCommand);
     }
 }
@@ -328,4 +325,9 @@ void GameEngine::win()
 void GameEngine::play()
 {
 
+}
+
+void GameEngine::quit()
+{
+    closeGame();
 }

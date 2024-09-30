@@ -7,6 +7,7 @@
 #include "CardsDriver.h"
 #include "Orders.h"
 #include "PlayerDriver.h"
+#include "GameEngineDriver.h"
 
 int main() {
 	testOrderLists();
@@ -17,8 +18,8 @@ int main() {
 	Deck* deck = new Deck;
 	testPlayers("./maps/Atlantis.map", deck);
 	delete deck;
-	GameEngine game("./maps/Atlantis.map");
-	game.testGameStates();
-
+	//GameEngine game("./maps/Atlantis.map");
+	//game.run();
+	testGameEngine("./maps/Atlantis.map");
 	return 0;
 }
