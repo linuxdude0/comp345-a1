@@ -159,8 +159,10 @@ void GameEngine::initializeCommands()
     commandMap["issue_order"] = std::bind(&GameEngine::issueOrder, this);
     commandMap["end_issue_orders"] = std::bind(&GameEngine::endIssueOrders, this); 
     commandMap["exec_orders"] = std::bind(&GameEngine::execOrder, this);
+    commandMap["end_exec_orders"] = std::bind(&GameEngine::endExecOrders,this);
     commandMap["win"] = std::bind(&GameEngine::win, this);
     commandMap["play"] = std::bind(&GameEngine::play, this);
+    commandMap["end"] = std::bind(&GameEngine::end, this);
     commandMap["quit"] = std::bind(&GameEngine::quit, this);
 }
 
@@ -169,7 +171,6 @@ Map& GameEngine::getMap() {return *mMap_ptr;}
 CurrentState GameEngine::getState() {return mCurrentState;}
 void GameEngine::setState(CurrentState state) {mCurrentState = state;}
 bool GameEngine::isRunning() {return mIsRunning;}
-
 CommandMap& GameEngine::getCommandMap() {return commandMap;}
 
 
@@ -185,8 +186,82 @@ void GameEngine::closeGame()
 void GameEngine::updateGame()
 {
     // switch cases here for all of the game states
+    switch(mCurrentState)
+    {
+        case(START):
+        {
+            std::cout << ">> Command(s): [1.load_map]" << std::endl;
+            break;
+        }
+        case(MAP_LOADED):
+        {
+            std::cout << ">> Command(s): [1.load_map 2.validate_map]" << std::endl;
+            break;
+        }
+        case(MAP_VALIDATED):
+        {
+            std::cout << ">> Command(s): [1.add_player]" << std::endl;
+            break;
+        }
+        case(PLAYERS_ADDED):
+        {
+            std::cout << ">> Command(s): [1.add_player 2.assign_countries]" << std::endl;
+            break;
+        }
+        case(ASSIGN_REINFORCEMENTS):
+        {
+            std::cout << ">> Command(s): [1.issue_order]" << std::endl;
+            break;
+        }
+        case(ISSUE_ORDERS):
+        {
+            std::cout << ">> Command(s): [1.issue_order 2.end_issue_orders]" << std::endl;
+            break;
+        }
+        case(EXECUTE_ORDERS):
+        {
+            std::cout << ">> Command(s): [1.exec_orders 2.end_exec_orders]" << std::endl;
+            break;
+        }
+        case(WIN):
+        {
+            // 
+            break;
+        }
+    }
 }
 
+// -- main functions --
+void GameEngine::userQuery()
+{
+    // asks user to enter specific game engine commands
+    // in order to switch states and perform game operations
+    std::string sCommand;
+    while(true)
+    {
+        updateGame();
+
+        std::cout << "Current state:[" << mCurrentState << "]" << std::endl;
+        std::cout << ">> Enter command: ";
+        std::getline(std::cin, sCommand);
+        if(sCommand == "quit")
+            mIsRunning = false;
+        if(std::cin.eof())
+        {
+            // handle case where user enters: "ctrl+d" (EOF) (bug made it so there was an infinite loop upon EOF)
+            mIsRunning = false;
+            closeGame();
+        }
+        if(std::cin.fail())
+        {
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            std::cout << ">> [ERROR]: Invalid input, please try again." << std::endl;
+        }
+        std::cout << sCommand << std::endl; // !! test function output !! 
+        execute(sCommand);
+    }
+}
 
 void GameEngine::execute(const std::string& s_command_name)
 {
@@ -204,36 +279,11 @@ void GameEngine::execute(const std::string& s_command_name)
     } 
 }
 
-// -- main functions --
-void GameEngine::userQuery()
-{
-    // asks user to enter specific game engine commands
-    // in order to switch states and perform game operations
-    std::string sCommand;
-    while(true)
-    {
-        std::cout << "Current state:[" << mCurrentState << "]" << std::endl;
-        std::cout << ">>Enter command: ";
-        std::getline(std::cin, sCommand);
-        if(sCommand == "quit")
-            mIsRunning = false;
-
-        if(std::cin.fail())
-        {
-            std::cin.clear();
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-            std::cout << ">> [ERROR]: Invalid input, please try again." << std::endl;
-        }
-        std::cout << sCommand << std::endl; // !! test function output !! 
-        execute(sCommand);
-    }
-}
-
 void GameEngine::run()
 {
     while(isRunning())
     {
-       userQuery(); 
+       userQuery();
     }
 }
 
@@ -254,6 +304,30 @@ void GameEngine::validateMap()
     setState(MAP_VALIDATED);
 }
 
+void GameEngine::distributeTerritories(int n_playerCount, int n_totalIndexes)
+{
+    // -- TODO: code to distribute territory indexes to each player --
+    int nIndexesPerPlayer = n_totalIndexes/n_playerCount;
+    int nRemainder = n_totalIndexes%n_playerCount;
+
+    std::cout << "indexes per player:" << nIndexesPerPlayer << std::endl;
+    
+    int nStartIndex = 0;
+    for(const auto& p: mPlayer_v)
+    {
+        std::cout << p->getName() << std::endl;
+        int nEndIndex = nStartIndex + nIndexesPerPlayer - 1;
+        for(int i{0};i!=(nEndIndex-nStartIndex); ++i)
+        {
+            std::cout << ">> pushing index: " << nStartIndex+i << std::endl;
+            p->toDefend().push_back(nStartIndex+i);
+        }
+        nStartIndex = nEndIndex+1; // move on to the next range of indexes
+    }
+
+}
+
+
 void GameEngine::addPlayer()
 {
     // create new player, associate random territory index and give player a Card Deck object
@@ -272,12 +346,12 @@ void GameEngine::addPlayer()
         std::string s_name = prompt_for_string(">> Enter name: ");
         n_territoryIndex = distrib(mt); // assign random territory index (from 0-41)
         std::cout << ">> Territory given: " << n_territoryIndex << std::endl;
-
         mDeck_ptr = new Deck();
         mPlayer_ptr = new Player(n_playerId,s_name,n_territoryIndex,mMap_ptr,mDeck_ptr);
         mPlayer_v.push_back(mPlayer_ptr); // insert players into a vector container
         n_playerId ++;
     }
+    distributeTerritories(n_playerCount,41);
     setState(PLAYERS_ADDED);
 }
 
@@ -286,7 +360,6 @@ void GameEngine::assignCountries()
     std::cout << ">> Assigned countries." << std::endl;
     setState(ASSIGN_REINFORCEMENTS);
 }
-
 
 void GameEngine::issueOrder()
 {
@@ -317,17 +390,31 @@ void GameEngine::execOrder()
     setState(ASSIGN_REINFORCEMENTS);
 }
 
+void GameEngine::endExecOrders()
+{
+    std::cout << ">> Finished executing orders." << std::endl;
+    setState(ASSIGN_REINFORCEMENTS);
+}
+
 void GameEngine::win()
 {
-
+    std::cout << ">> Play again? (play/end)" << std::endl;
+    setState(WIN);
 }
 
 void GameEngine::play()
 {
+    // playGame();
+    setState(START);    
+}
 
+void GameEngine::end()
+{
+    closeGame();
 }
 
 void GameEngine::quit()
 {
+    // -- if user enters the "quit" command --
     closeGame();
 }

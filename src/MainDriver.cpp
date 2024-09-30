@@ -18,8 +18,8 @@ int main() {
 	Deck* deck = new Deck;
 	testPlayers("./maps/Atlantis.map", deck);
 	delete deck;
-	//GameEngine game("./maps/Atlantis.map");
-	//game.run();
-	testGameEngine("./maps/Atlantis.map");
+	GameEngine game("./maps/Atlantis.map");
+	game.run();
+	//testGameEngine("./maps/Atlantis.map");
 	return 0;
 }

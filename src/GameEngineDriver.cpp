@@ -9,8 +9,10 @@ void testGameEngine(const std::string& map_fileName)
     GameEngine* gameEngineTest = new GameEngine(map_fileName);
     
     std::istringstream test_input(command_tests);
+    // redirect input to std::cin
     std::cin.rdbuf(test_input.rdbuf());
 
 
     gameEngineTest->run();
+    std::cout << gameEngineTest << std::endl;
 }

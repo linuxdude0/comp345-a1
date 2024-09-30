@@ -61,7 +61,8 @@ class GameEngine
         void setState(CurrentState state);
 
         // -- initializer functions --
-        void initializeCommands();        
+        void initializeCommands();
+        void distributeTerritories(int n_playerCount, int n_totalIndexes);
         
         // --  main functions --
         void userQuery();
@@ -78,10 +79,11 @@ class GameEngine
         void assignCountries();
         void issueOrder();
         void execOrder();
-        void endExecOrder();
+        void endExecOrders();
         void endIssueOrders();
         void win();
         void play();
+        void end();
         void quit();
 
     private:
