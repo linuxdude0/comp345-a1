@@ -132,9 +132,8 @@ GameEngine::GameEngine(const std::string map_name)
 }
 
 GameEngine::GameEngine(const GameEngine& ge_obj)
-    : mCurrentState{ge_obj.mCurrentState},mMapFileName{ge_obj.mMapFileName},
-    mMap_ptr{ge_obj.mMap_ptr},mPlayer_v{ge_obj.mPlayer_v},commandMap{ge_obj.commandMap},
-    mIsRunning{ge_obj.mIsRunning}
+    : mCurrentState{ge_obj.mCurrentState},mIsRunning{ge_obj.mIsRunning},mMapFileName{ge_obj.mMapFileName},
+    mMap_ptr{ge_obj.mMap_ptr},mPlayer_v{ge_obj.mPlayer_v},commandMap{ge_obj.commandMap}
 {
 
 }
