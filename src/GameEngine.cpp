@@ -305,25 +305,54 @@ void GameEngine::validateMap()
 
 void GameEngine::distributeTerritories(int n_playerCount, int n_totalIndexes)
 {
-    // -- TODO: code to distribute territory indexes to each player --
+    // -- distribute territory indexes evenly to all players --
     int nIndexesPerPlayer = n_totalIndexes/n_playerCount;
-    int nRemainder = n_totalIndexes%n_playerCount;
+    int nRemainder = n_totalIndexes%n_playerCount; 
 
-    std::cout << "indexes per player:" << nIndexesPerPlayer << std::endl;
-    
-    int nStartIndex = 0;
-    for(const auto& p: mPlayer_v)
+    /*
+    v_indexDistribution = 
     {
-        std::cout << p->getName() << std::endl;
+        {1,2,3,4,5,...},
+        {11,12,13,14,...},
+        {...}
+    }
+    */
+    std::vector<std::vector<int>> v_indexDistribution;
+    int nStartIndex = 0;
+    for(int i{0}; i!=n_playerCount; ++i)
+    {
         int nEndIndex = nStartIndex + nIndexesPerPlayer - 1;
+        if(i<nRemainder)
+            nEndIndex+=1;
+
+        // create a temporary vector of territory index ranges
+        std::vector<int> tempV;
         for(int i{0};i!=(nEndIndex-nStartIndex); ++i)
         {
             std::cout << ">> pushing index: " << nStartIndex+i << std::endl;
-            p->toDefend().push_back(nStartIndex+i);
+            tempV.push_back(nStartIndex+i); // push all indexes to temporary vector
         }
+        v_indexDistribution.push_back(tempV); // insert vector of indexes to our main vector of vectors of index ranges
         nStartIndex = nEndIndex+1; // move on to the next range of indexes
     }
 
+
+    // -- randomly distribute territory index ranges to each player --
+    unsigned r_seed = std::chrono::system_clock::now().time_since_epoch().count(); // initialize seed
+    std::shuffle(v_indexDistribution.begin(),v_indexDistribution.end(),std::default_random_engine(r_seed));
+    for(std::size_t i{0}; i!=v_indexDistribution.size(); ++i)
+    {
+        mPlayer_v[i]->toDefend() = v_indexDistribution[i];    
+    }
+
+    for(const auto& p : mPlayer_v)
+    {
+        std::cout << p->getName() << std::endl;
+            for(const auto& i : p->toDefend())
+                std::cout << i << std::endl;
+            std::cout << std::endl;
+    }
+    // -- [!!]TODO: fix bug where each new range skips an index for some reason... --
 }
 
 
@@ -331,26 +360,30 @@ void GameEngine::addPlayer()
 {
     // create new player, associate random territory index and give player a Card Deck object
 
-    std::mt19937_64 mt{std::random_device{}()}; // initialize mersenne twister generator
-    std::uniform_int_distribution<int> distrib{0,41};
+    if(!mPlayer_v.empty())
+    {
+        // adding more players to the match, clear all reserved territories to re-distribute them
+        for(const auto& p : mPlayer_v)
+            p->toDefend().clear(); // remove all territory indexes from vector
+    }
+
     //std::uniform_int_distribution<int> distrib{1,mMap_ptr->getTerritory(1).index};
     static int n_playerId{1};
-    int n_territoryIndex{};
-    int n_playerCount{};
+    int n_territoryIndex{0};
+    int n_playerCount{0};
     n_playerCount = prompt_for_numeric(">> Enter the number of players: ");
     for(int i{0}; i!=n_playerCount; ++i)
     {
         Player *mPlayer_ptr;
         Deck *mDeck_ptr;
         std::string s_name = prompt_for_string(">> Enter name: ");
-        n_territoryIndex = distrib(mt); // assign random territory index (from 0-41)
         std::cout << ">> Territory given: " << n_territoryIndex << std::endl;
         mDeck_ptr = new Deck();
         mPlayer_ptr = new Player(n_playerId,s_name,n_territoryIndex,mMap_ptr,mDeck_ptr);
         mPlayer_v.push_back(mPlayer_ptr); // insert players into a vector container
         n_playerId ++;
     }
-    distributeTerritories(n_playerCount,41);
+    distributeTerritories(mPlayer_v.size(),41);
     setState(PLAYERS_ADDED);
 }
 

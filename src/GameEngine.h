@@ -15,6 +15,7 @@
 #include <limits>
 #include <random>
 #include <ranges>
+#include <chrono>
 
 class Command;
 class GameEngine;
