@@ -2,6 +2,7 @@
 #include <iostream>
 
 void testLoadMaps(std::string file) {
+    std::cout << "==================TEST LOAD MAPS==================" << std::endl;
     try {
         Map m(file);
         Map map(&m);
@@ -14,6 +15,7 @@ void testLoadMaps(std::string file) {
             std::cout << "\t" << terr_adjacent.name << " at " << map.getContinent(terr_adjacent.continent_index).name << std::endl;
         }
     } catch(std::string e) {
-        std::cout << e << std::endl;
+        std::cout << "Map error in file " << file << ": "<< e << std::endl;
     }
+    std::cout << "==================END TEST LOAD MAPS==================" << std::endl;
 }

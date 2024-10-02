@@ -2,6 +2,7 @@
 
 int testOrderLists(){
 
+    std::cout << "==================TEST ORDER LIST==================" << std::endl;
     OrderList* list = new OrderList();
 
     DeployOrder* deploy = new DeployOrder();
@@ -39,5 +40,6 @@ int testOrderLists(){
     std:: cout << "\n" << *list;
 
     delete list;
+    std::cout << "==================END TEST ORDER LIST==================" << std::endl;
     return 1;
 }

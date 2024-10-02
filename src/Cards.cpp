@@ -84,6 +84,7 @@ void Hand::playAll() {
 
 // testCards function implementation
 void testCards() {
+
     Deck* deck = new Deck(); // Create a deck
     Hand hand(deck); // Create a hand
 

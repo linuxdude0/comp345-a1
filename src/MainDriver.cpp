@@ -10,14 +10,19 @@
 #include "GameEngineDriver.h"
 
 int main() {
-	testOrderLists();
-	testLoadMaps("./maps/Atlantis.map");
-	testLoadMaps("./maps/USA.map");
-	testCard();
-
+	std::string map_filenames[] = {
+		"./maps/Atlantis.map",
+		"./maps/Corruption.map",
+		"./maps/USA.map"
+	};
+	for (std::string f : map_filenames) {
+		testLoadMaps(f);
+	}
 	Deck* deck = new Deck;
 	testPlayers("./maps/Atlantis.map", deck);
 	delete deck;
+	testCard();
+	testOrderLists();
 	GameEngine game("./maps/Atlantis.map");
 	game.run();
 	//testGameEngine("./maps/Atlantis.map");

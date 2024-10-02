@@ -4,10 +4,11 @@
 #include "PlayerDriver.h"
 
 void testPlayers(std::string filename, Deck* testDeck){
-    std::cout << "\n THIS IS A TEST OF THE PLAYER CLASS:" << std::endl;
+    std::cout << "==================TEST PLAYER==================" << std::endl;
     Map* testMap = new Map(filename);
     Player* p1 = new Player(1, "John Doe", 1, testMap, testDeck);
     std::cout << "\n The player 1:\n" << *p1 << std::endl;
+    std::cout << "Map filename: " << filename << std::endl;
     std::cout << "TESTING issueOrder()";
     p1->issueOrder(OrderKind::ADVANCE);
     p1->issueOrder(OrderKind::BLOCKADE);
@@ -48,4 +49,5 @@ void testPlayers(std::string filename, Deck* testDeck){
     std::cout << *p1 << std::endl;
     delete testMap;
     delete p1; 
+    std::cout << "==================END TEST PLAYER==================" << std::endl;
 }

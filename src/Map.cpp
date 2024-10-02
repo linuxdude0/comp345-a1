@@ -195,9 +195,9 @@ Map::Map(std::string filename) {
 		}
 	}
 	for (size_t i=0; i<this->num_territories; i++) {
-		std::cout << "Territory " << i << ": ";
+		/*std::cout << "Territory " << i << ": ";*/
 		for (size_t j=0; j<this->territories[i].num_adjacent_territories; j++) {
-			std::cout << territories_adjacent[j][i] << ", ";
+			/*std::cout << territories_adjacent[j][i] << ", ";*/
 			bool found = false;
 			for (size_t k=0; k<this->num_territories; k++) {
 				if (territories_adjacent[j][i] == this->territories[k].name) {
@@ -209,7 +209,7 @@ Map::Map(std::string filename) {
 				throw "invalid adjacent territory: \"" + territories_adjacent[j][i] + "\"";
 			}
 		}
-		std::cout << "\b\b\n";
+		/*std::cout << "\b\b\n";*/
 	}
 	file.close();
 }

@@ -32,6 +32,8 @@ ostream & operator << (ostream & out, const Order & order){
     return out;
 }
 
+OrderList::OrderList(OrderList* orders) : orders(orders->orders) {}
+
 //Implementing Deploy Order
 DeployOrder::DeployOrder() {
     this->orderKind = OrderKind::DEPLOY;
@@ -221,6 +223,7 @@ void OrderList::executeAll() {
     }
 }
 
+OrderList::OrderList(){}
 
 
 OrderList::~OrderList() {

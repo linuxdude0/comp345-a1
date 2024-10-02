@@ -83,103 +83,69 @@ vector<int> Player::toAttack(){
 
 */
 bool Player::issueOrder(OrderKind ok){
-
-        if (ok == OrderKind::DEPLOY){
-
-            orders->add(new DeployOrder());
-
-        }
-        if (ok == OrderKind::ADVANCE){
-            orders->add(new AdvanceOrder());
-        }
-        if(ok == OrderKind::BOMB){
-
-            // needs a card
-            /*int handLen = this->currHand->handCards.size();*/
-
-            for(size_t i = 0; i < currHand->handCards.size(); i++){
-
-                if (currHand->handCards.at(i)->getType() == CardType::BOMB){
-                    currHand->handCards.at(i)->play(currDeck);
-                    currHand->handCards[i] = nullptr;
-                    orders->add(new BombOrder());
-                    return true;
-                }
-
+    if (ok == OrderKind::DEPLOY){
+        orders->add(new DeployOrder());
+        return true;
+    }else if (ok == OrderKind::ADVANCE){
+        orders->add(new AdvanceOrder());
+        return true;
+    }else if(ok == OrderKind::BOMB){
+        // needs a card
+        /*int handLen = this->currHand->handCards.size();*/
+        for(size_t i = 0; i < currHand->handCards.size(); i++){
+            if (currHand->handCards.at(i)->getType() == CardType::BOMB){
+                currHand->handCards.at(i)->play(currDeck);
+                currHand->handCards[i] = nullptr;
+                orders->add(new BombOrder());
+                return true;
             }
-
-            std::cout << "\nPlayer doesn't have a Bomb card, order aborted" << std::endl;
-            return false;
-       }
-
-        if(ok == OrderKind::BLOCKADE){
-
-           // needs a card
-            /*int handLen = this->currHand->handCards.size();*/
-
-            for(size_t i = 0; i < currHand->handCards.size(); i++){
-
-                if (currHand->handCards.at(i)->getType() == CardType::BLOCKADE){
-                    currHand->handCards.at(i)->play(currDeck);
-                    currHand->handCards[i] = nullptr;
-                    orders->add(new BlockadeOrder());
-                    return true;
-                }
-
-            }
-
-            std::cout << "\nPlayer doesn't have a Blockade card, order aborted" << std::endl;
-            return false;
-
         }
-        if(ok == OrderKind::AIRLIFT){
-
-
-            // needs a card
-            /*int handLen = this->currHand->handCards.size();*/
-
-            for(size_t i = 0; i < currHand->handCards.size(); i++){
-
-                if (currHand->handCards.at(i)->getType() == CardType::AIRLIFT){
-                    currHand->handCards.at(i)->play(currDeck);
-                    currHand->handCards[i] = nullptr;
-                    orders->add(new AirliftOrder());
-                    return true;
-                }
-
+        std::cout << "\nPlayer doesn't have a Bomb card, order aborted" << std::endl;
+        return false;
+    }else if(ok == OrderKind::BLOCKADE){
+        // needs a card
+        /*int handLen = this->currHand->handCards.size();*/
+        for(size_t i = 0; i < currHand->handCards.size(); i++){
+            if (currHand->handCards.at(i)->getType() == CardType::BLOCKADE){
+                currHand->handCards.at(i)->play(currDeck);
+                currHand->handCards[i] = nullptr;
+                orders->add(new BlockadeOrder());
+                return true;
             }
-
-            std::cout << "\nPlayer doesn't have an Airlift card, order aborted" << std::endl;
-            return false;
         }
-        if(ok == OrderKind::NEGOTIATE){
-
-
-          // needs a card
-            /*int handLen = this->currHand->handCards.size();*/
-
-            for(size_t i = 0; i < currHand->handCards.size(); i++){
-
-                if (currHand->handCards.at(i)->getType() == CardType::DIPLOMACY){
-                    currHand->handCards.at(i)->play(currDeck);
-                    currHand->handCards[i] = nullptr;
-                    orders->add(new NegotiateOrder());
-                    return true;
-                }
-
+        std::cout << "\nPlayer doesn't have a Blockade card, order aborted" << std::endl;
+        return false;
+    }else if(ok == OrderKind::AIRLIFT){
+        // needs a card
+        /*int handLen = this->currHand->handCards.size();*/
+        for(size_t i = 0; i < currHand->handCards.size(); i++){
+            if (currHand->handCards.at(i)->getType() == CardType::AIRLIFT){
+                currHand->handCards.at(i)->play(currDeck);
+                currHand->handCards[i] = nullptr;
+                orders->add(new AirliftOrder());
+                return true;
             }
-
-            std::cout << "\nPlayer doesn't have a Blockade card, order aborted" << std::endl;
-            return false;
-
         }
-        else{
-            
-            std::cout << "\nAttempt to push a wrong kind of Order in the Order list of " << Player::name << std::endl;  
-            return false;
-        }    
-    
-    };
+        std::cout << "\nPlayer doesn't have an Airlift card, order aborted" << std::endl;
+        return false;
+    }else if(ok == OrderKind::NEGOTIATE){
+        // needs a card
+        /*int handLen = this->currHand->handCards.size();*/
+        for(size_t i = 0; i < currHand->handCards.size(); i++){
+            if (currHand->handCards.at(i)->getType() == CardType::DIPLOMACY){
+                currHand->handCards.at(i)->play(currDeck);
+                currHand->handCards[i] = nullptr;
+                orders->add(new NegotiateOrder());
+                return true;
+            }
+        }
+        std::cout << "\nPlayer doesn't have a Blockade card, order aborted" << std::endl;
+        return false;
+    }else{
+        std::cout << "\nAttempt to push a wrong kind of Order in the Order list of " << Player::name << std::endl;  
+        return false;
+    }    
+};
 
 
 Hand* Player::getHand(){return currHand;}

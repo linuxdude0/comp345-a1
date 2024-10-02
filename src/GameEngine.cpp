@@ -356,7 +356,7 @@ void GameEngine::distributeTerritories(int n_playerCount, int n_totalIndexes)
                 std::cout << i << std::endl;
             std::cout << std::endl;
     }
-    // -- [!!]TODO: fix bug where each new range skips an index for some reason... --
+    // -- [!!]TODO fix bug where each new range skips an index for some reason... --
 }
 
 
