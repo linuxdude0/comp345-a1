@@ -1,4 +1,5 @@
 #include "GameEngine.h"
+#include <algorithm>
 
 // -- helper functions --
 void clear_extra()
@@ -109,6 +110,7 @@ std::ostream& operator<<(std::ostream& out, const CurrentState value)
         std::map<CurrentState, std::string_view> result;
         result.emplace(START,"START");     
         result.emplace(MAP_LOADED,"MAP_LOADED");     
+        result.emplace(MAP_VALIDATED,"MAP_VALIDATED");     
         result.emplace(PLAYERS_ADDED,"PLAYERS_ADDED");             
         result.emplace(ASSIGN_REINFORCEMENTS,"ASSIGN_REINFORCEMENTS");             
         result.emplace(ISSUE_ORDERS,"ISSUE_ORDERS");             
@@ -126,6 +128,7 @@ GameEngine::GameEngine(const std::string map_name)
     : mCurrentState{CurrentState::START}, mMapFileName{map_name}
 {
     mIsRunning = true;
+    this->mDeck_ptr = new Deck();
 
     // initialize commands
     initializeCommands();
@@ -133,7 +136,7 @@ GameEngine::GameEngine(const std::string map_name)
 
 GameEngine::GameEngine(const GameEngine& ge_obj)
     : mCurrentState{ge_obj.mCurrentState},mIsRunning{ge_obj.mIsRunning},mMapFileName{ge_obj.mMapFileName},
-    mMap_ptr{ge_obj.mMap_ptr},mPlayer_v{ge_obj.mPlayer_v},commandMap{ge_obj.commandMap}
+    mMap_ptr{ge_obj.mMap_ptr},mPlayer_v{ge_obj.mPlayer_v},mDeck_ptr(ge_obj.mDeck_ptr),commandMap{ge_obj.commandMap}
 {
 
 }
@@ -141,7 +144,7 @@ GameEngine::GameEngine(const GameEngine& ge_obj)
 GameEngine::~GameEngine()
 {
     delete mMap_ptr;
-
+    delete mDeck_ptr;
     for(auto p : mPlayer_v)
         delete p;         
 }
@@ -163,6 +166,7 @@ void GameEngine::initializeCommands()
     commandMap["play"] = std::bind(&GameEngine::play, this);
     commandMap["end"] = std::bind(&GameEngine::end, this);
     commandMap["quit"] = std::bind(&GameEngine::quit, this);
+    commandMap["help"] = std::bind(&GameEngine::help, this);
 }
 
 // -- accessors & mutators --
@@ -375,15 +379,13 @@ void GameEngine::addPlayer()
     for(int i{0}; i!=n_playerCount; ++i)
     {
         Player *mPlayer_ptr;
-        Deck *mDeck_ptr;
         std::string s_name = prompt_for_string(">> Enter name: ");
         std::cout << ">> Territory given: " << n_territoryIndex << std::endl;
-        mDeck_ptr = new Deck();
         mPlayer_ptr = new Player(n_playerId,s_name,n_territoryIndex,mMap_ptr,mDeck_ptr);
         mPlayer_v.push_back(mPlayer_ptr); // insert players into a vector container
         n_playerId ++;
     }
-    distributeTerritories(mPlayer_v.size(),41);
+    distributeTerritories(mPlayer_v.size(),mMap_ptr->num_territories);
     setState(PLAYERS_ADDED);
 }
 
@@ -449,4 +451,23 @@ void GameEngine::quit()
 {
     // -- if user enters the "quit" command --
     closeGame();
+}
+
+
+void GameEngine::help()
+{
+    std::cout << "Commands available:" << std::endl;
+    std::cout << "\tload_map" << std::endl;
+    std::cout << "\tvalidate_map" << std::endl;
+    std::cout << "\tadd_player" << std::endl;
+    std::cout << "\tassign_countries" << std::endl;
+    std::cout << "\tissue_order" << std::endl;
+    std::cout << "\tend_issue_orders" << std::endl; 
+    std::cout << "\texec_orders" << std::endl;
+    std::cout << "\tend_exec_orders" << std::endl;
+    std::cout << "\twin" << std::endl;
+    std::cout << "\tplay" << std::endl;
+    std::cout << "\tend" << std::endl;
+    std::cout << "\tquit" << std::endl;
+    std::cout << "\thelp" << std::endl;
 }

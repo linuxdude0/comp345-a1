@@ -86,6 +86,7 @@ class GameEngine
         void play();
         void end();
         void quit();
+        void help();
 
     private:
         // -- logic --
@@ -95,6 +96,7 @@ class GameEngine
         const std::string mMapFileName;
         Map* mMap_ptr;
         std::vector<Player*> mPlayer_v;
+        Deck* mDeck_ptr;
         std::unordered_map<std::string,CommandFunction> commandMap;
 
 };
