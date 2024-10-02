@@ -122,6 +122,17 @@ std::ostream& operator<<(std::ostream& out, const CurrentState value)
     return out << strings()[value];
 }
 
+GameEngine& GameEngine::operator=(const GameEngine& ge)
+{
+    mCurrentState = ge.mCurrentState;
+    mIsRunning = ge.mIsRunning;
+    mMap_ptr = ge.mMap_ptr;
+    mPlayer_v = ge.mPlayer_v;
+    mDeck_ptr = ge.mDeck_ptr;
+    commandMap = ge.commandMap;
+
+    return *this;
+}
 
 // -- constructor, copy constructor & destructor --
 GameEngine::GameEngine(const std::string map_name)

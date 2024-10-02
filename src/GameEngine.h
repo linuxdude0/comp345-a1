@@ -52,7 +52,7 @@ class GameEngine
 
         // -- overloaded stream input function --
         friend std::ostream& operator<<(std::ostream& out, const GameEngine& ge);
-
+        GameEngine& operator=(const GameEngine& ge);
         // -- accessors & mutators --
         Map& getMap();
         Player& getPlayer();
