@@ -9,13 +9,15 @@ void testPlayers(std::string filename, Deck* testDeck){
     Player* p1 = new Player(1, "John Doe", 1, testMap, testDeck);
     std::cout << "\n The player 1:\n" << *p1 << std::endl;
     std::cout << "Map filename: " << filename << std::endl;
-    std::cout << "TESTING issueOrder()";
+    std::cout << "TESTING issueOrder()" << std::endl;
+
+    std::cout << "Adding ADVANCE order" << std::endl;
     p1->issueOrder(OrderKind::ADVANCE);
+    std::cout << "Adding BLOCKADE order" << std::endl;
     p1->issueOrder(OrderKind::BLOCKADE);
+    std::cout << "Adding DEPLOY order" << std::endl;
     p1->issueOrder(OrderKind::DEPLOY);
     std::cout << "Missing some cards, let's add them" << std::endl;
-    /*Card* card = new Card(CardType::BOMB);*/
-    /*std::cout << card << std::endl;*/
     Card* card = testDeck->draw();
     p1 -> getHand()->addCard(card);
     switch (card->getType()) {
