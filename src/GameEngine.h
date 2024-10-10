@@ -9,6 +9,7 @@
 #include <string>
 #include <string_view>
 #include <map>
+#include <set>
 #include <unordered_map>
 #include <functional>
 #include <memory>
@@ -63,6 +64,7 @@ class GameEngine
 
         // -- initializer functions --
         void initializeCommands();
+        void initializeStateCommands();
         void distributeTerritories(int n_playerCount, int n_totalIndexes);
         
         // --  main functions --
@@ -98,6 +100,7 @@ class GameEngine
         std::vector<Player*> mPlayer_v;
         Deck* mDeck_ptr;
         std::unordered_map<std::string,CommandFunction> commandMap;
+        std::map<CurrentState, std::set<std::string>> stateCommandMap;
 
 };
 

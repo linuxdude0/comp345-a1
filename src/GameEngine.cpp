@@ -89,6 +89,13 @@ OrderKind prompt_order_kind(const std::string& message)
                 }
             }   
         }
+        else
+        {
+            std::cout << "[ERROR]: Invalid input." << std::endl;
+            std::cin.clear();
+            clear_extra();
+        }
+        clear_extra();
     }
 }
 
@@ -143,6 +150,7 @@ GameEngine::GameEngine(const std::string map_name)
 
     // initialize commands
     initializeCommands();
+    initializeStateCommands();
 }
 
 GameEngine::GameEngine(const GameEngine& ge_obj)
@@ -180,6 +188,19 @@ void GameEngine::initializeCommands()
     commandMap["help"] = std::bind(&GameEngine::help, this);
 }
 
+
+void GameEngine::initializeStateCommands()
+{
+    stateCommandMap[START] = {"load_map", "help", "quit"};
+    stateCommandMap[MAP_LOADED] = {"validate_map", "help", "quit"};
+    stateCommandMap[MAP_VALIDATED] = {"add_player", "help", "quit"};
+    stateCommandMap[PLAYERS_ADDED] = {"add_player","assign_countries", "help", "quit"};
+    stateCommandMap[ASSIGN_REINFORCEMENTS] = {"issue_order", "help", "quit"};
+    stateCommandMap[ISSUE_ORDERS] = {"issue_order", "end_issue_orders", "help", "quit"};
+    stateCommandMap[EXECUTE_ORDERS] = {"exec_orders", "end_exec_orders", "help", "quit"};
+    stateCommandMap[WIN] = {"win", "quit"}; 
+}
+
 // -- accessors & mutators --
 Map& GameEngine::getMap() {return *mMap_ptr;}
 CurrentState GameEngine::getState() {return mCurrentState;}
@@ -199,50 +220,16 @@ void GameEngine::closeGame()
 
 void GameEngine::updateGame()
 {
-    // switch cases here for all of the game states
-    switch(mCurrentState)
+    auto it = stateCommandMap.find(mCurrentState);
+    if(it != stateCommandMap.end())
     {
-        case(START):
-        {
-            std::cout << ">> Command(s): [1.load_map]" << std::endl;
-            break;
-        }
-        case(MAP_LOADED):
-        {
-            std::cout << ">> Command(s): [1.load_map 2.validate_map]" << std::endl;
-            break;
-        }
-        case(MAP_VALIDATED):
-        {
-            std::cout << ">> Command(s): [1.add_player]" << std::endl;
-            break;
-        }
-        case(PLAYERS_ADDED):
-        {
-            std::cout << ">> Command(s): [1.add_player 2.assign_countries]" << std::endl;
-            break;
-        }
-        case(ASSIGN_REINFORCEMENTS):
-        {
-            std::cout << ">> Command(s): [1.issue_order]" << std::endl;
-            break;
-        }
-        case(ISSUE_ORDERS):
-        {
-            std::cout << ">> Command(s): [1.issue_order 2.end_issue_orders]" << std::endl;
-            break;
-        }
-        case(EXECUTE_ORDERS):
-        {
-            std::cout << ">> Command(s): [1.exec_orders 2.end_exec_orders]" << std::endl;
-            break;
-        }
-        case(WIN):
-        {
-            // 
-            break;
-        }
+        std::cout << "Command(s):";
+        for(const auto& cmd : it->second)
+            std::cout << "[" << cmd << "] ";
+        std::cout << std::endl;
     }
+    else
+        std::cout << "<No available commands in this state>" << std::endl;
 }
 
 // -- main functions --
@@ -279,18 +266,35 @@ void GameEngine::userQuery()
 
 void GameEngine::execute(const std::string& s_command_name)
 {
-    // takes command entered by user as input 
-    // check if bound command is in the map
-    auto it = commandMap.find(s_command_name);
-    if(it != commandMap.end())
+    // check if entered command is valid in the current state
+    auto stateIt = stateCommandMap.find(mCurrentState);
+    if(stateIt != stateCommandMap.end())
     {
-        // if command is found, call the bound function
-        it->second();
+        const std::set<std::string>& validCommands = stateIt->second;
+        if(validCommands.find(s_command_name) != validCommands.end())
+        {
+            // takes command entered by user as input 
+            // check if bound command is in the map
+            auto it = commandMap.find(s_command_name);
+            if(it != commandMap.end())
+            {
+                // if command is found, call the bound function
+                it->second();
+            }
+            else
+            {
+                std::cerr << "[ERROR]: Command not found." << std::endl;
+            } 
+        }
+        else
+        {
+            std::cerr << "[ERROR]: Command is not valid in the current state." << std::endl;
+        }
     }
     else
     {
-        std::cerr << "[ERROR]: Command not found." << std::endl;
-    } 
+        std::cerr << "[ERROR]: Current state is invalid." << std::endl;
+    }
 }
 
 void GameEngine::run()
