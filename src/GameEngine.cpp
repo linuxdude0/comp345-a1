@@ -33,6 +33,7 @@ int prompt_for_numeric(const std::string& message)
         }
     }
 }
+
 std::string prompt_for_string(const std::string& message)
 {
     // asks user for a string input (with error checking)
@@ -54,6 +55,7 @@ std::string prompt_for_string(const std::string& message)
     }
     return sInput;
 }
+// -- end of helper functions --
 
 OrderKind prompt_order_kind(const std::string& message)
 {
@@ -102,20 +104,20 @@ std::ostream& operator<<(std::ostream& out, const GameEngine& ge)
     return out; 
 }
 
-std::ostream& operator<<(std::ostream& out, const CurrentState value)
+std::ostream& operator<<(std::ostream& out, const GameEngine::CurrentState value)
 {
     // << operator overload with to print out states in std::string_view form
     // lambda function that creates a map of states corresponding to their string-form representation
     static const auto strings = []{
-        std::map<CurrentState, std::string_view> result;
-        result.emplace(START,"START");     
-        result.emplace(MAP_LOADED,"MAP_LOADED");     
-        result.emplace(MAP_VALIDATED,"MAP_VALIDATED");     
-        result.emplace(PLAYERS_ADDED,"PLAYERS_ADDED");             
-        result.emplace(ASSIGN_REINFORCEMENTS,"ASSIGN_REINFORCEMENTS");             
-        result.emplace(ISSUE_ORDERS,"ISSUE_ORDERS");             
-        result.emplace(EXECUTE_ORDERS,"EXECUTE_ORDERS");             
-        result.emplace(WIN,"WIN");             
+        std::map<GameEngine::CurrentState, std::string_view> result;
+        result.emplace(GameEngine::START,"START");     
+        result.emplace(GameEngine::MAP_LOADED,"MAP_LOADED");     
+        result.emplace(GameEngine::MAP_VALIDATED,"MAP_VALIDATED");     
+        result.emplace(GameEngine::PLAYERS_ADDED,"PLAYERS_ADDED");             
+        result.emplace(GameEngine::ASSIGN_REINFORCEMENTS,"ASSIGN_REINFORCEMENTS");             
+        result.emplace(GameEngine::ISSUE_ORDERS,"ISSUE_ORDERS");             
+        result.emplace(GameEngine::EXECUTE_ORDERS,"EXECUTE_ORDERS");             
+        result.emplace(GameEngine::WIN,"WIN");             
         return result;
     };
     // print out the string corresponding to the enum
@@ -129,7 +131,6 @@ GameEngine& GameEngine::operator=(const GameEngine& ge)
     mMap_ptr = ge.mMap_ptr;
     mPlayer_v = ge.mPlayer_v;
     mDeck_ptr = ge.mDeck_ptr;
-    commandMap = ge.commandMap;
 
     return *this;
 }
@@ -140,14 +141,15 @@ GameEngine::GameEngine(const std::string map_name)
 {
     mIsRunning = true;
     this->mDeck_ptr = new Deck();
+    this->mCommandProcessor_ptr = new CommandProcessor();
 
-    // initialize commands
-    initializeCommands();
+    // initialize valid state commands
+    initializeStateCommands();
 }
 
 GameEngine::GameEngine(const GameEngine& ge_obj)
     : mCurrentState{ge_obj.mCurrentState},mIsRunning{ge_obj.mIsRunning},mMapFileName{ge_obj.mMapFileName},
-    mMap_ptr{ge_obj.mMap_ptr},mPlayer_v{ge_obj.mPlayer_v},mDeck_ptr(ge_obj.mDeck_ptr),commandMap{ge_obj.commandMap}
+    mMap_ptr{ge_obj.mMap_ptr},mPlayer_v{ge_obj.mPlayer_v},mDeck_ptr{ge_obj.mDeck_ptr}
 {
 
 }
@@ -161,32 +163,28 @@ GameEngine::~GameEngine()
 }
 
 // -- initializer functions --
-void GameEngine::initializeCommands()
+void GameEngine::initializeStateCommands()
 {
-    // adds member function to a map associated to a specific command
-    // function will then later be called via provided function
-    commandMap["load_map"] = std::bind(&GameEngine::loadMap, this);
-    commandMap["validate_map"] = std::bind(&GameEngine::validateMap, this);
-    commandMap["add_player"] = std::bind(&GameEngine::addPlayer, this);
-    commandMap["assign_countries"] = std::bind(&GameEngine::assignCountries, this);
-    commandMap["issue_order"] = std::bind(&GameEngine::issueOrder, this);
-    commandMap["end_issue_orders"] = std::bind(&GameEngine::endIssueOrders, this); 
-    commandMap["exec_orders"] = std::bind(&GameEngine::execOrder, this);
-    commandMap["end_exec_orders"] = std::bind(&GameEngine::endExecOrders,this);
-    commandMap["win"] = std::bind(&GameEngine::win, this);
-    commandMap["play"] = std::bind(&GameEngine::play, this);
-    commandMap["end"] = std::bind(&GameEngine::end, this);
-    commandMap["quit"] = std::bind(&GameEngine::quit, this);
-    commandMap["help"] = std::bind(&GameEngine::help, this);
+    stateCommandMap[START] = {"loadmap", "help", "quit"};
+    stateCommandMap[MAP_LOADED] = {"validatemap", "help", "quit"};
+    stateCommandMap[MAP_VALIDATED] = {"addplayer", "help", "quit"};
+    stateCommandMap[PLAYERS_ADDED] = {"addplayer","assigncountries", "help", "quit"};
+    stateCommandMap[ASSIGN_REINFORCEMENTS] = {"issueorder", "help", "quit"};
+    stateCommandMap[ISSUE_ORDERS] = {"issueorder", "endissueorders", "help", "quit"};
+    stateCommandMap[EXECUTE_ORDERS] = {"execorders", "endexecorders", "help", "quit"};
+    stateCommandMap[WIN] = {"win", "quit"}; 
 }
 
 // -- accessors & mutators --
 Map& GameEngine::getMap() {return *mMap_ptr;}
-CurrentState GameEngine::getState() {return mCurrentState;}
+Deck& GameEngine::getDeck() {return *mDeck_ptr;}
+GameEngine::CurrentState GameEngine::getState() {return mCurrentState;}
 void GameEngine::setState(CurrentState state) {mCurrentState = state;}
+void GameEngine::setIsRunning(bool val) {mIsRunning = val;}
 bool GameEngine::isRunning() {return mIsRunning;}
-CommandMap& GameEngine::getCommandMap() {return commandMap;}
-
+std::string GameEngine::getMapFileName() {return mMapFileName;}
+std::vector<Player*>& GameEngine::getPlayersContainer() {return mPlayer_v;}
+std::map<GameEngine::CurrentState, std::set<std::string>> GameEngine::getCommandMap() {return stateCommandMap;}
 
 void GameEngine::closeGame()
 {
@@ -199,99 +197,24 @@ void GameEngine::closeGame()
 
 void GameEngine::updateGame()
 {
-    // switch cases here for all of the game states
-    switch(mCurrentState)
+    auto it = stateCommandMap.find(mCurrentState);
+    if(it != stateCommandMap.end())
     {
-        case(START):
-        {
-            std::cout << ">> Command(s): [1.load_map]" << std::endl;
-            break;
-        }
-        case(MAP_LOADED):
-        {
-            std::cout << ">> Command(s): [1.load_map 2.validate_map]" << std::endl;
-            break;
-        }
-        case(MAP_VALIDATED):
-        {
-            std::cout << ">> Command(s): [1.add_player]" << std::endl;
-            break;
-        }
-        case(PLAYERS_ADDED):
-        {
-            std::cout << ">> Command(s): [1.add_player 2.assign_countries]" << std::endl;
-            break;
-        }
-        case(ASSIGN_REINFORCEMENTS):
-        {
-            std::cout << ">> Command(s): [1.issue_order]" << std::endl;
-            break;
-        }
-        case(ISSUE_ORDERS):
-        {
-            std::cout << ">> Command(s): [1.issue_order 2.end_issue_orders]" << std::endl;
-            break;
-        }
-        case(EXECUTE_ORDERS):
-        {
-            std::cout << ">> Command(s): [1.exec_orders 2.end_exec_orders]" << std::endl;
-            break;
-        }
-        case(WIN):
-        {
-            // 
-            break;
-        }
+        std::cout << "Command(s):";
+        for(const auto& cmd : it->second)
+            std::cout << "[" << cmd << "] ";
+        std::cout << std::endl;
     }
+    else
+        std::cout << "<No available commands in this state>" << std::endl;
 }
 
 // -- main functions --
 void GameEngine::userQuery()
 {
-    // asks user to enter specific game engine commands
-    // in order to switch states and perform game operations
-    std::string sCommand;
-    while(true)
-    {
-        updateGame();
-
-        std::cout << "Current state:[" << mCurrentState << "]" << std::endl;
-        std::cout << ">> Enter command: ";
-        std::getline(std::cin, sCommand);
-        if(sCommand == "quit")
-            mIsRunning = false;
-        if(std::cin.eof())
-        {
-            // handle case where user enters: "ctrl+d" (EOF) (bug made it so there was an infinite loop upon EOF)
-            mIsRunning = false;
-            closeGame();
-        }
-        if(std::cin.fail())
-        {
-            std::cin.clear();
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-            std::cout << ">> [ERROR]: Invalid input, please try again." << std::endl;
-        }
-        std::cout << sCommand << std::endl; // !! test function output !! 
-        execute(sCommand);
-    }
+    mCommandProcessor_ptr->processUserInput(*this);
 }
 
-void GameEngine::execute(const std::string& s_command_name)
-{
-    // takes command entered by user as input 
-    // check if bound command is in the map
-    auto it = commandMap.find(s_command_name);
-    if(it != commandMap.end())
-    {
-        // if command is found, call the bound function
-        it->second();
-    }
-    else
-    {
-        std::cerr << "[ERROR]: Command not found." << std::endl;
-    } 
-}
 
 void GameEngine::run()
 {
@@ -468,14 +391,14 @@ void GameEngine::quit()
 void GameEngine::help()
 {
     std::cout << "Commands available:" << std::endl;
-    std::cout << "\tload_map" << std::endl;
-    std::cout << "\tvalidate_map" << std::endl;
-    std::cout << "\tadd_player" << std::endl;
-    std::cout << "\tassign_countries" << std::endl;
-    std::cout << "\tissue_order" << std::endl;
-    std::cout << "\tend_issue_orders" << std::endl; 
-    std::cout << "\texec_orders" << std::endl;
-    std::cout << "\tend_exec_orders" << std::endl;
+    std::cout << "\tloadmap" << std::endl;
+    std::cout << "\tvalidatemap" << std::endl;
+    std::cout << "\taddplayer" << std::endl;
+    std::cout << "\tassigncountries" << std::endl;
+    std::cout << "\tissueorder" << std::endl;
+    std::cout << "\tendissueorders" << std::endl; 
+    std::cout << "\texecorders" << std::endl;
+    std::cout << "\tendexecorders" << std::endl;
     std::cout << "\twin" << std::endl;
     std::cout << "\tplay" << std::endl;
     std::cout << "\tend" << std::endl;

@@ -23,6 +23,10 @@ int main() {
 	delete deck;
 	testCard();
 	testOrderLists();
-	testGameEngine("./maps/Atlantis.map");
+
+	GameEngine* game = new GameEngine("./maps/Atlantis.map");
+	game->run();
+
+	//testGameEngine("./maps/Atlantis.map");
 	return 0;
 }
