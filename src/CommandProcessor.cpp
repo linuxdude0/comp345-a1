@@ -46,13 +46,43 @@ void CommandProcessor::processUserInput(GameEngine& ge)
             std::cout << ">> [ERROR]: Invalid input, please try again." << std::endl;
         }
 
+        // -- split up the command and arguments --
+        std::istringstream i_stream(sCommand);
+        std::string s_command;
+        std::string s_argument;
+
+        i_stream >> s_command;
+        std::getline(i_stream, s_argument); // get remaining input from user as command argument
         // -- main cases --
-        if(sCommand == "loadmap")
-            saveCommand(sCommand,std::make_unique<loadMapCommand>());
+        if(s_command == "loadmap")
+        {
+            if(!s_argument.empty())
+            {
+                saveCommand(s_command,std::make_unique<loadMapCommand>(s_argument));
+            }
+            else
+            {
+                std::cout << "[ERROR]: map file name required." << std::endl;
+                std::cout << "usage: loadmap <filename>.map" << std::endl;
+                continue;
+            }
+        }
         else if(sCommand == "validatemap")
             saveCommand(sCommand,std::make_unique<validateMapCommand>());
-        else if(sCommand == "addplayer")
-            saveCommand(sCommand,std::make_unique<addPlayerCommand>());
+        
+        else if(s_command == "addplayer")
+        {
+            if(!s_argument.empty())
+            {
+                saveCommand(s_command,std::make_unique<addPlayerCommand>(s_argument));
+            }
+            else
+            {
+                std::cout << "[ERROR]: player name required." << std::endl;
+                std::cout << "usage: addplayer <player name>" << std::endl;
+                continue;
+            }
+        }
         else if(sCommand == "assigncountries")
             saveCommand(sCommand,std::make_unique<assignCountriesCommand>());
         else if(sCommand == "issueorder")
@@ -111,6 +141,19 @@ void CommandProcessor::validate(const std::string& s_command_name, GameEngine& g
 {
     auto stateCommandMap = ge.getCommandMap();
     GameEngine::CurrentState mCurrentState = ge.getState();
+
+    // -- special cases if it is the loadmap or addplayer commands --
+    if(s_command_name.find("loadmap") == 0)
+    {
+        readCommand("loadmap", ge); // accept, regardless of arguments
+        return;
+    }
+
+    else if(s_command_name.find("addplayer") == 0)
+    {
+        readCommand("addplayer", ge); // accept, regardless of arguments
+        return;
+    }
 
     // check if entered command is valid in the current state
     auto stateIt = stateCommandMap.find(mCurrentState);

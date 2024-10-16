@@ -6,6 +6,7 @@
 #include <unordered_map>
 #include <memory>
 #include <iostream>
+#include <sstream>
 
 class GameEngine;
 class Command;

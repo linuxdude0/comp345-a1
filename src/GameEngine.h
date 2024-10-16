@@ -18,6 +18,8 @@
 #include <random>
 #include <ranges>
 #include <chrono>
+#include <algorithm> 
+#include <cctype>    
 
 class GameEngine;
 class CommandProcessor;
@@ -76,9 +78,9 @@ class GameEngine
         void closeGame();
         
         // -- game commands --
-        void loadMap();
+        void loadMap(std::string map_filename);
         void validateMap();
-        void addPlayer();
+        void addPlayer(const std::string& player_name);
         void assignCountries();
         void issueOrder();
         void execOrder();

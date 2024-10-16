@@ -25,10 +25,12 @@ class Command
 class loadMapCommand : public Command
 {
     public:
-        void executeCommand(GameEngine& ge);
+        loadMapCommand(const std::string& s_argument);
+        void executeCommand(GameEngine& ge) override;
         void saveEffect(const std::string& s_effect);
     private:
         std::string mEffect;
+        std::string mArgument;
 };
 
 class validateMapCommand : public Command
@@ -43,10 +45,12 @@ class validateMapCommand : public Command
 class addPlayerCommand : public Command
 {
     public:
-        void executeCommand(GameEngine& ge);
+        addPlayerCommand(const std::string& s_argument);
+        void executeCommand(GameEngine& ge) override;
         void saveEffect(const std::string& s_effect);
     private:
         std::string mEffect;
+        std::string mArgument;
 };
 
 class assignCountriesCommand : public Command

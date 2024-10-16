@@ -22,9 +22,15 @@ void Command::saveEffect(const std::string& s_effect)
 
 
 // -- loadmap command --
+loadMapCommand::loadMapCommand(const std::string& s_argument)
+    :mArgument{s_argument}
+{
+    // default constructor
+}
+
 void loadMapCommand::executeCommand(GameEngine& ge)
 {
-    ge.loadMap();
+    ge.loadMap(mArgument);
 }
 
 void loadMapCommand::saveEffect(const std::string& s_effect)
@@ -44,9 +50,15 @@ void validateMapCommand::saveEffect(const std::string& s_effect)
 }
 
 // -- addplayer command --
+addPlayerCommand::addPlayerCommand(const std::string& s_argument)
+    :mArgument{s_argument}
+{
+    // default constructor
+}
+
 void addPlayerCommand::executeCommand(GameEngine& ge)
 {
-    ge.addPlayer();
+    ge.addPlayer(mArgument);
 }
 
 void addPlayerCommand::saveEffect(const std::string& s_effect)

@@ -228,10 +228,15 @@ void GameEngine::run()
 // after each command is run: switch the game's state (setState(<currentState>))
 
 // -- startup phase --
-void GameEngine::loadMap()
+void GameEngine::loadMap(std::string map_filename)
 {   
-    // initialize Map object 
-    this->mMap_ptr = new Map(mMapFileName); 
+    // initialize Map object
+    // remove potential whitespaces from map file name:
+    map_filename.erase(std::remove_if(map_filename.begin(),map_filename.end(), ::isspace), map_filename.end());
+    std::string map_filePath = "./maps/";
+    map_filePath += map_filename; 
+    std::cout << "map filename:" << map_filePath << std::endl;
+    this->mMap_ptr = new Map(map_filePath); 
     setState(MAP_LOADED);
 }
 
@@ -294,7 +299,7 @@ void GameEngine::distributeTerritories(int n_playerCount, int n_totalIndexes)
 }
 
 
-void GameEngine::addPlayer()
+void GameEngine::addPlayer(const std::string& player_name)
 {
     // create new player, associate random territory index and give player a Card Deck object
 
@@ -305,20 +310,17 @@ void GameEngine::addPlayer()
             p->toDefend().clear(); // remove all territory indexes from vector
     }
 
-    //std::uniform_int_distribution<int> distrib{1,mMap_ptr->getTerritory(1).index};
     static int n_playerId{1};
     int n_territoryIndex{0};
-    int n_playerCount{0};
-    n_playerCount = prompt_for_numeric(">> Enter the number of players: ");
-    for(int i{0}; i!=n_playerCount; ++i)
-    {
-        Player *mPlayer_ptr;
-        std::string s_name = prompt_for_string(">> Enter name: ");
-        std::cout << ">> Territory given: " << n_territoryIndex << std::endl;
-        mPlayer_ptr = new Player(n_playerId,s_name,n_territoryIndex,mMap_ptr,mDeck_ptr);
-        mPlayer_v.push_back(mPlayer_ptr); // insert players into a vector container
-        n_playerId ++;
-    }
+    
+    Player *mPlayer_ptr;
+    std::string s_name = player_name;
+    std::cout << ">> Territory given: " << n_territoryIndex << std::endl;
+    mPlayer_ptr = new Player(n_playerId,s_name,n_territoryIndex,mMap_ptr,mDeck_ptr);
+    mPlayer_v.push_back(mPlayer_ptr); // insert players into a vector container
+    n_playerId ++;
+    std::cout << "vector size: " << mPlayer_v.size() << std::endl;
+    
     distributeTerritories(mPlayer_v.size(),mMap_ptr->num_territories);
     setState(PLAYERS_ADDED);
 }
