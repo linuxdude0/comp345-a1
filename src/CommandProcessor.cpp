@@ -1,4 +1,5 @@
 #include "CommandProcessor.h"
+#include "GameEngine.h"
 
 // -- constructor & destructor --
 

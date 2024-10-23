@@ -2,7 +2,6 @@
 #define COMMAND_H
 
 #include <string>
-#include "GameEngine.h"
 
 class GameEngine;
 
@@ -27,7 +26,7 @@ class loadMapCommand : public Command
     public:
         loadMapCommand(const std::string& s_argument);
         void executeCommand(GameEngine& ge) override;
-        void saveEffect(const std::string& s_effect);
+        void saveEffect(const std::string& s_effect) override;
     private:
         std::string mEffect;
         std::string mArgument;
@@ -47,7 +46,7 @@ class addPlayerCommand : public Command
     public:
         addPlayerCommand(const std::string& s_argument);
         void executeCommand(GameEngine& ge) override;
-        void saveEffect(const std::string& s_effect);
+        void saveEffect(const std::string& s_effect) override;
     private:
         std::string mEffect;
         std::string mArgument;

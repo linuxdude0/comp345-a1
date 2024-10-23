@@ -2,7 +2,6 @@
 #define COMMAND_PROCESSOR_H
 
 #include "Command.h"
-#include "GameEngine.h"
 #include <unordered_map>
 #include <memory>
 #include <iostream>

@@ -228,6 +228,13 @@ void GameEngine::run()
 // after each command is run: switch the game's state (setState(<currentState>))
 
 // -- startup phase --
+
+/*void GameEngine::startupPhase() */
+/*{*/
+/*    this->loadMap(mMapFileName);*/
+/*    this->validateMap();*/
+/*}*/
+
 void GameEngine::loadMap(std::string map_filename)
 {   
     // initialize Map object

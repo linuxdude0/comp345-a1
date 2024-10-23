@@ -91,6 +91,7 @@ class GameEngine
         void end();
         void quit();
         void help();
+        void startupPhase(void);
 
     private:
         CommandProcessor* mCommandProcessor_ptr;

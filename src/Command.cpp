@@ -1,4 +1,5 @@
 #include "Command.h"
+#include "GameEngine.h"
 
 Command::Command()
 {
