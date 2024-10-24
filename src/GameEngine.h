@@ -46,7 +46,7 @@ class GameEngine
         friend std::ostream& operator<<(std::ostream& out, const CurrentState value);
         
         // -- constructors & destructor --
-        GameEngine(const std::string map_name);
+        GameEngine(const std::string map_name, int argc, char* argv[]);
         GameEngine(const GameEngine&);
         ~GameEngine();
 

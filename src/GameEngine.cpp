@@ -1,4 +1,5 @@
 #include "GameEngine.h"
+#include "common.h"
 #include <algorithm>
 
 // -- helper functions --
@@ -136,9 +137,11 @@ GameEngine& GameEngine::operator=(const GameEngine& ge)
 }
 
 // -- constructor, copy constructor & destructor --
-GameEngine::GameEngine(const std::string map_name)
+GameEngine::GameEngine(const std::string map_name, int argc, char* argv[])
     : mCurrentState{CurrentState::START}, mMapFileName{map_name}
 {
+    UNUSED(argc);
+    UNUSED(argv);
     mIsRunning = true;
     this->mDeck_ptr = new Deck();
     this->mCommandProcessor_ptr = new CommandProcessor();

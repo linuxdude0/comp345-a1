@@ -16,6 +16,7 @@ Map::Map(Map* map) {
 	this->num_territories = map->num_territories;
 	this->num_continents = map->num_continents;
 	for (size_t i=0; i<this->num_continents; i++) {
+		this->num_territories_per_continent[i] = map->num_territories_per_continent[i];
 		this->scores_to_own_continent[i] = map->scores_to_own_continent[i];
 		this->continents[i] = map->continents[i];
 	}
@@ -126,6 +127,7 @@ Map::Map(std::string filename) {
 				} catch (std::invalid_argument& e) {
 					throw "wrong value: \"" + value + "\"";
 				}
+				this->num_territories_per_continent[this->num_continents] = 0;
 				this->continents[this->num_continents++] = field;
 			}
 				break;
@@ -179,6 +181,7 @@ Map::Map(std::string filename) {
 					if (territory_continent == this->continents[i]) {
 						found = true;
 						this->territories[this->num_territories].continent_index = i;
+						this->num_territories_per_continent[i]++;
 					}
 				}
 				if (!found) {
@@ -256,7 +259,6 @@ bool Map::validate() {
 	return true;
 }
 
-
 Map::Territory Map::getTerritory(unsigned index) {
 	if (index >= this->num_territories) {
 		throw "invalid territory index";
@@ -273,6 +275,30 @@ Map::Continent Map::getContinent(unsigned index) {
 		.score = this->scores_to_own_continent[index],
 	};
 	return continent;
+}
+
+unsigned Map::getScore(size_t num_territories, unsigned territories[MAX_TERRITORIES]) {
+	unsigned num_terr_per_continent[MAX_CONTINENTS]{};
+	unsigned score = 0;
+	for (size_t i=0; i<num_territories; i++) {
+		Territory t = this->getTerritory(territories[i]);
+		num_terr_per_continent[t.continent_index]++;
+	}
+#ifdef DEBUG
+	std::cout << "-----------DEBUG------------" << std::endl;
+#endif
+	for (size_t i=0; i<MAX_CONTINENTS; i++) {
+#ifdef DEBUG
+		std::cout << num_terr_per_continent[i] << ":" << this->num_territories_per_continent[i] << std::endl;
+#endif
+		if(num_terr_per_continent[i] == this->num_territories_per_continent[i]) {
+			score+=this->scores_to_own_continent[i];
+		}
+	}
+#ifdef DEBUG
+	std::cout << "-----------END DEBUG------------" << std::endl;
+#endif
+	return score;
 }
 
 std::ostream& operator<<(std::ostream& os, const Map& map) {

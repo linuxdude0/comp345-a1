@@ -213,6 +213,8 @@ std::ostream& operator<<(std::ostream& os, Player& obj){
 
                 os << counter << " Reinforcements Card " << std::endl;
                 break;
+            case CardType::CARD_TYPE_MAX:
+                break;
         }
         counter++;
     }

@@ -6,7 +6,7 @@
 #include <cstdlib>
 
 // Enum for card types
-enum class CardType { BOMB, REINFORCEMENT, BLOCKADE, AIRLIFT, DIPLOMACY };
+enum class CardType { BOMB, REINFORCEMENT, BLOCKADE, AIRLIFT, DIPLOMACY, CARD_TYPE_MAX};
 
 // Forward declaration of Deck class
 class Deck;

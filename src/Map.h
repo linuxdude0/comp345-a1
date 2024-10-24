@@ -35,6 +35,7 @@ public:
 	bool wrap;
 	std::string continents[MAX_CONTINENTS];
 	unsigned scores_to_own_continent[MAX_CONTINENTS];
+	unsigned num_territories_per_continent[MAX_CONTINENTS];
 	size_t num_continents = 0;
 	Territory territories[MAX_TERRITORIES];
 	size_t num_territories = 0;
@@ -43,5 +44,6 @@ public:
 	bool validate();
 	Territory getTerritory(unsigned index);
 	Continent getContinent(unsigned index);
+	unsigned getScore(size_t num_territories, unsigned territories[MAX_TERRITORIES]);
 	friend std::ostream& operator<<(std::ostream& os, const Map& map);
 };

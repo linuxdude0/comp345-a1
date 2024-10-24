@@ -45,6 +45,8 @@ void testPlayers(std::string filename, Deck* testDeck){
             /*std::cout << "Reinforcement Order issued:" << std::endl;*/
             /*std::cout << ((p1 -> issueOrder(OrderKind::)) ? "true" : "false")<< std::endl;*/
             break;
+        case CardType::CARD_TYPE_MAX:
+            break;
     }
     std::cout << *p1 << std::endl;
     delete testMap;

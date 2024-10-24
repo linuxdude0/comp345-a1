@@ -13,8 +13,8 @@ CardType Card::getType() const {
 // Deck class implementation
 Deck::Deck() {
     // Initialize the deck with one card of each type
-    for (int i = 0; i < 5; ++i) {
-        cards.push_back(new Card(static_cast<CardType>(i)));
+    for (int i = 0; i < 1000; ++i) {
+        cards.push_back(new Card(static_cast<CardType>(i%static_cast<int>((CardType::CARD_TYPE_MAX)))));
     }
     std::srand(std::time(0)); // Seed random number generator
 }

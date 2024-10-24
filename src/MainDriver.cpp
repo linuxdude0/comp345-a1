@@ -9,7 +9,7 @@
 #include "PlayerDriver.h"
 #include "GameEngineDriver.h"
 
-int main() {
+int main(int argc, char* argv[]) {
 	std::string map_filenames[] = {
 		"./maps/Atlantis.map",
 		"./maps/Corruption.map",
@@ -24,7 +24,7 @@ int main() {
 	testCard();
 	testOrderLists();
 
-	GameEngine* game = new GameEngine("./maps/Atlantis.map");
+	GameEngine* game = new GameEngine("./maps/Atlantis.map", argc, argv);
 	game->run();
 
 	//testGameEngine("./maps/Atlantis.map");
