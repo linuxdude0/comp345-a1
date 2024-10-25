@@ -147,8 +147,10 @@ GameEngine& GameEngine::operator=(const GameEngine& ge)
 GameEngine::GameEngine(const std::string map_name, int argc, char* argv[])
     : mCurrentState{CurrentState::START}, mMapFileName{map_name}
 {
-    UNUSED(argc);
-    UNUSED(argv);
+    // push arguments to args list
+    for(int i{0}; i<argc; ++i)
+        mArgs.push_back(argv[i]);
+
     mIsRunning = true;
     this->mDeck_ptr = new Deck();
     this->mCommandProcessor_ptr = new CommandProcessor();
@@ -173,6 +175,19 @@ GameEngine::~GameEngine()
 }
 
 // -- initializer functions --
+bool GameEngine::parseOptions(const std::string& s_option)
+{
+    auto it = std::find(mArgs.begin(),mArgs.end(), s_option);
+    if(it!=std::end(mArgs))
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
 void GameEngine::initializeStateCommands()
 {
     stateCommandMap[START] = {"loadmap", "help", "quit"};
@@ -224,6 +239,11 @@ void GameEngine::userQuery()
     mCommandProcessor_ptr->getCommand(*this);
 }
 
+void GameEngine::automaticQuery()
+{
+    // -- read commands from file --
+    // mCommandProcessor_ptr->
+}
 
 void GameEngine::reset()
 {
@@ -235,9 +255,19 @@ void GameEngine::reset()
 
 void GameEngine::run()
 {
-    while(isRunning())
+    if(parseOptions("-console"))
     {
-       userQuery();
+        while(isRunning())
+        {
+            userQuery();
+        }
+    }
+    else if(parseOptions("-file"))
+    {
+        while(isRunning())
+        {
+            automaticQuery();
+        }
     }
 }
 

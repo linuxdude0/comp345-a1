@@ -67,11 +67,13 @@ class GameEngine
         std::map<CurrentState, std::set<std::string>> getCommandMap();
 
         // -- initializer functions --
+        bool parseOptions(const std::string& s_option);
         void initializeStateCommands();
         void distributeTerritories(int n_playerCount, int n_totalIndexes);
         
         // --  main functions --
         void userQuery();
+        void automaticQuery();
         void updateGame();
         void execute(const std::string& s_command_name);
 
@@ -106,6 +108,7 @@ class GameEngine
         std::vector<Player*> mPlayer_v;
         Deck* mDeck_ptr;
         std::map<CurrentState, std::set<std::string>> stateCommandMap;
+        std::vector<std::string> mArgs;
 };
 
 #endif // !GAME_ENGINE_H
