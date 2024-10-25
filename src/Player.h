@@ -21,6 +21,7 @@ Player:
 class Player{
 
     private:
+        int reinforcementPool;
         int playerID;
         string name;
         vector<int>* territoriesToDefend;
@@ -47,6 +48,9 @@ class Player{
         // setters
         void setID(int);
         void setName(string);
+        const int& getReinforcementPool();
+        void setReinforcementPool(int i);
+        void addToReinforcementPool(int i);
 
 
         // overloaded stream insertion

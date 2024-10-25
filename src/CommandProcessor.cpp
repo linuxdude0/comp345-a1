@@ -25,7 +25,7 @@ void CommandProcessor::processUserInput(GameEngine& ge)
     std::string sCommand;
     while(true)
     {
-        ge.updateGame();
+        ge.updateGame(); // MEOW : correct state 
 
         std::cout << "Current state:[" << ge.getState() << "]" << std::endl;
         std::cout << ">> Enter command: ";
@@ -86,6 +86,8 @@ void CommandProcessor::processUserInput(GameEngine& ge)
         }
         else if(sCommand == "assigncountries")
             saveCommand(sCommand,std::make_unique<assignCountriesCommand>());
+        else if(sCommand == "gamestart") // MEOW
+            saveCommand(sCommand,std::make_unique<gamestartCommand>());    
         else if(sCommand == "issueorder")
             saveCommand(sCommand,std::make_unique<issueOrderCommand>());
         else if(sCommand == "endissueorders")

@@ -37,6 +37,7 @@ class GameEngine
             MAP_LOADED,
             MAP_VALIDATED,
             PLAYERS_ADDED,
+            GAMESTART,
             ASSIGN_REINFORCEMENTS,
             ISSUE_ORDERS,
             EXECUTE_ORDERS,
@@ -82,6 +83,7 @@ class GameEngine
         void validateMap();
         void addPlayer(const std::string& player_name);
         void assignCountries();
+        void gamestart(); //meow
         void issueOrder();
         void execOrder();
         void endExecOrders();

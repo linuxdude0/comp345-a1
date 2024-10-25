@@ -175,3 +175,15 @@ void helpCommand::saveEffect(const std::string& s_effect)
 {
     mEffect = s_effect;
 }
+
+
+// MEOW
+void gamestartCommand::executeCommand(GameEngine& ge)
+{
+    ge.gamestart();
+}
+void gamestartCommand::saveEffect(const std::string& s_effect)
+{
+    mEffect = s_effect;
+}
+

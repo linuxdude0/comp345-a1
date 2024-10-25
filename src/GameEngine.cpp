@@ -114,7 +114,8 @@ std::ostream& operator<<(std::ostream& out, const GameEngine::CurrentState value
         result.emplace(GameEngine::START,"START");     
         result.emplace(GameEngine::MAP_LOADED,"MAP_LOADED");     
         result.emplace(GameEngine::MAP_VALIDATED,"MAP_VALIDATED");     
-        result.emplace(GameEngine::PLAYERS_ADDED,"PLAYERS_ADDED");             
+        result.emplace(GameEngine::PLAYERS_ADDED,"PLAYERS_ADDED");
+        result.emplace(GameEngine::GAMESTART,"GAMESTART");               
         result.emplace(GameEngine::ASSIGN_REINFORCEMENTS,"ASSIGN_REINFORCEMENTS");             
         result.emplace(GameEngine::ISSUE_ORDERS,"ISSUE_ORDERS");             
         result.emplace(GameEngine::EXECUTE_ORDERS,"EXECUTE_ORDERS");             
@@ -172,6 +173,7 @@ void GameEngine::initializeStateCommands()
     stateCommandMap[MAP_LOADED] = {"validatemap", "help", "quit"};
     stateCommandMap[MAP_VALIDATED] = {"addplayer", "help", "quit"};
     stateCommandMap[PLAYERS_ADDED] = {"addplayer","assigncountries", "help", "quit"};
+    stateCommandMap[GAMESTART] = {"gamestart", "help", "quit"}; // meow
     stateCommandMap[ASSIGN_REINFORCEMENTS] = {"issueorder", "help", "quit"};
     stateCommandMap[ISSUE_ORDERS] = {"issueorder", "endissueorders", "help", "quit"};
     stateCommandMap[EXECUTE_ORDERS] = {"execorders", "endexecorders", "help", "quit"};
@@ -272,7 +274,7 @@ void GameEngine::distributeTerritories(int n_playerCount, int n_totalIndexes)
     */
     std::vector<std::vector<int>> v_indexDistribution;
     int nStartIndex = 0;
-    for(int i{0}; i!=n_playerCount; ++i)
+    for(int i{0}; i < n_playerCount; i++)
     {
         int nEndIndex = nStartIndex + nIndexesPerPlayer - 1;
         if(i<nRemainder)
@@ -280,7 +282,7 @@ void GameEngine::distributeTerritories(int n_playerCount, int n_totalIndexes)
 
         // create a temporary vector of territory index ranges
         std::vector<int> tempV;
-        for(int i{0};i!=(nEndIndex-nStartIndex); ++i)
+        for(int i{0};i <= (nEndIndex - nStartIndex); i++)
         {
             std::cout << ">> pushing index: " << nStartIndex+i << std::endl;
             tempV.push_back(nStartIndex+i); // push all indexes to temporary vector
@@ -338,7 +340,31 @@ void GameEngine::addPlayer(const std::string& player_name)
 void GameEngine::assignCountries()
 {
     std::cout << ">> Assigned countries." << std::endl;
-    setState(ASSIGN_REINFORCEMENTS);
+    setState(GAMESTART);
+}
+
+
+// given that territories were already assigned elsewhere 
+void GameEngine::gamestart(){
+
+    
+
+    std::cout << ">> Gamestart." << std::endl;
+    
+    // loops thru all the players in the main players vector
+    for(Player* p : mPlayer_v){
+
+        // adds 50 units to the reinforcement pool of each player, pool is initialized to 0 initially
+        p->addToReinforcementPool(50);
+        std::cout << ">> Player " << p->getName() << " just received 50 units." << std::endl;
+        
+        // adds 2 card to each player's hand
+        p->getHand()->addCard(this->mDeck_ptr->draw());
+        p->getHand()->addCard(this->mDeck_ptr->draw());
+        std::cout << ">> Player " << p->getName() << " just received 2 cards" << std::endl;
+
+    }
+    setState(ASSIGN_REINFORCEMENTS); // switches to the main game state
 }
 
 void GameEngine::issueOrder()

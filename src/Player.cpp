@@ -10,7 +10,8 @@ Player::Player(int playerID, string name, int startTerrIndex, Map* map, Deck* cu
     playerID(playerID),
     name(name),
     currMap(map),
-    currDeck(currDeck)
+    currDeck(currDeck), 
+    reinforcementPool{0}
     {
         territoriesToDefend = new vector<int>;
         territoriesToDefend->push_back(startTerrIndex);
@@ -146,6 +147,14 @@ bool Player::issueOrder(OrderKind ok){
         return false;
     }    
 };
+
+const int& Player::getReinforcementPool(){return reinforcementPool;}
+
+
+void Player::setReinforcementPool(int i){reinforcementPool = i;}
+
+
+void Player::addToReinforcementPool(int i){reinforcementPool += 1;}
 
 
 Hand* Player::getHand(){return currHand;}

@@ -141,4 +141,16 @@ class helpCommand : public Command
     private:
         std::string mEffect;
 };
+
+class gamestartCommand : public Command{
+
+    public:
+        void executeCommand(GameEngine& ge);
+        void saveEffect(const std::string& s_effect);
+    private:
+        std::string mEffect;
+
+};
+
+
 #endif //! COMMAND_H
