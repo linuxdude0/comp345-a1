@@ -7,11 +7,11 @@ using std::vector;
 
 // constructor
 Player::Player(int playerID, string name, int startTerrIndex, Map* map, Deck* currDeck):
+    reinforcementPool{0},
     playerID(playerID),
     name(name),
     currMap(map),
-    currDeck(currDeck), 
-    reinforcementPool{0}
+    currDeck(currDeck)
     {
         territoriesToDefend = new vector<int>;
         territoriesToDefend->push_back(startTerrIndex);
@@ -154,7 +154,7 @@ const int& Player::getReinforcementPool(){return reinforcementPool;}
 void Player::setReinforcementPool(int i){reinforcementPool = i;}
 
 
-void Player::addToReinforcementPool(int i){reinforcementPool += 1;}
+void Player::addToReinforcementPool(int i){reinforcementPool += i;}
 
 
 Hand* Player::getHand(){return currHand;}
