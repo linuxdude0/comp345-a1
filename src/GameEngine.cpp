@@ -73,16 +73,22 @@ OrderKind prompt_order_kind(const std::string& message)
             {
                 case(1):
                     return OrderKind::DEPLOY;
+                    break;
                 case(2):
                     return OrderKind::ADVANCE;
+                    break;
                 case(3):
                     return OrderKind::BOMB;
+                    break;
                 case(4):
                     return OrderKind::BLOCKADE;
+                    break;
                 case(5):
                     return OrderKind::AIRLIFT;
+                    break;
                 case(6):
                     return OrderKind::NEGOTIATE;
+                    break;
                 default:
                 {
                     std::cout << "[WARNING]: Unknown order." << std::endl;
@@ -174,10 +180,6 @@ void GameEngine::initializeStateCommands()
     stateCommandMap[MAP_VALIDATED] = {"addplayer", "help", "quit"};
     stateCommandMap[PLAYERS_ADDED] = {"addplayer","assigncountries", "help", "quit"};
     stateCommandMap[GAMESTART] = {"gamestart", "help", "quit"}; // meow
-    stateCommandMap[ASSIGN_REINFORCEMENTS] = {"issueorder", "help", "quit"};
-    stateCommandMap[ISSUE_ORDERS] = {"issueorder", "endissueorders", "help", "quit"};
-    stateCommandMap[EXECUTE_ORDERS] = {"execorders", "endexecorders", "help", "quit"};
-    stateCommandMap[WIN] = {"win", "quit"}; 
 }
 
 // -- accessors & mutators --
@@ -195,8 +197,6 @@ void GameEngine::closeGame()
 {
     // -- perform cleanup here --
     std::cout << ">> [DEBUG]: Quitting game" << std::endl;
-    mIsRunning = false;
-
     std::exit(EXIT_SUCCESS);
 }
 
@@ -210,6 +210,10 @@ void GameEngine::updateGame()
             std::cout << "[" << cmd << "] ";
         std::cout << std::endl;
     }
+    else if(mCurrentState == WIN)
+    {
+        mIsRunning = false;
+    }
     else
         std::cout << "<No available commands in this state>" << std::endl;
 }
@@ -217,9 +221,17 @@ void GameEngine::updateGame()
 // -- main functions --
 void GameEngine::userQuery()
 {
-    mCommandProcessor_ptr->processUserInput(*this);
+    mCommandProcessor_ptr->getCommand(*this);
 }
 
+
+void GameEngine::reset()
+{
+    // -- in case user decides to replay the game --
+    // free allocated memory 
+    delete mMap_ptr;
+    mPlayer_v.clear();     
+}
 
 void GameEngine::run()
 {
@@ -344,6 +356,8 @@ void GameEngine::assignCountries()
 }
 
 
+// -- play phase --
+
 // given that territories were already assigned elsewhere 
 void GameEngine::gamestart(){
 
@@ -363,8 +377,20 @@ void GameEngine::gamestart(){
         p->getHand()->addCard(this->mDeck_ptr->draw());
         std::cout << ">> Player " << p->getName() << " just received 2 cards" << std::endl;
 
+        setState(ASSIGN_REINFORCEMENTS); // switches to the main game state
+        
+        // -- beginning of play phase --
+        while(mCurrentState != WIN)
+        {
+            issueOrder(); // 1. prompts each player in the lobby to issue their orders
+            endIssueOrders(); // 2. end issuing orders and change state to execute orders
+
+            execOrder(); // 3. execute orders for each player in the lobby
+            endExecOrders(); // 4. end executing orders and change state to assign reinforcements
+            win(); // win state occurs
+        }
+
     }
-    setState(ASSIGN_REINFORCEMENTS); // switches to the main game state
 }
 
 void GameEngine::issueOrder()
@@ -383,6 +409,7 @@ void GameEngine::issueOrder()
 
 void GameEngine::endIssueOrders()
 {
+    clear_extra();
     std::cout << ">> Finished issuing orders." << std::endl;
     setState(EXECUTE_ORDERS);
 }
@@ -404,19 +431,29 @@ void GameEngine::endExecOrders()
 
 void GameEngine::win()
 {
-    std::cout << ">> Play again? (play/end)" << std::endl;
     setState(WIN);
+    
+    std::cout << ">> Play again? (replay/quit)" << std::endl;
+    while(true)
+    {
+        std::string s_choice = prompt_for_string("Enter your choice: ");
+        if(s_choice == "replay")
+            replay();
+        else if(s_choice == "quit")
+            quit();
+        else
+        {
+            std::cout << ">> [ERROR]: Invalid choice." << std::endl;
+            continue;
+        }
+    }
 }
 
-void GameEngine::play()
+void GameEngine::replay()
 {
-    // playGame();
-    setState(START);    
-}
-
-void GameEngine::end()
-{
-    closeGame();
+    setState(START);
+    reset();
+    run();    
 }
 
 void GameEngine::quit()
@@ -433,13 +470,6 @@ void GameEngine::help()
     std::cout << "\tvalidatemap" << std::endl;
     std::cout << "\taddplayer" << std::endl;
     std::cout << "\tassigncountries" << std::endl;
-    std::cout << "\tissueorder" << std::endl;
-    std::cout << "\tendissueorders" << std::endl; 
-    std::cout << "\texecorders" << std::endl;
-    std::cout << "\tendexecorders" << std::endl;
-    std::cout << "\twin" << std::endl;
-    std::cout << "\tplay" << std::endl;
-    std::cout << "\tend" << std::endl;
-    std::cout << "\tquit" << std::endl;
+    std::cout << "\tgamestart" << std::endl;
     std::cout << "\thelp" << std::endl;
 }

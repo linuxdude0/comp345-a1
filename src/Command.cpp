@@ -11,6 +11,8 @@ Command::~Command()
 
 }
 
+std::string Command::getEffect() {return mEffect;}
+
 void Command::executeCommand(GameEngine& ge)
 {
     std::cout << ge << std::endl;
@@ -74,82 +76,6 @@ void assignCountriesCommand::executeCommand(GameEngine& ge)
 }
 
 void assignCountriesCommand::saveEffect(const std::string& s_effect)
-{
-    mEffect = s_effect;
-}
-
-// -- issueorder command --
-void issueOrderCommand::executeCommand(GameEngine& ge)
-{
-    ge.issueOrder();
-}
-
-void issueOrderCommand::saveEffect(const std::string& s_effect)
-{
-    mEffect = s_effect;
-}
-
-// -- endissueorder command --
-void endIssueOrderCommand::executeCommand(GameEngine& ge)
-{
-    ge.endIssueOrders();
-}
-
-void endIssueOrderCommand::saveEffect(const std::string& s_effect)
-{
-    mEffect = s_effect;
-}
-// -- execorder command --
-void execOrderCommand::executeCommand(GameEngine& ge)
-{
-    ge.execOrder();
-}
-
-void execOrderCommand::saveEffect(const std::string& s_effect)
-{
-    mEffect = s_effect;
-}
-
-// -- endexecorder command --
-void endExecOrderCommand::executeCommand(GameEngine& ge)
-{
-    ge.endExecOrders();
-}
-
-void endExecOrderCommand::saveEffect(const std::string& s_effect)
-{
-    mEffect = s_effect;
-}
-
-// -- win command --
-void winCommand::executeCommand(GameEngine& ge)
-{
-    ge.win();
-}
-
-void winCommand::saveEffect(const std::string& s_effect)
-{
-    mEffect = s_effect;
-}
-
-// -- play command --
-void playCommand::executeCommand(GameEngine& ge)
-{
-    ge.play();
-}
-
-void playCommand::saveEffect(const std::string& s_effect)
-{
-    mEffect = s_effect;
-}
-
-// -- end command --
-void endCommand::executeCommand(GameEngine& ge)
-{
-    ge.end();
-}
-
-void endCommand::saveEffect(const std::string& s_effect)
 {
     mEffect = s_effect;
 }

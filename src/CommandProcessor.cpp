@@ -14,11 +14,10 @@ CommandProcessor::~CommandProcessor()
 }
 
 // -- accessors & mutators --
-//Command& CommandProcessor::getCommand(){}
 CommandMap& CommandProcessor::getCommandMap() { return mCommandMap; }
 
 // -- main functionality --
-void CommandProcessor::processUserInput(GameEngine& ge)
+void CommandProcessor::getCommand(GameEngine& ge)
 {
     // asks user to enter specific game engine commands
     // in order to switch states and perform game operations
@@ -68,8 +67,8 @@ void CommandProcessor::processUserInput(GameEngine& ge)
                 continue;
             }
         }
-        else if(sCommand == "validatemap")
-            saveCommand(sCommand,std::make_unique<validateMapCommand>());
+        else if(s_command == "validatemap")
+            saveCommand(s_command,std::make_unique<validateMapCommand>());
         
         else if(s_command == "addplayer")
         {
@@ -84,35 +83,21 @@ void CommandProcessor::processUserInput(GameEngine& ge)
                 continue;
             }
         }
-        else if(sCommand == "assigncountries")
-            saveCommand(sCommand,std::make_unique<assignCountriesCommand>());
-        else if(sCommand == "gamestart") // MEOW
-            saveCommand(sCommand,std::make_unique<gamestartCommand>());    
-        else if(sCommand == "issueorder")
-            saveCommand(sCommand,std::make_unique<issueOrderCommand>());
-        else if(sCommand == "endissueorders")
-            saveCommand(sCommand,std::make_unique<endIssueOrderCommand>());
-        else if(sCommand == "execorders")
-            saveCommand(sCommand,std::make_unique<execOrderCommand>());
-        else if(sCommand == "endexecorders")
-            saveCommand(sCommand,std::make_unique<endExecOrderCommand>());
-        else if(sCommand == "win")
-            saveCommand(sCommand,std::make_unique<winCommand>());
-        else if(sCommand == "play")
-            saveCommand(sCommand,std::make_unique<playCommand>());
-        else if(sCommand == "end")
-            saveCommand(sCommand,std::make_unique<endCommand>());
-        else if(sCommand == "quit")
-            saveCommand(sCommand,std::make_unique<quitCommand>());
-        else if(sCommand == "help")
-            saveCommand(sCommand,std::make_unique<helpCommand>());
+        else if(s_command == "assigncountries")
+            saveCommand(s_command,std::make_unique<assignCountriesCommand>());
+        else if(s_command == "gamestart") // MEOW
+            saveCommand(s_command,std::make_unique<gamestartCommand>());    
+        else if(s_command == "quit")
+            saveCommand(s_command,std::make_unique<quitCommand>());
+        else if(s_command == "help")
+            saveCommand(s_command,std::make_unique<helpCommand>());
         else
         {
             std::cout << "[WARNING]: Unknown command." << std::endl;
         }
 
-        std::cout << sCommand << std::endl; // !! test function output !! 
-        validate(sCommand,ge);
+        std::cout << s_command << std::endl; // !! test function output !! 
+        validate(s_command,ge);
     }
 }
 
@@ -152,12 +137,6 @@ void CommandProcessor::validate(const std::string& s_command_name, GameEngine& g
         return;
     }
 
-    else if(s_command_name.find("addplayer") == 0)
-    {
-        readCommand("addplayer", ge); // accept, regardless of arguments
-        return;
-    }
-
     // check if entered command is valid in the current state
     auto stateIt = stateCommandMap.find(mCurrentState);
     if(stateIt != stateCommandMap.end())
@@ -169,6 +148,8 @@ void CommandProcessor::validate(const std::string& s_command_name, GameEngine& g
         }
         else
         {
+            // if entered in the wrong state, save effect with error message
+            mCommandMap[s_command_name]->saveEffect(s_command_name+" command was used in the wrong state.");
             std::cerr << "[ERROR]: Command is not valid in the current state." << std::endl;
         }
     }

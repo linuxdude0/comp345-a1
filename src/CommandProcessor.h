@@ -5,6 +5,7 @@
 #include <unordered_map>
 #include <memory>
 #include <iostream>
+#include <fstream>
 #include <sstream>
 
 class GameEngine;
@@ -19,11 +20,10 @@ class CommandProcessor
         CommandProcessor();
         ~CommandProcessor();
         // -- accessors & mutators --
-        //Command& getCommand(); // returns command object to GameEngine or Player
         CommandMap& getCommandMap();
 
         void saveCommand(const std::string& s_commandName, std::unique_ptr<Command> s_commandPtr); // add command to the commandMap
-        void processUserInput(GameEngine& ge); // process user input 
+        void getCommand(GameEngine& ge); // process user input 
     private:
         // -- main functionality --
         void readCommand(const std::string& s_userInput, GameEngine& ge); // read command from the player's input

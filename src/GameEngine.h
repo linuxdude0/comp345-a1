@@ -58,12 +58,12 @@ class GameEngine
         Map& getMap();
         Deck& getDeck();
         Player& getPlayer();
+        std::string getMapFileName();
         void setIsRunning(bool val);
         bool isRunning();
         CurrentState getState();
-        std::string getMapFileName();
-        std::vector<Player*>& getPlayersContainer();
         void setState(CurrentState state);
+        std::vector<Player*>& getPlayersContainer();
         std::map<CurrentState, std::set<std::string>> getCommandMap();
 
         // -- initializer functions --
@@ -75,6 +75,7 @@ class GameEngine
         void updateGame();
         void execute(const std::string& s_command_name);
 
+        void reset();
         void run(); // game loop
         void closeGame();
         
@@ -89,8 +90,7 @@ class GameEngine
         void endExecOrders();
         void endIssueOrders();
         void win();
-        void play();
-        void end();
+        void replay();
         void quit();
         void help();
         void startupPhase(void);

@@ -15,6 +15,7 @@ class Command
 
         virtual void executeCommand(GameEngine& ge);
         virtual void saveEffect(const std::string& s_effect);
+        std::string getEffect();
     private:
         std::string mEffect;
 };
@@ -61,41 +62,6 @@ class assignCountriesCommand : public Command
         std::string mEffect;
 };
 
-class issueOrderCommand : public Command
-{
-    public:
-        void executeCommand(GameEngine& ge);
-        void saveEffect(const std::string& s_effect);
-    private:
-        std::string mEffect;
-};
-
-class endIssueOrderCommand : public Command
-{
-    public:
-        void executeCommand(GameEngine& ge);
-        void saveEffect(const std::string& s_effect);
-    private:
-        std::string mEffect;
-};
-
-class execOrderCommand : public Command
-{
-    public:
-        void executeCommand(GameEngine& ge);
-        void saveEffect(const std::string& s_effect);
-    private:
-        std::string mEffect;
-};
-
-class endExecOrderCommand : public Command
-{
-    public:
-        void executeCommand(GameEngine& ge);
-        void saveEffect(const std::string& s_effect);
-    private:
-        std::string mEffect;
-};
 
 class winCommand : public Command
 {
@@ -106,22 +72,14 @@ class winCommand : public Command
         std::string mEffect;
 };
 
-class playCommand : public Command
-{
-    public:
-        void executeCommand(GameEngine& ge);
-        void saveEffect(const std::string& s_effect);
-    private:
-        std::string mEffect;
-};
+class gamestartCommand : public Command{
 
-class endCommand : public Command
-{
     public:
         void executeCommand(GameEngine& ge);
         void saveEffect(const std::string& s_effect);
     private:
         std::string mEffect;
+
 };
 
 class quitCommand : public Command
@@ -141,16 +99,5 @@ class helpCommand : public Command
     private:
         std::string mEffect;
 };
-
-class gamestartCommand : public Command{
-
-    public:
-        void executeCommand(GameEngine& ge);
-        void saveEffect(const std::string& s_effect);
-    private:
-        std::string mEffect;
-
-};
-
 
 #endif //! COMMAND_H
