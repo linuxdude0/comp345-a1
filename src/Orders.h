@@ -45,8 +45,8 @@ public:
 };
 
 class AdvanceOrder : public Order {
-    int num_troops;
-    int territory_source;
+    unsigned num_troops;
+    unsigned territory_source;
     Map* map_ptr;
 public:
     AdvanceOrder(Player* player, unsigned territory_target, unsigned territory_source, unsigned num_troops, Map*);

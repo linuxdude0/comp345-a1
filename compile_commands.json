@@ -257,54 +257,10 @@
       "-march=native",
       "-o",
       "./bin/project",
-      "./src/Orders.cpp"
-    ],
-    "directory": "/home/yacine/programming/C++/comp345-a1",
-    "file": "/home/yacine/programming/C++/comp345-a1/src/Orders.cpp",
-    "output": "/home/yacine/programming/C++/comp345-a1/bin/project"
-  },
-  {
-    "arguments": [
-      "/usr/lib64/ccache/g++",
-      "-c",
-      "-Wall",
-      "-Wpedantic",
-      "-Werror",
-      "-std=c++20",
-      "-Wextra",
-      "-g",
-      "-fsanitize=address",
-      "-O3",
-      "-pipe",
-      "-march=native",
-      "-o",
-      "./bin/project",
       "./src/OrdersDriver.cpp"
     ],
     "directory": "/home/yacine/programming/C++/comp345-a1",
     "file": "/home/yacine/programming/C++/comp345-a1/src/OrdersDriver.cpp",
-    "output": "/home/yacine/programming/C++/comp345-a1/bin/project"
-  },
-  {
-    "arguments": [
-      "/usr/lib64/ccache/g++",
-      "-c",
-      "-Wall",
-      "-Wpedantic",
-      "-Werror",
-      "-std=c++20",
-      "-Wextra",
-      "-g",
-      "-fsanitize=address",
-      "-O3",
-      "-pipe",
-      "-march=native",
-      "-o",
-      "./bin/project",
-      "./src/Player.cpp"
-    ],
-    "directory": "/home/yacine/programming/C++/comp345-a1",
-    "file": "/home/yacine/programming/C++/comp345-a1/src/Player.cpp",
     "output": "/home/yacine/programming/C++/comp345-a1/bin/project"
   },
   {
@@ -371,6 +327,50 @@
     ],
     "directory": "/home/yacine/programming/C++/comp345-a1",
     "file": "/home/yacine/programming/C++/comp345-a1/src/GameEngine.cpp",
+    "output": "/home/yacine/programming/C++/comp345-a1/bin/project"
+  },
+  {
+    "arguments": [
+      "/usr/lib64/ccache/g++",
+      "-c",
+      "-Wall",
+      "-Wpedantic",
+      "-Werror",
+      "-std=c++20",
+      "-Wextra",
+      "-g",
+      "-fsanitize=address",
+      "-O3",
+      "-pipe",
+      "-march=native",
+      "-o",
+      "./bin/project",
+      "./src/Player.cpp"
+    ],
+    "directory": "/home/yacine/programming/C++/comp345-a1",
+    "file": "/home/yacine/programming/C++/comp345-a1/src/Player.cpp",
+    "output": "/home/yacine/programming/C++/comp345-a1/bin/project"
+  },
+  {
+    "arguments": [
+      "/usr/lib64/ccache/g++",
+      "-c",
+      "-Wall",
+      "-Wpedantic",
+      "-Werror",
+      "-std=c++20",
+      "-Wextra",
+      "-g",
+      "-fsanitize=address",
+      "-O3",
+      "-pipe",
+      "-march=native",
+      "-o",
+      "./bin/project",
+      "./src/Orders.cpp"
+    ],
+    "directory": "/home/yacine/programming/C++/comp345-a1",
+    "file": "/home/yacine/programming/C++/comp345-a1/src/Orders.cpp",
     "output": "/home/yacine/programming/C++/comp345-a1/bin/project"
   }
 ]

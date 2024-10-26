@@ -2,6 +2,7 @@
 #include "common.h"
 #include "Mappings.h"
 #include <algorithm>
+#include <cassert>
 
 extern std::vector<std::tuple<unsigned, Player*, unsigned>> territory_owner_troops_mappings;
 
@@ -47,7 +48,6 @@ DeployOrder::DeployOrder(Player* player, unsigned territory_target, unsigned num
 bool DeployOrder::validate() {
     std::cout << "Validating Deploy" << std::endl;
     // 
-
     // check if deployment territory truly belongs to the player
     bool match = false; 
     for( unsigned int i : player->toDefend()){
@@ -63,7 +63,7 @@ bool DeployOrder::validate() {
     }
 
     // check that the number of troops requested for deployment is adequate
-    if(num_troops <= static_cast<unsigned int>(player->getReinforcementPool())){
+    if(num_troops > static_cast<unsigned int>(player->getReinforcementPool()) || num_troops == 0){
         std::cout << "[!] Order Validation failed: Number of troops requested to deploy on territory " << territory_target << " is larger than available pool for player " << player->getName() << std::endl; 
         return false;
     }
@@ -108,7 +108,7 @@ AdvanceOrder::AdvanceOrder(Player* player, unsigned territory_target, unsigned t
 
 bool AdvanceOrder::targetbelongsToPlayer(){
 
-    for(int i : player->toDefend()){
+    for(unsigned i : player->toDefend()){
 
         if(i == territory_target){return true;}
     }
@@ -117,12 +117,11 @@ bool AdvanceOrder::targetbelongsToPlayer(){
 
 bool AdvanceOrder::fight(){
 
-    std::tuple<unsigned, Player*, unsigned>* source; 
-    std::tuple<unsigned, Player*, unsigned>* target;
+    std::tuple<unsigned, Player*, unsigned>* source = nullptr; 
+    std::tuple<unsigned, Player*, unsigned>* target = nullptr;
 
     // let's get those map entries... 
     for(auto& smth : territory_owner_troops_mappings){
-
         if(std::get<0>(smth) == territory_source){
             source = &smth;
         }
@@ -130,7 +129,7 @@ bool AdvanceOrder::fight(){
             target = &smth;
         }
     }
-
+    assert(source && target);
     std::get<2>(*source) -= num_troops; // they left from source, they ll either die or occupy the other terr.
 
     unsigned attackers = num_troops;
@@ -175,8 +174,14 @@ bool AdvanceOrder::validate(){
     // come on why would you do that
     if(territory_target == territory_source){
         std::cout << "[!] Advance Order Validation failed:" << " source territory and target territory are the same (really?) " << std::endl;
+        return false;
     }
     
+    if (num_troops == 0) {
+        std::cout << "[!] Advance Order Validation failed:" << " no troops to advance (really?) " << std::endl;
+        return false;
+    }
+
     // territory_owner_troops_mapping
 
     // 1) if source belongs to player
@@ -184,9 +189,9 @@ bool AdvanceOrder::validate(){
     // 3) if target territory is adjacent to source
     
 
-    // ---  source belongs to player invoking ? 
+    // ---  source belongs to player invoking ? YES (from linuxdude)
     bool match = false;
-    for(int i : player -> toDefend()){
+    for(unsigned i : player -> toDefend()){
         if(i == territory_source){
             match = true;
             break;
