@@ -109,6 +109,8 @@ class GameEngine
         Deck* mDeck_ptr;
         std::map<CurrentState, std::set<std::string>> stateCommandMap;
         std::vector<std::string> mArgs;
+        std::vector<std::vector<std::vector<int>>> territory_owner_troops_map;
+
 };
 
 #endif // !GAME_ENGINE_H

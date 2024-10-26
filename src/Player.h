@@ -43,7 +43,7 @@ class Player{
 
 
         // getters
-        int getID();
+        const int& getID();
         string& getName();
         // setters
         void setID(int);

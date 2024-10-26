@@ -1,4 +1,6 @@
 #include "Orders.h"
+class Player;
+class GameEngine;
 
 #define UNUSED(x) (void)(x)
 
@@ -35,7 +37,11 @@ ostream & operator << (ostream & out, const Order & order){
 OrderList::OrderList(OrderList* orders) : orders(orders->orders) {}
 
 //Implementing Deploy Order
-DeployOrder::DeployOrder() {
+DeployOrder::DeployOrder(Player* p, int target_territory_index, GameEngine& ge):
+p(p),
+target_territory_index(target_territory_index),
+ge(ge)
+{
     this->orderKind = OrderKind::DEPLOY;
 }
 
@@ -46,6 +52,10 @@ bool DeployOrder::validate() {
 void DeployOrder::execute() {
     if (validate()){
         std::cout << "Executing Deploy\n";
+    }
+    else{
+
+        std::cout << "Couldn't Deploy Troops at territory [" << target_territory_index << "] for Player id = "<< this->p->getID() << 
     }
 }
 

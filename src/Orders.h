@@ -31,7 +31,10 @@ public:
 
 class DeployOrder : public Order {
 public:
-    DeployOrder();
+    Player* p; 
+    int target_territory_index;
+    GameEngine& ge;
+    DeployOrder(Player* p, int target_territory_index, GameEngine& ge);
     DeployOrder(DeployOrder* deployOrder);
     bool validate() override;
     void execute() override;

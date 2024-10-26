@@ -1,5 +1,4 @@
 #include "Player.h"
-#include "Orders.h"
 #include <algorithm>
 
 using std::string;
@@ -161,7 +160,7 @@ Hand* Player::getHand(){return currHand;}
 OrderList* Player::getOrderList(){return orders;}
 
 string& Player::getName(){return name;}
-int Player::getID(){return playerID;}
+const int& Player::getID(){return playerID;}
 
 void Player::setID(int newID){this->playerID = newID;}
 void Player::setName(std::string newName){this->name = newName;}
