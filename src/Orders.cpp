@@ -79,7 +79,7 @@ void DeployOrder::execute() {
                 player->removeFromReinforcementPool(num_troops);
             }
         }
-        std::cout << "[ok] Deploy Executed Player " << player->getName() << "on territory " << territory_target << "with " << num_troops << std::endl;
+        std::cout << "[ok] Deploy Executed for [Player: " << player->getName() << "] on territory " << territory_target << "with " << num_troops << " units" << std::endl;
     }
     else{
         std::cout << "[!] Deploy execution failed for player " << player->getName() << std::endl;

@@ -433,12 +433,12 @@ void GameEngine::gamestart(){
     // -- beginning of play phase --
         while(mCurrentState != WIN)
         {
+
             issueOrder(); // 1. prompts each player in the lobby to issue their orders
             endIssueOrders(); // 2. end issuing orders and change state to execute orders
-
             execOrder(); // 3. execute orders for each player in the lobby
-            endExecOrders(); // 4. end executing orders and change state to assign reinforcements
-            win(); // win state occurs
+            endExecOrders(); // 4. end executing orders and change state to assign reinforcements or win, the win check is performed at this stage
+        
         }
 
 }
@@ -466,7 +466,7 @@ void GameEngine::issueOrder()
     for(Player* const p : mPlayer_v)
     {
         // ask each player to enter order to issue of their choosing
-        std::cout << "Player:[" << p->getName() << "]" << std::endl;
+        std::cout << "Deployment phase for Player:[" << p->getName() << "]" << std::endl;
         while (p->getReinforcementPool() > 0) {
             std::cout << "You need to deploy as you still have " << p->getReinforcementPool()<< " troops to deploy" << std::endl;
             std::cout << "Choose the target territory: \n";
@@ -482,7 +482,12 @@ void GameEngine::issueOrder()
             p->issueOrder(new DeployOrder(p, territory, num_troops));
             p->getOrderList()->executeAll();
         }
+    }
+    setState(ISSUE_ORDERS);
+    for(Player* const p : mPlayer_v){
+
         do {
+            std::cout << "[Player: " << p->getName() << "] is issuing orders" << std::endl;
             m_orderKind = prompt_order_kind("Enter the order to issue (1-6): ");
             Player* player = p;
             unsigned target = 0;
@@ -539,7 +544,6 @@ void GameEngine::issueOrder()
             }
         } while(m_orderKind != OrderKind::DEPLOY);
     }
-    setState(ISSUE_ORDERS);
 }
 
 void GameEngine::endIssueOrders()
@@ -561,7 +565,24 @@ void GameEngine::execOrder()
 void GameEngine::endExecOrders()
 {
     std::cout << ">> Finished executing orders." << std::endl;
-    setState(ASSIGN_REINFORCEMENTS);
+    if(allConqueredByOne()){
+        win();
+    }
+    else{
+        setState(ASSIGN_REINFORCEMENTS);
+    }
+}
+
+bool GameEngine::allConqueredByOne(){
+
+    Player* firstPlayer = std::get<1>(territory_owner_troops_mappings[0]);
+    for (const auto& entry : territory_owner_troops_mappings) {
+        if (std::get<1>(entry) != firstPlayer) {
+            return false; // found a different player
+        }
+    }
+
+    return true; // all tuples have the same player
 }
 
 void GameEngine::win()
