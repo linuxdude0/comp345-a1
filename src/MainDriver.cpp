@@ -26,7 +26,7 @@ int main(int argc, char* argv[]) {
 
 	GameEngine* game = new GameEngine("./maps/Atlantis.map", argc, argv);
 	game->run();
-
+	delete game;
 	//testGameEngine("./maps/Atlantis.map");
 	return 0;
 }

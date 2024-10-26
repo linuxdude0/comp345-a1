@@ -1,14 +1,13 @@
 #include "Orders.h"
-
-#define UNUSED(x) (void)(x)
+#include "common.h"
+#include "Mappings.h"
 
 //Default constructor
 Order::Order() = default;
 
+Order::~Order() = default;
 
-Order::~Order() {}
-
-ostream & operator << (ostream & out, const Order & order){
+ostream& operator<< (ostream & out, const Order & order){
     switch (order.orderKind) {
         case OrderKind::DEPLOY:
             out << (DeployOrder&)order;
@@ -35,11 +34,15 @@ ostream & operator << (ostream & out, const Order & order){
 OrderList::OrderList(OrderList* orders) : orders(orders->orders) {}
 
 //Implementing Deploy Order
-DeployOrder::DeployOrder() {
+DeployOrder::DeployOrder(Player* player, unsigned territory_target, unsigned num_troops) {
+    this->player = player;
+    this->territory_target = territory_target;
+    this->num_troops = num_troops;
     this->orderKind = OrderKind::DEPLOY;
 }
 
 bool DeployOrder::validate() {
+    std::cout << "Validating Deploy\n";
     return true;
 }
 
@@ -49,14 +52,18 @@ void DeployOrder::execute() {
     }
 }
 
-ostream & operator << (ostream & out, const DeployOrder & deployOrder){
+ostream& operator << (ostream & out, const DeployOrder & deployOrder){
     UNUSED(deployOrder);
     out << "Deploy Order";
     return out;
 }
 
 //Implementing Advance Order
-AdvanceOrder::AdvanceOrder() {
+AdvanceOrder::AdvanceOrder(Player* player, unsigned territory_target, unsigned territory_source, unsigned num_troops) {
+    this->player = player;
+    this->territory_target = territory_target;
+    this->territory_source = territory_source;
+    this->num_troops = num_troops;
     this->orderKind = OrderKind::ADVANCE;
 }
 
@@ -77,7 +84,9 @@ ostream & operator << (ostream & out, const AdvanceOrder & advanceOrder){
 }
 
 //Implementing Bomb Order
-BombOrder::BombOrder() {
+BombOrder::BombOrder(Player* player, unsigned territory_target) {
+    this->player = player;
+    this->territory_target = territory_target;
     this->orderKind = OrderKind::BOMB;
 }
 
@@ -91,14 +100,16 @@ void BombOrder::execute() {
     }
 }
 
-ostream & operator << (ostream & out, const BombOrder & bombOrder){
+ostream& operator << (ostream & out, const BombOrder & bombOrder){
     UNUSED(bombOrder);
     out << "Bomb Order";
     return out;
 }
 
 //Implementing Blockade Order
-BlockadeOrder::BlockadeOrder() {
+BlockadeOrder::BlockadeOrder(Player* player, unsigned territory_target) {
+    this->player = player;
+    this->territory_target = territory_target;
     this->orderKind = OrderKind::BLOCKADE;
 }
 
@@ -119,7 +130,11 @@ ostream & operator << (ostream & out, const BlockadeOrder & blockadeOrder){
 }
 
 //Implementing Airlift Order
-AirliftOrder::AirliftOrder() {
+AirliftOrder::AirliftOrder(Player* player, unsigned territory_target, unsigned territory_source, unsigned num_troops) {
+    this->player = player;
+    this->territory_target = territory_target;
+    this->territory_source = territory_source;
+    this->num_troops = num_troops;
     this->orderKind = OrderKind::AIRLIFT;
 }
 
@@ -133,14 +148,16 @@ void AirliftOrder::execute() {
     }
 }
 
-ostream & operator << (ostream & out, const AirliftOrder & airliftOrder){
+ostream& operator << (ostream & out, const AirliftOrder & airliftOrder){
     UNUSED(airliftOrder);
     out << "Airlift Order";
     return out;
 }
 
 //Implementing Negotiate Order
-NegotiateOrder::NegotiateOrder() {
+NegotiateOrder::NegotiateOrder(Player* player, unsigned territory_target) {
+    this->player = player;
+    this->territory_target = territory_target;
     this->orderKind = OrderKind::NEGOTIATE;
 }
 
@@ -224,7 +241,6 @@ void OrderList::executeAll() {
 }
 
 OrderList::OrderList(){}
-
 
 OrderList::~OrderList() {
     for (size_t i = 0; i < this->orders.size(); ++i) {

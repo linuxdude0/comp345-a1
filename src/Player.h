@@ -29,7 +29,7 @@ class Player{
         OrderList* orders;
         Map* currMap;
         Deck* currDeck;
-    
+        bool playCard(CardType ct);
     public:
         Player(int, string, int, Map*, Deck*);
         Player(const Player&);
@@ -39,8 +39,8 @@ class Player{
         vector<int> toAttack();
         Hand* getHand();
         OrderList* getOrderList();
-        bool issueOrder(OrderKind ok);
-
+        bool issueOrder(Order* order);
+        bool ownsTerritory(unsigned index);
 
         // getters
         int getID();

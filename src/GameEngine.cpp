@@ -1,6 +1,8 @@
 #include "GameEngine.h"
+#include "Orders.h"
 #include "common.h"
 #include <algorithm>
+#include "Mappings.h"
 
 // -- helper functions --
 void clear_extra()
@@ -61,7 +63,7 @@ std::string prompt_for_string(const std::string& message)
 OrderKind prompt_order_kind(const std::string& message)
 {
     // asks user to input number corresponding to an order
-    std::cout << "1.DEPLOY\n2.ADVANCE\n3.BOMB\n4.BLOCKADE\n5.AIRLIFT\n6.NEGOTIATE" << std::endl;
+    std::cout << "2.ADVANCE\n3.BOMB\n4.BLOCKADE\n5.AIRLIFT\n6.NEGOTIATE\n1.EXIT" << std::endl;
     while(true)
     { 
         // continue looping until user enters correct input
@@ -424,16 +426,102 @@ void GameEngine::gamestart(){
     }
 }
 
+unsigned chooseTerritory(Map m) {
+    for (size_t i=0; i<m.num_territories; i++) {
+        Map::Territory t = m.getTerritory(i);
+        std::cout << "\t" << t.index << ": " << t.name << " in continent " << m.continents[t.continent_index] << std::endl;
+    }
+    int n = -1;
+    do {
+        std::cout << "Please write the territory number you want to target: ";
+        std::cin >> n;
+        if (n < 0 || n >= (int)m.num_territories) {
+            std::cout << "Territory not found, please reenter\n";
+        }
+    } while(n < 0 || n >= (int)m.num_territories);
+    return (unsigned)n;
+}
+
 void GameEngine::issueOrder()
 {
     OrderKind m_orderKind;
     // iterate over each player in player vector
-    for(auto const p : mPlayer_v)
+    for(Player* const p : mPlayer_v)
     {
         // ask each player to enter order to issue of their choosing
         std::cout << "Player:[" << p->getName() << "]" << std::endl;
-        m_orderKind = prompt_order_kind("Enter the order to issue (1-6): ");
-        p->issueOrder(m_orderKind);   
+        int troops_deployed = 0;
+        while (p->getReinforcementPool()-troops_deployed > 0) {
+            std::cout << "You need to deploy as you still have " << p->getReinforcementPool()-troops_deployed << "troops to deploy" << std::endl;
+            std::cout << "Choose the target territory: \n";
+            unsigned territory = chooseTerritory(*this->mMap_ptr);
+            int num_troops = -1;
+            do {
+                std::cout << "Please choose how many of the " << p->getReinforcementPool()-troops_deployed << "troops you want to deploy at " << this->mMap_ptr->getTerritory(territory).name << ": ";
+                std::cin >> num_troops;
+                if (num_troops < 1 || num_troops > p->getReinforcementPool()-troops_deployed) {
+                    std::cout << "Wrong number of troops, please reenter" << std::endl;
+                }
+            } while(num_troops < 1 && num_troops > p->getReinforcementPool()-troops_deployed);
+            p->issueOrder(new DeployOrder(p, territory, num_troops));
+        }
+        p->getOrderList()->executeAll();
+        do {
+            m_orderKind = prompt_order_kind("Enter the order to issue (1-6): ");
+            Player* player = p;
+            unsigned target = 0;
+            unsigned source = 0;
+            unsigned num_troops = 0;
+            // ask questrions
+            switch (m_orderKind) {
+                case OrderKind::DEPLOY: // here deploy is exit
+                    break;
+                case OrderKind::ADVANCE:
+                case OrderKind::AIRLIFT:
+                    std::cout << "Choose source territory: " << std::endl;
+                    source = chooseTerritory(*this->mMap_ptr);
+                    std::cout << "Choose target territory: " << std::endl;
+                    target = chooseTerritory(*this->mMap_ptr);
+                    do {
+                        std::cout << "Please the number of troops: ";
+                        std::cin >> num_troops;
+                        if (num_troops <= 0) {
+                            std::cout << "wrong number of troops" << std::endl;
+                        }
+                    } while(num_troops <=0);
+                    break;
+                case OrderKind::BOMB:
+                case OrderKind::BLOCKADE:
+                case OrderKind::NEGOTIATE:
+                    std::cout << "Choose target territory: " << std::endl;
+                    target = chooseTerritory(*this->mMap_ptr);
+                    break;
+                default:
+                    throw "huh????";
+            }
+
+            switch (m_orderKind) {
+                case OrderKind::DEPLOY: // here deploy is exit
+                    break;
+                case OrderKind::ADVANCE:
+                    p->issueOrder(new AdvanceOrder(player, target, source, num_troops));
+                    break;
+                case OrderKind::AIRLIFT:
+                    p->issueOrder(new AirliftOrder(player, target, source, num_troops));
+                    break;
+                case OrderKind::BOMB:
+                    p->issueOrder(new BombOrder(player, target));
+                    break;
+                case OrderKind::BLOCKADE:
+                    p->issueOrder(new BlockadeOrder(player, target));
+                    break;
+                case OrderKind::NEGOTIATE:
+                    p->issueOrder(new NegotiateOrder(player, target));
+                    break;
+                default:
+                    throw "huh????";
+            }
+        } while(m_orderKind != OrderKind::DEPLOY);
     }
     setState(ISSUE_ORDERS);
 }

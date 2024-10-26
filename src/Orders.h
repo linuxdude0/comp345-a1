@@ -6,6 +6,8 @@
 using std::vector;
 using std::ostream;
 
+class Player;
+
 enum class OrderKind{
     DEPLOY,
     ADVANCE,
@@ -18,9 +20,10 @@ enum class OrderKind{
 class Order{
 
 protected:
-    OrderKind orderKind;
-
+    Player* player;
+    unsigned territory_target;
 public:
+    OrderKind orderKind;
     Order();
     virtual bool validate() = 0 ;
     virtual void execute() = 0;
@@ -30,8 +33,9 @@ public:
 };
 
 class DeployOrder : public Order {
+    unsigned num_troops;
 public:
-    DeployOrder();
+    DeployOrder(Player* player, unsigned territory_target, unsigned num_troops);
     DeployOrder(DeployOrder* deployOrder);
     bool validate() override;
     void execute() override;
@@ -40,8 +44,10 @@ public:
 };
 
 class AdvanceOrder : public Order {
+    unsigned num_troops;
+    unsigned territory_source;
 public:
-    AdvanceOrder();
+    AdvanceOrder(Player* player, unsigned territory_target, unsigned territory_source, unsigned num_troops);
     AdvanceOrder(AdvanceOrder* advanceOrder);
     bool validate() override;
     void execute() override;
@@ -51,7 +57,7 @@ public:
 
 class BombOrder : public Order {
 public:
-    BombOrder();
+    BombOrder(Player* player, unsigned territory_target);
     BombOrder(BombOrder* bombOrder);
     bool validate() override;
     void execute() override;
@@ -61,7 +67,7 @@ public:
 
 class BlockadeOrder : public Order {
 public:
-    BlockadeOrder();
+    BlockadeOrder(Player* player, unsigned territory_target);
     BlockadeOrder(BlockadeOrder* blockadeOrder);
     bool validate() override;
     void execute() override;
@@ -70,8 +76,10 @@ public:
 };
 
 class AirliftOrder : public Order {
+    unsigned num_troops;
+    unsigned territory_source;
 public:
-    AirliftOrder();
+    AirliftOrder(Player* player, unsigned territory_target, unsigned territory_source, unsigned num_troops);
     AirliftOrder(AirliftOrder* airliftOrder);
     bool validate() override;
     void execute() override;
@@ -81,7 +89,7 @@ public:
 
 class NegotiateOrder : public Order {
 public:
-    NegotiateOrder();
+    NegotiateOrder(Player* player, unsigned territory_target);
     NegotiateOrder(NegotiateOrder* negotiateOrder);
     bool validate() override;
     void execute() override;
