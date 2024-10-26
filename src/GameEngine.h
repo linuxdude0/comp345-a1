@@ -5,6 +5,7 @@
 #include "Player.h"
 #include "Cards.h"
 #include "CommandProcessor.h"
+#include "FileCommandProcessorAdapter.h"
 
 #include <iostream>
 #include <string>
@@ -23,6 +24,7 @@
 
 class GameEngine;
 class CommandProcessor;
+class FileCommandProcessorAdapter;
 
 // Game Engine class:
 //      - 
@@ -99,6 +101,7 @@ class GameEngine
 
     private:
         CommandProcessor* mCommandProcessor_ptr;
+        FileCommandProcessorAdapter* mFCPA_ptr;
         // -- logic --
         CurrentState mCurrentState;
         bool mIsRunning;

@@ -1,30 +1,25 @@
 #include "FileLineReader.h"
 
-FileLineReader::FileLineReader()
+FileLineReader::FileLineReader(const std::string& s_filename)
+: mCommandsFile(s_filename)
 {
-
+    if(!mCommandsFile.is_open())
+    {
+        std::cerr << ">>[ERROR]: Could not open commands file for reading." << std::endl;
+    }
 }
 
 FileLineReader::~FileLineReader()
 {
-
+    if(mCommandsFile.is_open())
+        mCommandsFile.close();
 }
 
-Command FileLineReader::readLineFromFile(const std::string& s_fileName)
+bool FileLineReader::readLineFromFile(std::string& s_line)
 {
-    Command t_command;
-    std::ifstream s_file(s_fileName);
-    if(!s_file)
+    if(std::getline(mCommandsFile,s_line))
     {
-        std::cerr << ">> [ERROR]: File could not be found." << std::endl;
+        return true;
     }
-
-    std::string s_line;
-    while(std::getline(s_file, s_line))
-    {
-        std::cout << s_line << std::endl;
-    }
-
-    s_file.close();
-    return t_command;
+    return false;
 }

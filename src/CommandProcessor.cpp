@@ -32,7 +32,10 @@ void CommandProcessor::getCommand(GameEngine& ge)
 
         // -- edge cases --
         if(sCommand == "quit")
+        {
             ge.setIsRunning(false);
+            break;
+        }
         if(std::cin.eof())
         {
             // handle case where user enters: "ctrl+d" (EOF) (bug made it so there was an infinite loop upon EOF)
@@ -100,6 +103,8 @@ void CommandProcessor::getCommand(GameEngine& ge)
         validate(s_command,ge);
     }
 }
+
+
 
 void CommandProcessor::readCommand(const std::string& s_commandName, GameEngine& ge)
 {

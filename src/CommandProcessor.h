@@ -8,6 +8,10 @@
 #include <fstream>
 #include <sstream>
 
+
+// -- following the adapter design pattern: --
+// (target class)
+
 class GameEngine;
 class Command;
 
@@ -18,17 +22,19 @@ class CommandProcessor
     public:
         // -- constructor & destructor --
         CommandProcessor();
-        ~CommandProcessor();
+        virtual ~CommandProcessor();
         // -- accessors & mutators --
         CommandMap& getCommandMap();
 
         void saveCommand(const std::string& s_commandName, std::unique_ptr<Command> s_commandPtr); // add command to the commandMap
-        void getCommand(GameEngine& ge); // process user input 
-    private:
+        virtual void getCommand(GameEngine& ge); // process user input
+    
+    protected:
         // -- main functionality --
         void readCommand(const std::string& s_userInput, GameEngine& ge); // read command from the player's input
         void validate(const std::string& s_command_name, GameEngine& ge);
-
+    
+    private:
         CommandMap mCommandMap;
 };
 

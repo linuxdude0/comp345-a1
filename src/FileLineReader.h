@@ -5,16 +5,21 @@
 #include <fstream>
 #include <iostream>
 
+
+// -- following the adapter design pattern: --
+// (adaptee class)
+
 class Command;
 
 class FileLineReader
 {
     private:
+        std::ifstream mCommandsFile;
     public:
-        FileLineReader();
+        FileLineReader(const std::string& s_filename);
         ~FileLineReader();
 
-        Command readLineFromFile(const std::string& s_fileName);
+        bool readLineFromFile(std::string& line);
 };
 
 #endif

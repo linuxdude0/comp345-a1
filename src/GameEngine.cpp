@@ -262,6 +262,7 @@ void GameEngine::run()
             userQuery();
         }
     }
+    // TODO: must split commandline argument -file <filename>
     else if(parseOptions("-file"))
     {
         while(isRunning())

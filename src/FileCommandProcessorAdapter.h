@@ -1,20 +1,23 @@
 #ifndef FILE_COMMAND_PROCESSOR_H
 #define FILE_COMMAND_PROCESSOR_H
 
+#include "GameEngine.h"
 #include "CommandProcessor.h"
 #include "FileLineReader.h"
 
-class FileCommandProcessorAdapter
+// -- following the adapter design pattern: --
+// (adapter class)
+
+class FileCommandProcessorAdapter : public CommandProcessor
 {
     private:
-        CommandProcessor* mCommandProcessor_ptr;
-        FileLineReader* mFileLineReader_ptr;
+        FileLineReader mFileReader;
     public:
 
-        FileCommandProcessorAdapter();
-        ~FileCommandProcessorAdapter();
+        FileCommandProcessorAdapter(const std::string& s_filename);
+        ~FileCommandProcessorAdapter() override;
 
-        void readCommand(const std::string& s_fileName);
+        void getCommand(GameEngine& ge) override;
 };
 
 
