@@ -600,7 +600,7 @@ void GameEngine::fillPlayerReinforcementPools(){
     for(Player* const currPlayer : mPlayer_v){
 
         int total_fresh_troops = 0;
-        int curr_owned_terrs = (currPlayer->toDefend()).size();
+        int curr_owned_terrs = static_cast<int>(currPlayer->toDefend().size());
         total_fresh_troops += (curr_owned_terrs) / 3; //  (# of territories owned divided by 3, rounded down) as per assignment
         
 
@@ -608,7 +608,7 @@ void GameEngine::fillPlayerReinforcementPools(){
         // then we add this number to the fresh troops
 
         unsigned currOwned[MAX_TERRITORIES];
-        for(int i = 0; i < currPlayer->toDefend().size(); i++){
+        for(std::vector<int>::size_type i = 0; i < currPlayer->toDefend().size(); ++i) {
             currOwned[i] = currPlayer->toDefend().at(i);
         }    
 
