@@ -30,6 +30,7 @@ class Player{
         Map* currMap;
         Deck* currDeck;
         bool playCard(CardType ct);
+        bool cardIssuedThisTurn;
     public:
         Player(int, string, int, Map*, Deck*);
         Player(const Player&);
@@ -52,6 +53,9 @@ class Player{
         void setReinforcementPool(int i);
         void addToReinforcementPool(int i);
         void removeFromReinforcementPool(int i);
+        void clearIssuedCardFlag();
+        void setIssuedCardFlag();
+        bool issuedThisTurn();
 
 
         // overloaded stream insertion

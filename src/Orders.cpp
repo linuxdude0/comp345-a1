@@ -1,6 +1,9 @@
 #include "Orders.h"
 #include "common.h"
 #include "Mappings.h"
+#include <algorithm>
+
+extern std::vector<std::tuple<unsigned, Player*, unsigned>> territory_owner_troops_mappings;
 
 //Default constructor
 Order::Order() = default;
@@ -60,7 +63,7 @@ bool DeployOrder::validate() {
     }
 
     // check that the number of troops requested for deployment is adequate
-    if(num_troops > static_cast<unsigned int>(player->getReinforcementPool())){
+    if(num_troops <= static_cast<unsigned int>(player->getReinforcementPool())){
         std::cout << "[!] Order Validation failed: Number of troops requested to deploy on territory " << territory_target << " is larger than available pool for player " << player->getName() << std::endl; 
         return false;
     }
@@ -94,21 +97,190 @@ ostream& operator << (ostream & out, const DeployOrder & deployOrder){
 }
 
 //Implementing Advance Order
-AdvanceOrder::AdvanceOrder(Player* player, unsigned territory_target, unsigned territory_source, unsigned num_troops) {
+AdvanceOrder::AdvanceOrder(Player* player, unsigned territory_target, unsigned territory_source, unsigned num_troops, Map* map_ptr) {
     this->player = player;
     this->territory_target = territory_target;
     this->territory_source = territory_source;
     this->num_troops = num_troops;
     this->orderKind = OrderKind::ADVANCE;
+    this->map_ptr = map_ptr;
 }
 
-bool AdvanceOrder::validate() {
+bool AdvanceOrder::targetbelongsToPlayer(){
+
+    for(int i : player->toDefend()){
+
+        if(i == territory_target){return true;}
+    }
+    return false;
+}
+
+bool AdvanceOrder::fight(){
+
+    std::tuple<unsigned, Player*, unsigned>* source; 
+    std::tuple<unsigned, Player*, unsigned>* target;
+
+    // let's get those map entries... 
+    for(auto& smth : territory_owner_troops_mappings){
+
+        if(std::get<0>(smth) == territory_source){
+            source = &smth;
+        }
+        if(std::get<0>(smth) == territory_target){
+            target = &smth;
+        }
+    }
+
+    std::get<2>(*source) -= num_troops; // they left from source, they ll either die or occupy the other terr.
+
+    unsigned attackers = num_troops;
+    unsigned defenders = std::get<2>(*target);
+
+    // attackers attack and defenders fight until either all attackers or defenders are dead.
+    while (attackers > 0 && defenders > 0) {
+        //attacker has a 60% chance to kill a defender
+        if ((rand() % 100) < 60) {
+            defenders--;
+        }
+        //defender has a 70% chance to kill an attacker
+        if (defenders > 0 && (rand() % 100) < 70) {
+            attackers--;
+        }
+    }
+
+    // means attackers won
+    if(defenders == 0 && attackers > 0){
+
+        vector<int>& losersTerrs = std::get<1>(*target)->toDefend();
+        losersTerrs.erase(std::remove(losersTerrs.begin(), losersTerrs.end(), territory_target), losersTerrs.end());
+        
+        std::get<1>(*target) = std::get<1>(*source); // new owner in the global mapping
+        std::get<2>(*target) = attackers; // the leftover attackers occupy the new terr
+        std::get<1>(*source)->toDefend().push_back(territory_target);
+
+        return true;
+        
+    } // means attackers lost
+    else{
+
+       std::get<2>(*target) = defenders; // the defendants lost warriors.
+
+       return false;
+    }
+
+}
+
+bool AdvanceOrder::validate(){
+
+    // come on why would you do that
+    if(territory_target == territory_source){
+        std::cout << "[!] Advance Order Validation failed:" << " source territory and target territory are the same (really?) " << std::endl;
+    }
+    
+    // territory_owner_troops_mapping
+
+    // 1) if source belongs to player
+    // 2) if num_troops to advance < num_troops at that terr in the global territory_owner_troops_mapping
+    // 3) if target territory is adjacent to source
+    
+
+    // ---  source belongs to player invoking ? 
+    bool match = false;
+    for(int i : player -> toDefend()){
+        if(i == territory_source){
+            match = true;
+            break;
+        }
+    }
+    if(!match){
+
+        std::cout << "[!] Advance Order Validation failed:" << " source territory does not belong to player " << player->getName() << std::endl;    
+        return false;
+    }
+
+
+
+    //  check that correct num of troops to advance
+    for (const auto& tuple : territory_owner_troops_mappings){
+
+
+        if(std::get<0>(tuple) == territory_source){
+            if(std::get<1>(tuple) != player){
+                // if the owner in the global map is not correct... must be a bug then needa fix the logic
+                std::cout << "[!] Advance Order Validation failed:" << " source territory does not belong to player " << player->getName() << " in the global mapping" <<std::endl;
+                
+                return false;
+                
+            }
+
+            if(std::get<2>(tuple) < num_troops){
+                // if wrong number of troops demanded to be advanced (more than available) --> this check should prob be performed in the game engine tbh...
+                std::cout << "[!] Advance Order Validation failed:" << " number of troops requested to advance is superior to that in the source territory  " << territory_source << " for player " << player->getName() <<std::endl;
+                return false;
+            }
+
+        }
+    }
+
+
+    // check that the target terr is an adjacent terr to the source terr
+    match = false;
+    Map::Territory source = (map_ptr->getTerritory(territory_source));
+    for(unsigned i = 0; i < source.num_adjacent_territories; i++){
+
+        if(source.adjacent_territories_indexes[i] == territory_target){
+
+            match = true;
+            break;
+        }
+    }
+    if(!match){
+        std::cout << "[!] Advance Order Validation failed for player " << player->getName() <<  ": target territory= " << territory_target << " is not adjacent to source =" << territory_source <<std::endl;
+        return false;
+    }
+
+    
     return true;
 }
 
-void AdvanceOrder::execute() {
+void AdvanceOrder::execute(){
     if (validate()){
-        std::cout << "Executing Advance\n";
+        
+        std::cout << "Executing Advance Order for Player [" << player->getName() << "]"<< std::endl;
+        
+
+        // if advancing to own territory
+        if(targetbelongsToPlayer()){
+            
+            for(auto& smth : territory_owner_troops_mappings){
+
+                // remove troops from source in the global mapping
+                if(std::get<0>(smth) == territory_source){
+                    std::get<2>(smth) -= num_troops;
+                }
+                if(std::get<0>(smth) == territory_target){
+                    std::get<2>(smth) += num_troops;
+                }
+
+            }
+            std::cout << "[ok] Advanced Troops for [Player: " << player->getName() << "] from " << territory_source << " to " << territory_target << std::endl; 
+        }
+        //else fight mechanics and buncha problems...
+        else{
+
+            bool won = fight();
+            if(won){
+                std::cout << "[ok] [Player: " << player->getName() << "] captured a new territory " << territory_target << std::endl; 
+            }
+            else{
+                std::cout << "[ok] [Player: " << player->getName() << "] didn't manage to capture a new territory  " << territory_target << std::endl;
+    
+            }
+        }
+    }
+    else{
+        std::cout << "[!] Deploy execution failed for player " << player->getName() << std::endl;
+        return;
     }
 }
 

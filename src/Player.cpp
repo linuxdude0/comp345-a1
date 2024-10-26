@@ -13,7 +13,8 @@ Player::Player(int playerID, string name, int startTerrIndex, Map* map, Deck* cu
     playerID(playerID),
     name(name),
     currMap(map),
-    currDeck(currDeck)
+    currDeck(currDeck),
+    cardIssuedThisTurn(false)
     {
         territoriesToDefend = new vector<int>;
         territoriesToDefend->push_back(startTerrIndex);
@@ -72,6 +73,10 @@ vector<int> Player::toAttack(){
     }
     return can_attack;
 }
+
+void Player::clearIssuedCardFlag(){cardIssuedThisTurn = false;};
+void Player::setIssuedCardFlag(){cardIssuedThisTurn = true;};
+bool Player::issuedThisTurn(){return cardIssuedThisTurn;};
 
 
 

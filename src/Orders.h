@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <iostream>
+#include "Map.h"
 using std::vector;
 using std::ostream;
 
@@ -44,13 +45,16 @@ public:
 };
 
 class AdvanceOrder : public Order {
-    unsigned num_troops;
-    unsigned territory_source;
+    int num_troops;
+    int territory_source;
+    Map* map_ptr;
 public:
-    AdvanceOrder(Player* player, unsigned territory_target, unsigned territory_source, unsigned num_troops);
+    AdvanceOrder(Player* player, unsigned territory_target, unsigned territory_source, unsigned num_troops, Map*);
     AdvanceOrder(AdvanceOrder* advanceOrder);
     bool validate() override;
     void execute() override;
+    bool targetbelongsToPlayer();
+    bool fight(); 
     friend ostream & operator << (ostream & out, const AdvanceOrder & advanceOrder);
     AdvanceOrder* operator=(AdvanceOrder* order);
 };

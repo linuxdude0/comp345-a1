@@ -7,6 +7,7 @@
 
 extern std::vector<std::tuple<unsigned, Player*, unsigned>> territory_owner_troops_mappings;
 
+
 // -- helper functions --
 void clear_extra()
 {
@@ -364,7 +365,6 @@ void GameEngine::distributeTerritories(int n_playerCount, int n_totalIndexes)
     // -- [!!]TODO fix bug where each new range skips an index for some reason... --
 }
 
-
 void GameEngine::addPlayer(const std::string& player_name)
 {
     // create new player, associate random territory index and give player a Card Deck object
@@ -525,7 +525,7 @@ void GameEngine::issueOrder()
                 case OrderKind::DEPLOY: // here deploy is exit
                     break;
                 case OrderKind::ADVANCE:
-                    p->issueOrder(new AdvanceOrder(player, target, source, num_troops));
+                    p->issueOrder(new AdvanceOrder(player, target, source, num_troops, mMap_ptr));
                     break;
                 case OrderKind::AIRLIFT:
                     p->issueOrder(new AirliftOrder(player, target, source, num_troops));
@@ -570,7 +570,7 @@ void GameEngine::endExecOrders()
     }
     else{
 
-        //TODO : need to remove players from main array mPlayer_v and destroy them if they got eliminated this turn (aka lost all terrs to others) if they lost the game
+        // TODO : need to remove players from main array mPlayer_v and destroy them if they got eliminated this turn (aka lost all terrs to others) if they lost the game
         
         // ^^ this needs to be done before filling the deployment pools, as the method uses that main v_player array
 
