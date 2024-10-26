@@ -457,23 +457,21 @@ void GameEngine::issueOrder()
     {
         // ask each player to enter order to issue of their choosing
         std::cout << "Player:[" << p->getName() << "]" << std::endl;
-        int troops_deployed = 0;
-        while (p->getReinforcementPool()-troops_deployed > 0) {
-            std::cout << "You need to deploy as you still have " << p->getReinforcementPool()-troops_deployed << "troops to deploy" << std::endl;
+        while (p->getReinforcementPool() > 0) {
+            std::cout << "You need to deploy as you still have " << p->getReinforcementPool()<< " troops to deploy" << std::endl;
             std::cout << "Choose the target territory: \n";
             unsigned territory = chooseTerritory(*this->mMap_ptr);
             int num_troops = -1;
             do {
-                std::cout << "Please choose how many of the " << p->getReinforcementPool()-troops_deployed << "troops you want to deploy at " << this->mMap_ptr->getTerritory(territory).name << ": ";
+                std::cout << "Please choose how many of the " << p->getReinforcementPool()<< " troops you want to deploy at " << this->mMap_ptr->getTerritory(territory).name << ": ";
                 std::cin >> num_troops;
-                if (num_troops < 1 || num_troops > p->getReinforcementPool()-troops_deployed) {
+                if (num_troops < 1 || num_troops > p->getReinforcementPool()) {
                     std::cout << "Wrong number of troops, please reenter" << std::endl;
                 }
-            } while(num_troops < 1 && num_troops > p->getReinforcementPool()-troops_deployed);
+            } while(num_troops < 1 && num_troops > p->getReinforcementPool());
             p->issueOrder(new DeployOrder(p, territory, num_troops));
-            troops_deployed+=num_troops;
+            p->getOrderList()->executeAll();
         }
-        p->getOrderList()->executeAll();
         do {
             m_orderKind = prompt_order_kind("Enter the order to issue (1-6): ");
             Player* player = p;
