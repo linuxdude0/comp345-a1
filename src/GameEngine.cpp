@@ -1,4 +1,5 @@
 #include "GameEngine.h"
+#include "Map.h"
 #include "Orders.h"
 #include "common.h"
 #include <algorithm>
@@ -145,13 +146,22 @@ GameEngine& GameEngine::operator=(const GameEngine& ge)
     return *this;
 }
 
+
 // -- constructor, copy constructor & destructor --
 GameEngine::GameEngine(const std::string map_name, int argc, char* argv[])
     : mCurrentState{CurrentState::START}, mMapFileName{map_name}
 {
+    mMap_ptr = nullptr;
     // push arguments to args list
-    for(int i{0}; i<argc; ++i)
+
+
+    string file="-file";
+    for(int i{0}; i<argc; ++i) {
+        if (file == argv[i] && i+1<argc) {
+            this->filename = argv[i+1];
+        }
         mArgs.push_back(argv[i]);
+    }
 
     mIsRunning = true;
     this->mDeck_ptr = new Deck();
@@ -172,6 +182,7 @@ GameEngine::~GameEngine()
 {
     delete mMap_ptr;
     delete mDeck_ptr;
+    delete mCommandProcessor_ptr;
     for(auto p : mPlayer_v)
         delete p;         
 }
@@ -241,8 +252,11 @@ void GameEngine::userQuery()
     mCommandProcessor_ptr->getCommand(*this);
 }
 
+
 void GameEngine::automaticQuery()
 {
+    // here is a small gift
+    /*this->filename*/ // here ya go,  a filename for automaticQuery
     // -- read commands from file --
     // mCommandProcessor_ptr->
 }
@@ -255,6 +269,8 @@ void GameEngine::reset()
     mPlayer_v.clear();     
 }
 
+
+
 void GameEngine::run()
 {
     if(parseOptions("-console"))
@@ -264,7 +280,6 @@ void GameEngine::run()
             userQuery();
         }
     }
-    // TODO: must split commandline argument -file <filename>
     else if(parseOptions("-file"))
     {
         while(isRunning())
@@ -276,14 +291,6 @@ void GameEngine::run()
 
 // -- game commands --
 // after each command is run: switch the game's state (setState(<currentState>))
-
-// -- startup phase --
-
-/*void GameEngine::startupPhase() */
-/*{*/
-/*    this->loadMap(mMapFileName);*/
-/*    this->validateMap();*/
-/*}*/
 
 void GameEngine::loadMap(std::string map_filename)
 {   
@@ -464,6 +471,7 @@ void GameEngine::issueOrder()
                 }
             } while(num_troops < 1 && num_troops > p->getReinforcementPool()-troops_deployed);
             p->issueOrder(new DeployOrder(p, territory, num_troops));
+            troops_deployed+=num_troops;
         }
         p->getOrderList()->executeAll();
         do {

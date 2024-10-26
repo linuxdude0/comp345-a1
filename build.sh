@@ -1,6 +1,6 @@
 #!/bin/bash
 
-CC=g++
+CC="bear -- g++"
 ROOT=$(dirname $0)
 SRC=$(find $ROOT/src -name *.cpp)
 # CXXFLAGS="-Wall -Wpedantic -std=c++20 -Wextra -g -fsanitize=address -DDEBUG" # uncomment when wanting to see some debug info

@@ -5,7 +5,6 @@
 #include "Player.h"
 #include "Cards.h"
 #include "CommandProcessor.h"
-#include "FileCommandProcessorAdapter.h"
 
 #include <iostream>
 #include <string>
@@ -88,7 +87,7 @@ class GameEngine
         void validateMap();
         void addPlayer(const std::string& player_name);
         void assignCountries();
-        void gamestart(); //meow
+        void gamestart(); //meow meow meow
         void issueOrder();
         void execOrder();
         void endExecOrders();
@@ -112,6 +111,7 @@ class GameEngine
         Deck* mDeck_ptr;
         std::map<CurrentState, std::set<std::string>> stateCommandMap;
         std::vector<std::string> mArgs;
+        std::string filename;
 };
 
 #endif // !GAME_ENGINE_H
