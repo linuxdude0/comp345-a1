@@ -569,6 +569,13 @@ void GameEngine::endExecOrders()
         win();
     }
     else{
+
+        //TODO : need to remove players from main array mPlayer_v and destroy them if they got eliminated this turn (aka lost all terrs to others) if they lost the game
+        
+        // ^^ this needs to be done before filling the deployment pools, as the method uses that main v_player array
+
+        fillPlayerReinforcementPools(); // fills the deployment pools in preparation for next phase;
+
         setState(ASSIGN_REINFORCEMENTS);
     }
 }
@@ -583,6 +590,39 @@ bool GameEngine::allConqueredByOne(){
     }
 
     return true; // all tuples have the same player
+}
+
+
+void GameEngine::fillPlayerReinforcementPools(){
+
+
+    // for each player still in the main player array (not those who got eliminated)
+    for(Player* const currPlayer : mPlayer_v){
+
+        int total_fresh_troops = 0;
+        int curr_owned_terrs = (currPlayer->toDefend()).size();
+        total_fresh_troops += (curr_owned_terrs) / 3; //  (# of territories owned divided by 3, rounded down) as per assignment
+        
+
+        // TODO: (?) need a method from Map class that checks if a player owns a whole continent, if so returns the bonus for all continents owned
+        // then we add this number to the fresh troops
+
+        unsigned currOwned[MAX_TERRITORIES];
+        for(int i = 0; i < currPlayer->toDefend().size(); i++){
+            currOwned[i] = currPlayer->toDefend().at(i);
+        }    
+
+        // well - well, this is a question of principles, sig: unsigned getScore(size_t num_territories, unsigned territories[MAX_TERRITORIES]);
+        int continental_bonus_score = mMap_ptr -> getScore(currPlayer->toDefend().size(), currOwned);
+
+        total_fresh_troops += continental_bonus_score;
+        
+        if(total_fresh_troops < 3){ // "In any case the minimal number of reinforcement army units per turn for any player is 3." 
+            total_fresh_troops = 3;
+        }
+
+        currPlayer->addToReinforcementPool(total_fresh_troops);
+    }
 }
 
 void GameEngine::win()

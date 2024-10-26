@@ -98,6 +98,7 @@ class GameEngine
         void help();
         void startupPhase(void);
         bool allConqueredByOne();
+        void fillPlayerReinforcementPools();
 
     private:
         CommandProcessor* mCommandProcessor_ptr;
