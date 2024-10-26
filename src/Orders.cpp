@@ -47,7 +47,7 @@ bool DeployOrder::validate() {
 
     // check if deployment territory truly belongs to the player
     bool match = false; 
-    for(int i : player->toDefend()){
+    for( unsigned int i : player->toDefend()){
 
         if(i == territory_target){
             match = true;
@@ -60,7 +60,7 @@ bool DeployOrder::validate() {
     }
 
     // check that the number of troops requested for deployment is adequate
-    if(num_troops > player->getReinforcementPool()){
+    if(num_troops > static_cast<unsigned int>(player->getReinforcementPool())){
         std::cout << "[!] Order Validation failed: Number of troops requested to deploy on territory " << territory_target << " is larger than available pool for player " << player->getName() << std::endl; 
         return false;
     }
