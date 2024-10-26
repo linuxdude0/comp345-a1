@@ -1,12 +1,11 @@
 #include "GameEngine.h"
 #include "Map.h"
 #include "Orders.h"
+#include "Player.h"
 #include "common.h"
 #include <algorithm>
+#include <cassert>
 #include "Mappings.h"
-
-extern std::vector<std::tuple<unsigned, Player*, unsigned>> territory_owner_troops_mappings;
-
 
 // -- helper functions --
 void clear_extra()
@@ -445,20 +444,95 @@ void GameEngine::gamestart(){
 
 }
 
-unsigned chooseTerritory(Map m) {
-    for (size_t i=0; i<m.num_territories; i++) {
-        Map::Territory t = m.getTerritory(i);
-        std::cout << "\t" << t.index << ": " << t.name << " in continent " << m.continents[t.continent_index] << std::endl;
-    }
-    int n = -1;
-    do {
-        std::cout << "Please write the territory number you want to target: ";
-        std::cin >> n;
-        if (n < 0 || n >= (int)m.num_territories) {
-            std::cout << "Territory not found, please reenter\n";
+unsigned chooseTerritory(Map m, OrderKind ok, Player* player, int src=-1) {
+    assert(player);
+    switch (ok) {
+        case OrderKind::ADVANCE: {
+            if (src == -1) {
+                for(unsigned i: player->toDefend()) {
+                    Map::Territory t = m.getTerritory(i);
+                    unsigned num_troops = 0;
+                    for (std::tuple<unsigned, Player*, unsigned> tuple : territory_owner_troops_mappings) {
+                        unsigned terr = std::get<0>(tuple);
+                        if (terr == i) {
+                            num_troops = std::get<2>(tuple);
+                            break;
+                        }
+                    }
+                    std::cout << "\t" << t.index << ": " << t.name << " in continent " << m.continents[t.continent_index] << " with " << num_troops << " troops, owner: " << player->getName() << std::endl;
+                }
+            } else {
+                Map::Territory s = m.getTerritory(src);
+                for(unsigned i=0; i<s.num_adjacent_territories; i++) {
+                    Map::Territory t = m.getTerritory(s.adjacent_territories_indexes[i]);
+                    unsigned num_troops = 0;
+                    Player* p = nullptr;
+                    for (std::tuple<unsigned, Player*, unsigned> tuple : territory_owner_troops_mappings) {
+                        unsigned terr = std::get<0>(tuple);
+                        if (terr == i) {
+                            num_troops = std::get<2>(tuple);
+                            p = std::get<1>(tuple);
+                            break;
+                        }
+                    }
+                    std::cout << "\t" << t.index << ": " << t.name << " in continent " << m.continents[t.continent_index] << " with " << num_troops << " troops, owner: " << p->getName() << std::endl;
+                }
+            }
+            int n = -1;
+            do {
+                std::cout << "Please write the territory number you choose: ";
+                std::cin >> n;
+                if ((src == -1 && !player->ownsTerritory(n)) || (src >= 0 && !m.isAdjacent(n, src))) {
+                    std::cout << "Territory not found, please reenter\n";
+                }
+            } while((src == -1 && !player->ownsTerritory(n)) || (src >= 0 && !m.isAdjacent(n, src)));
+            return (unsigned)n;
         }
-    } while(n < 0 || n >= (int)m.num_territories);
-    return (unsigned)n;
+            break;
+        case OrderKind::DEPLOY: 
+        case OrderKind::AIRLIFT:
+        case OrderKind::BOMB:
+        case OrderKind::BLOCKADE:
+        case OrderKind::NEGOTIATE: {
+            for(unsigned i: player->toDefend()) {
+                Map::Territory t = m.getTerritory(i);
+                unsigned num_troops = 0;
+                for (std::tuple<unsigned, Player*, unsigned> tuple : territory_owner_troops_mappings) {
+                    unsigned terr = std::get<0>(tuple);
+                    if (terr == i) {
+                        num_troops = std::get<2>(tuple);
+                        break;
+                    }
+                }
+                std::cout << "\t" << t.index << ": " << t.name << " in continent " << m.continents[t.continent_index] << " with " << num_troops << " troops, owner: " << player->getName() << std::endl;
+            }
+            int n = -1;
+            do {
+                std::cout << "Please write the territory number you choose: ";
+                std::cin >> n;
+                if (!player->ownsTerritory(n)) {
+                    std::cout << "Territory not found, please reenter\n";
+                }
+            } while(!player->ownsTerritory(n));
+            return (unsigned)n;
+        }
+            break;
+        default:
+            throw "huh????";
+    }
+    /*for (size_t i=0; i<m.num_territories; i++) {*/
+    /*    Map::Territory t = m.getTerritory(i);*/
+    /*    std::cout << "\t" << t.index << ": " << t.name << " in continent " << m.continents[t.continent_index] << std::endl;*/
+    /*}*/
+    /*int n = -1;*/
+    /*do {*/
+    /*    std::cout << "Please write the territory number you want to target: ";*/
+    /*    std::cin >> n;*/
+    /*    if (n < 0 || n >= (int)m.num_territories) {*/
+    /*        std::cout << "Territory not found, please reenter\n";*/
+    /*    }*/
+    /*} while(n < 0 || n >= (int)m.num_territories);*/
+    /*return (unsigned)n;*/
 }
 
 void GameEngine::reinforcementPhase()
@@ -471,7 +545,7 @@ void GameEngine::reinforcementPhase()
         while (p->getReinforcementPool() > 0) {
             std::cout << "You need to deploy as you still have " << p->getReinforcementPool()<< " troops to deploy" << std::endl;
             std::cout << "Choose the target territory: \n";
-            unsigned territory = chooseTerritory(*this->mMap_ptr);
+            unsigned territory = chooseTerritory(*this->mMap_ptr, OrderKind::DEPLOY, p);
             int num_troops = -1;
             do {
                 std::cout << "Please choose how many of the " << p->getReinforcementPool()<< " troops you want to deploy at " << this->mMap_ptr->getTerritory(territory).name << ": ";
@@ -506,9 +580,9 @@ void GameEngine::issueOrder()
                 case OrderKind::ADVANCE:
                 case OrderKind::AIRLIFT:
                     std::cout << "Choose source territory: " << std::endl;
-                    source = chooseTerritory(*this->mMap_ptr);
+                    source = chooseTerritory(*this->mMap_ptr, m_orderKind, p);
                     std::cout << "Choose target territory: " << std::endl;
-                    target = chooseTerritory(*this->mMap_ptr);
+                    target = chooseTerritory(*this->mMap_ptr, m_orderKind, p, source);
                     do {
                         std::cout << "Please the number of troops: ";
                         std::cin >> num_troops;
@@ -521,7 +595,7 @@ void GameEngine::issueOrder()
                 case OrderKind::BLOCKADE:
                 case OrderKind::NEGOTIATE:
                     std::cout << "Choose target territory: " << std::endl;
-                    target = chooseTerritory(*this->mMap_ptr);
+                    target = chooseTerritory(*this->mMap_ptr, m_orderKind, p);
                     break;
                 default:
                     throw "huh????";

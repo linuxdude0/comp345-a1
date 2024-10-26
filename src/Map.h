@@ -45,5 +45,6 @@ public:
 	Territory getTerritory(unsigned index);
 	Continent getContinent(unsigned index);
 	unsigned getScore(size_t num_territories, unsigned territories[MAX_TERRITORIES]);
+	bool isAdjacent(unsigned t1, unsigned t2);
 	friend std::ostream& operator<<(std::ostream& os, const Map& map);
 };

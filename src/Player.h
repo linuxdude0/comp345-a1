@@ -42,6 +42,7 @@ class Player{
         OrderList* getOrderList();
         bool issueOrder(Order* order);
         bool ownsTerritory(unsigned index);
+        bool toAttackTerritory(unsigned index);
 
         // getters
         int getID();

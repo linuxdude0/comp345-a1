@@ -1,5 +1,7 @@
 #include "CommandProcessor.h"
+#include "Command.h"
 #include "GameEngine.h"
+#include <memory>
 
 // -- constructor & destructor --
 
@@ -154,8 +156,12 @@ void CommandProcessor::validate(const std::string& s_command_name, GameEngine& g
         else
         {
             // if entered in the wrong state, save effect with error message
-            mCommandMap[s_command_name]->saveEffect(s_command_name+" command was used in the wrong state.");
-            std::cerr << "[ERROR]: Command is not valid in the current state." << std::endl;
+            if(mCommandMap[s_command_name] != nullptr) {
+                mCommandMap[s_command_name]->saveEffect(s_command_name+" command was used in the wrong state.");
+                std::cerr << "[ERROR]: Command is not valid in the current state." << std::endl;
+            } else {
+                std::cerr << "[ERROR]: Command not found." << std::endl;
+            }
         }
     }
     else

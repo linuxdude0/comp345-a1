@@ -301,6 +301,16 @@ unsigned Map::getScore(size_t num_territories, unsigned territories[MAX_TERRITOR
 	return score;
 }
 
+bool Map::isAdjacent(unsigned t1, unsigned t2) {
+	Territory t = this->getTerritory(t1);
+	for (size_t i=0; i<t.num_adjacent_territories; i++) {
+		if (t.adjacent_territories_indexes[i] == t2) {
+			return true;
+		}
+	}
+	return false;
+}
+
 std::ostream& operator<<(std::ostream& os, const Map& map) {
 	os << "Author = " << map.author << std::endl;
 	os << "Warn = " << map.warn << std::endl;

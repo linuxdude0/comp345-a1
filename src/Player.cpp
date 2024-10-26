@@ -208,6 +208,15 @@ bool Player::ownsTerritory(unsigned index) {
     return false;
 }
 
+bool Player::toAttackTerritory(unsigned index) {
+    for (unsigned i : this->toAttack()) {
+        if (i == index) {
+            return true;
+        }
+    }
+    return false;
+}
+
 const int& Player::getReinforcementPool(){return reinforcementPool;}
 
 
