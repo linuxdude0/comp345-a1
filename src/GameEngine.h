@@ -97,6 +97,7 @@ class GameEngine
         void quit();
         void help();
         void startupPhase(void);
+        bool allConqueredByOne();
 
     private:
         CommandProcessor* mCommandProcessor_ptr;
