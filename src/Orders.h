@@ -1,10 +1,14 @@
 #ifndef ORDERS_H
 #define ORDERS_H
 
+#include "Map.h"
 #include <vector>
 #include <iostream>
 using std::vector;
 using std::ostream;
+
+class Player;
+
 
 enum class OrderKind{
     DEPLOY,
@@ -33,8 +37,8 @@ class DeployOrder : public Order {
 public:
     Player* p; 
     int target_territory_index;
-    GameEngine ge;
-    DeployOrder(Player* p, int target_territory_index, GameEngine& ge);
+    int player_to_territories[2][MAX_TERRITORIES]{};
+    DeployOrder(Player* p, int target_territory_index, int player_to_territories[2][MAX_TERRITORIES]);
     DeployOrder(DeployOrder* deployOrder);
     bool validate() override;
     void execute() override;
@@ -44,7 +48,7 @@ public:
 
 class AdvanceOrder : public Order {
 public:
-    AdvanceOrder();
+    AdvanceOrder(Player* p, int target_territory_index, int player_to_territories[2][MAX_TERRITORIES]);
     AdvanceOrder(AdvanceOrder* advanceOrder);
     bool validate() override;
     void execute() override;
