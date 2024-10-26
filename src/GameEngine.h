@@ -100,6 +100,12 @@ class GameEngine
         bool allConqueredByOne();
         void fillPlayerReinforcementPools();
 
+        // wrapper functions 
+        void reinforcementPhase();
+        void issueOrdersPhase();
+        void executeOrdersPhase();
+
+
     private:
         CommandProcessor* mCommandProcessor_ptr;
         FileCommandProcessorAdapter* mFCPA_ptr;

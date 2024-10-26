@@ -425,7 +425,7 @@ void GameEngine::gamestart(){
         for(int i : p->toDefend()){
             territory_owner_troops_mappings.push_back(std::make_tuple(i, p, 0));
         }
-    
+
         setState(ASSIGN_REINFORCEMENTS); // switches to the main game state
         
     }
@@ -433,11 +433,13 @@ void GameEngine::gamestart(){
     // -- beginning of play phase --
         while(mCurrentState != WIN)
         {
-
-            issueOrder(); // 1. prompts each player in the lobby to issue their orders
-            endIssueOrders(); // 2. end issuing orders and change state to execute orders
-            execOrder(); // 3. execute orders for each player in the lobby
-            endExecOrders(); // 4. end executing orders and change state to assign reinforcements or win, the win check is performed at this stage
+            reinforcementPhase(); // 0. prompts each player in the lobby to issue their orders
+            issueOrdersPhase(); // 1. prompts each player in the lobby to issue their orders and  end issuing orders and change state to execute orders
+            executeOrdersPhase(); // 2. execute orders for each player in the lobby and end executing orders and change state to assign reinforcements or win, the win check is performed at this stage
+            // issueOrder(); // 1. prompts each player in the lobby to issue their orders
+            // endIssueOrders(); // 2. end issuing orders and change state to execute orders
+            // execOrder(); // 3. execute orders for each player in the lobby
+            // endExecOrders(); // 4. end executing orders and change state to assign reinforcements or win, the win check is performed at this stage
         
         }
 
@@ -459,9 +461,8 @@ unsigned chooseTerritory(Map m) {
     return (unsigned)n;
 }
 
-void GameEngine::issueOrder()
-{
-    OrderKind m_orderKind;
+void GameEngine::reinforcementPhase()
+{    
     // iterate over each player in player vector
     for(Player* const p : mPlayer_v)
     {
@@ -483,7 +484,12 @@ void GameEngine::issueOrder()
             p->getOrderList()->executeAll();
         }
     }
-    setState(ISSUE_ORDERS);
+        setState(ISSUE_ORDERS);
+}
+
+void GameEngine::issueOrder()
+{
+    OrderKind m_orderKind;
     for(Player* const p : mPlayer_v){
 
         do {
@@ -553,6 +559,12 @@ void GameEngine::endIssueOrders()
     setState(EXECUTE_ORDERS);
 }
 
+void GameEngine::issueOrdersPhase()
+{
+    issueOrder();
+    endIssueOrders();
+}
+
 void GameEngine::execOrder()
 {
     for(auto const p : mPlayer_v)
@@ -579,6 +591,14 @@ void GameEngine::endExecOrders()
         setState(ASSIGN_REINFORCEMENTS);
     }
 }
+
+void GameEngine::executeOrdersPhase()
+{
+
+    execOrder();
+    endExecOrders();
+}
+
 
 bool GameEngine::allConqueredByOne(){
 
