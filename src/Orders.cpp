@@ -1,4 +1,5 @@
 #include "Orders.h"
+
 class Player;
 class GameEngine;
 
@@ -55,7 +56,7 @@ void DeployOrder::execute() {
     }
     else{
 
-        std::cout << "Couldn't Deploy Troops at territory [" << target_territory_index << "] for Player id = "<< this->p->getID() << 
+        std::cout << "Couldn't Deploy Troops at territory [" << target_territory_index << "] for Player id = "<< p->getID() << 
     }
 }
 

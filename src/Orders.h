@@ -33,7 +33,7 @@ class DeployOrder : public Order {
 public:
     Player* p; 
     int target_territory_index;
-    GameEngine& ge;
+    GameEngine ge;
     DeployOrder(Player* p, int target_territory_index, GameEngine& ge);
     DeployOrder(DeployOrder* deployOrder);
     bool validate() override;
