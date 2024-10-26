@@ -208,8 +208,9 @@ const int& Player::getReinforcementPool(){return reinforcementPool;}
 
 void Player::setReinforcementPool(int i){reinforcementPool = i;}
 
-
 void Player::addToReinforcementPool(int i){reinforcementPool += i;}
+
+void Player::removeFromReinforcementPool(int i){reinforcementPool -= i;}
 
 
 Hand* Player::getHand(){return currHand;}

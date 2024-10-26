@@ -5,6 +5,8 @@
 #include <algorithm>
 #include "Mappings.h"
 
+extern std::vector<std::tuple<unsigned, Player*, unsigned>> territory_owner_troops_mappings;
+
 // -- helper functions --
 void clear_extra()
 {
@@ -416,10 +418,19 @@ void GameEngine::gamestart(){
         p->getHand()->addCard(this->mDeck_ptr->draw());
         p->getHand()->addCard(this->mDeck_ptr->draw());
         std::cout << ">> Player " << p->getName() << " just received 2 cards" << std::endl;
+        
 
+        // for each player assign their owner territories in the global ownership map with current owned = 0, given no deployment yet
+        // i=terrIndex, p = Player* , 0 = currently troops stationed
+        for(int i : p->toDefend()){
+            territory_owner_troops_mappings.push_back(std::make_tuple(i, p, 0));
+        }
+    
         setState(ASSIGN_REINFORCEMENTS); // switches to the main game state
         
-        // -- beginning of play phase --
+    }
+
+    // -- beginning of play phase --
         while(mCurrentState != WIN)
         {
             issueOrder(); // 1. prompts each player in the lobby to issue their orders
@@ -430,7 +441,6 @@ void GameEngine::gamestart(){
             win(); // win state occurs
         }
 
-    }
 }
 
 unsigned chooseTerritory(Map m) {

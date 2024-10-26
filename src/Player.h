@@ -51,6 +51,7 @@ class Player{
         const int& getReinforcementPool();
         void setReinforcementPool(int i);
         void addToReinforcementPool(int i);
+        void removeFromReinforcementPool(int i);
 
 
         // overloaded stream insertion

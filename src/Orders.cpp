@@ -34,7 +34,7 @@ ostream& operator<< (ostream & out, const Order & order){
 OrderList::OrderList(OrderList* orders) : orders(orders->orders) {}
 
 //Implementing Deploy Order
-DeployOrder::DeployOrder(Player* player, unsigned territory_target, unsigned num_troops) {
+DeployOrder::DeployOrder(Player* player, unsigned territory_target, unsigned num_troops){
     this->player = player;
     this->territory_target = territory_target;
     this->num_troops = num_troops;
@@ -42,13 +42,48 @@ DeployOrder::DeployOrder(Player* player, unsigned territory_target, unsigned num
 }
 
 bool DeployOrder::validate() {
-    std::cout << "Validating Deploy\n";
+    std::cout << "Validating Deploy" << std::endl;
+    // 
+
+    // check if deployment territory truly belongs to the player
+    bool match = false; 
+    for(int i : player->toDefend()){
+
+        if(i == territory_target){
+            match = true;
+            break;
+        }
+    }
+    if(!match){
+        std::cout << "[!] Order Validation failed: Territory assigned for deployment does not belong to player " << player->getName() << std::endl; 
+        return false;
+    }
+
+    // check that the number of troops requested for deployment is adequate
+    if(num_troops > player->getReinforcementPool()){
+        std::cout << "[!] Order Validation failed: Number of troops requested to deploy on territory " << territory_target << " is larger than available pool for player " << player->getName() << std::endl; 
+        return false;
+    }
     return true;
 }
 
 void DeployOrder::execute() {
     if (validate()){
-        std::cout << "Executing Deploy\n";
+        std::cout << "Executing Deploy for Player..." << player->getName() << std::endl;
+
+        // deploy number of troops requested to target territory, remove them from the player's pool
+        for(auto& smth : territory_owner_troops_mappings){
+
+            if(std::get<0>(smth) == territory_target){
+                std::get<2>(smth) = num_troops;
+                player->removeFromReinforcementPool(num_troops);
+            }
+        }
+        std::cout << "[ok] Deploy Executed Player " << player->getName() << "on territory " << territory_target << "with " << num_troops << std::endl;
+    }
+    else{
+        std::cout << "[!] Deploy execution failed for player " << player->getName() << std::endl;
+        return;
     }
 }
 
