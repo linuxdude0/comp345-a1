@@ -237,6 +237,7 @@ bool Map::validate() {
 				}
 			}
 		}
+		std::cout << std::endl;
 		if (count != this->num_territories) {
 			return false;
 		}
