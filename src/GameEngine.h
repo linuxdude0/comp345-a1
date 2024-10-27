@@ -100,6 +100,7 @@ class GameEngine
         bool allConqueredByOne();
         void fillPlayerReinforcementPools();
         void distributeCardsToWinners();
+        void kickLosers(); 
 
         // wrapper functions 
         void reinforcementPhase();
