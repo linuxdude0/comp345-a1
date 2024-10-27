@@ -684,10 +684,7 @@ void GameEngine::endExecOrders()
     }
     else{
 
-        // TODO : need to remove players from main array mPlayer_v and destroy them if they got eliminated this turn (aka lost all terrs to others) if they lost the game
-        
-        // ^^ this needs to be done before filling the deployment pools, as the method uses that main v_player array
-
+        kickLosers(); // kicks players who lost all territories from the main vector, bye bye, sucks to be you!
         fillPlayerReinforcementPools(); // fills the deployment pools in preparation for next phase;
         distributeCardsToWinners();
         setState(ASSIGN_REINFORCEMENTS);
@@ -748,6 +745,24 @@ void GameEngine::fillPlayerReinforcementPools(){
 }
 
 
+void GameEngine::kickLosers(){
+// kicks players who lost all territories from the main vector
+    // alternatively maybe use the main huge map of territories to check that...
+    
+    // not my method i copy-pasted it and am proud of it, C++ syntax is absolute nonsense sometimes
+    for (auto it = mPlayer_v.begin(); it != mPlayer_v.end(); ) {
+        Player* testedPlayer = *it;
+        // alternatively maybe use the main huge map of territories to check that...
+        if (testedPlayer->toDefend().size() == 0) {
+            // if no territories to defend --> then bye bye bon voyage
+            std::cout << "[info] Player " << testedPlayer->getName() << " LOST THE GAME... BYE BYE!!! We got only " << mPlayer_v.size() - 1 << " remaining!!" << std::endl;
+            it = mPlayer_v.erase(it);
+        } else {
+            ++it; // else iterate further
+        }
+    }
+}
+
 void GameEngine::distributeCardsToWinners(){
 // if a player managed to capture a territory during a turn, he gets a card from the deck (there's a flag raised in fight() method)
 // a player can't receive more than 1!!! card per turn, no matter how many terrs he captured.
@@ -761,7 +776,9 @@ void GameEngine::distributeCardsToWinners(){
 void GameEngine::win()
 {
     setState(WIN);
-    
+
+    std::string winner = mPlayer_v.at(0)->getName(); // last player left in the array
+    std::cout << "CONGRATULATIONS! PLAYER " << winner << " WON THIS GAME!" << std::endl;
     std::cout << ">> Play again? (replay/quit)" << std::endl;
     while(true)
     {
