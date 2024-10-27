@@ -444,7 +444,17 @@ void GameEngine::gamestart(){
 
 }
 
+void print_table(void) {
+    for (std::tuple<unsigned, Player*, unsigned> t : territory_owner_troops_mappings) {
+        std::cout << std::get<0>(t) << ", " << std::get<1>(t)->getName() << ", " << std::get<2>(t) << std::endl;
+    }
+}
+
 unsigned chooseTerritory(Map m, OrderKind ok, Player* player, int src=-1) {
+#ifdef DEBUG
+    std::cout << "\t\t\tsrc= " << src << "\n";
+    print_table();
+#endif
     assert(player);
     switch (ok) {
         case OrderKind::ADVANCE: {
@@ -469,7 +479,7 @@ unsigned chooseTerritory(Map m, OrderKind ok, Player* player, int src=-1) {
                     Player* p = nullptr;
                     for (std::tuple<unsigned, Player*, unsigned> tuple : territory_owner_troops_mappings) {
                         unsigned terr = std::get<0>(tuple);
-                        if (terr == i) {
+                        if (terr == t.index) {
                             num_troops = std::get<2>(tuple);
                             p = std::get<1>(tuple);
                             break;
@@ -565,7 +575,6 @@ void GameEngine::issueOrder()
 {
     OrderKind m_orderKind;
     for(Player* const p : mPlayer_v){
-
         do {
             std::cout << "[Player: " << p->getName() << "] is issuing orders" << std::endl;
             m_orderKind = prompt_order_kind("Enter the order to issue (1-6): ");
@@ -600,7 +609,6 @@ void GameEngine::issueOrder()
                 default:
                     throw "huh????";
             }
-
             switch (m_orderKind) {
                 case OrderKind::DEPLOY: // here deploy is exit
                     break;
