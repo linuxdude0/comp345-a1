@@ -661,7 +661,7 @@ void GameEngine::endExecOrders()
         // ^^ this needs to be done before filling the deployment pools, as the method uses that main v_player array
 
         fillPlayerReinforcementPools(); // fills the deployment pools in preparation for next phase;
-
+        distributeCardsToWinners();
         setState(ASSIGN_REINFORCEMENTS);
     }
 }
@@ -719,6 +719,17 @@ void GameEngine::fillPlayerReinforcementPools(){
     }
 }
 
+
+void GameEngine::distributeCardsToWinners(){
+// if a player managed to capture a territory during a turn, he gets a card from the deck (there's a flag raised in fight() method)
+// a player can't receive more than 1!!! card per turn, no matter how many terrs he captured.
+    for(Player* currPlayer : mPlayer_v){
+        if(currPlayer->cardToReceiveThisTurn()){
+            currPlayer->getHand()->addCard(mDeck_ptr->draw()); // draw a card and clear flag
+            currPlayer->clearCardToIssueFlag(); // done
+        }
+    }
+}
 void GameEngine::win()
 {
     setState(WIN);

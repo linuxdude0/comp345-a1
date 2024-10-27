@@ -63,7 +63,7 @@ bool DeployOrder::validate() {
     }
 
     // check that the number of troops requested for deployment is adequate
-    if(num_troops > static_cast<unsigned int>(player->getReinforcementPool()) || num_troops == 0){
+    if(num_troops > static_cast<unsigned int>(player->getReinforcementPool())){
         std::cout << "[!] Order Validation failed: Number of troops requested to deploy on territory " << territory_target << " is larger than available pool for player " << player->getName() << std::endl; 
         return false;
     }
@@ -78,7 +78,7 @@ void DeployOrder::execute() {
         for(auto& smth : territory_owner_troops_mappings){
 
             if(std::get<0>(smth) == territory_target){
-                std::get<2>(smth) = num_troops;
+                std::get<2>(smth) += num_troops;
                 player->removeFromReinforcementPool(num_troops);
             }
         }
@@ -135,6 +135,7 @@ bool AdvanceOrder::fight(){
     unsigned attackers = num_troops;
     unsigned defenders = std::get<2>(*target);
 
+    std::cout << "[info] Battle:  " << std::get<1>(*source)->getName() <<" (" << attackers << " units)" << " vs " << std::get<1>(*target)->getName() <<" (" << defenders << " units)"  << " to control territory=" << territory_target << std::endl;
     // attackers attack and defenders fight until either all attackers or defenders are dead.
     while (attackers > 0 && defenders > 0) {
         //attacker has a 60% chance to kill a defender
@@ -150,21 +151,25 @@ bool AdvanceOrder::fight(){
     // means attackers won
     if(defenders == 0 && attackers > 0){
 
+        std::cout << "[info] [Player: " << std::get<1>(*source)->getName() << "] won the battle against" << std::get<1>(*target)->getName() << " and is capturing a new territory  " << territory_target << " with the remaining " << attackers << " units" << std::endl;
+
         vector<int>& losersTerrs = std::get<1>(*target)->toDefend();
         losersTerrs.erase(std::remove(losersTerrs.begin(), losersTerrs.end(), territory_target), losersTerrs.end());
-        
         std::get<1>(*target) = std::get<1>(*source); // new owner in the global mapping
         std::get<2>(*target) = attackers; // the leftover attackers occupy the new terr
         std::get<1>(*source)->toDefend().push_back(territory_target);
+        std::get<1>(*source)->setCardToIssueFlag(); // flag to issue a card at the end of this turn, given that a territory was captured
+        
+        
 
         return true;
         
     } // means attackers lost
     else{
-
-       std::get<2>(*target) = defenders; // the defendants lost warriors.
-
-       return false;
+    
+        std::get<2>(*target) = defenders; // the defendants lost warriors.
+        std::cout << "[info] [Player: " << std::get<1>(*source)->getName() << "] lost the battle against" << std::get<1>(*target)->getName() << " over territory =  " << territory_target << ". There are still " << defenders << " remaining units belonging to " << std::get<1>(*target)->getName() << " stationed."<< std::endl;
+        return false;
     }
 
 }
@@ -219,6 +224,7 @@ bool AdvanceOrder::validate(){
             }
 
             if(std::get<2>(tuple) < num_troops){
+                std::cout << std::get<2>(tuple);
                 // if wrong number of troops demanded to be advanced (more than available) --> this check should prob be performed in the game engine tbh...
                 std::cout << "[!] Advance Order Validation failed:" << " number of troops requested to advance is superior to that in the source territory  " << territory_source << " for player " << player->getName() <<std::endl;
                 return false;
@@ -257,6 +263,8 @@ void AdvanceOrder::execute(){
         // if advancing to own territory
         if(targetbelongsToPlayer()){
             
+            std::cout << "[info] [Player: " << player->getName() << "] : " << num_troops << " advancing from " << territory_source << " to " << territory_target << std::endl;
+
             for(auto& smth : territory_owner_troops_mappings){
 
                 // remove troops from source in the global mapping
@@ -284,7 +292,7 @@ void AdvanceOrder::execute(){
         }
     }
     else{
-        std::cout << "[!] Deploy execution failed for player " << player->getName() << std::endl;
+        std::cout << "[!] Advance execution failed for player " << player->getName() << std::endl;
         return;
     }
 }

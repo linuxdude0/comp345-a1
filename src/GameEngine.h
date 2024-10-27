@@ -99,11 +99,13 @@ class GameEngine
         void startupPhase(void);
         bool allConqueredByOne();
         void fillPlayerReinforcementPools();
+        void distributeCardsToWinners();
 
         // wrapper functions 
         void reinforcementPhase();
         void issueOrdersPhase();
         void executeOrdersPhase();
+
 
 
     private:
