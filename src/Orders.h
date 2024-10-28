@@ -71,12 +71,16 @@ public:
 
 class BlockadeOrder : public Order {
 public:
-    BlockadeOrder(Player* player, unsigned territory_target);
+    BlockadeOrder(Player* player, unsigned territory_target,Player* neutralPlayer);
     BlockadeOrder(BlockadeOrder* blockadeOrder);
     bool validate() override;
     void execute() override;
     friend ostream & operator << (ostream & out, const BlockadeOrder & blockadeOrder);
     BlockadeOrder* operator=(BlockadeOrder* order);
+private:
+    Player* player;
+    unsigned territory_target;
+    Player* neutralPlayer; // Pointer to the Neutral player
 };
 
 class AirliftOrder : public Order {

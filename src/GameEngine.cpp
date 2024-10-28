@@ -151,7 +151,7 @@ GameEngine& GameEngine::operator=(const GameEngine& ge)
 
 // -- constructor, copy constructor & destructor --
 GameEngine::GameEngine(const std::string map_name, int argc, char* argv[])
-    : mCurrentState{CurrentState::START}, mMapFileName{map_name}
+    : mCurrentState{CurrentState::START}, mMapFileName{map_name},mNeutralPlayer{new Player(0,"Neutral",0,nullptr,nullptr)}
 {
     mMap_ptr = nullptr;
     // push arguments to args list
@@ -175,7 +175,7 @@ GameEngine::GameEngine(const std::string map_name, int argc, char* argv[])
 
 GameEngine::GameEngine(const GameEngine& ge_obj)
     : mCurrentState{ge_obj.mCurrentState},mIsRunning{ge_obj.mIsRunning},mMapFileName{ge_obj.mMapFileName},
-    mMap_ptr{ge_obj.mMap_ptr},mPlayer_v{ge_obj.mPlayer_v},mDeck_ptr{ge_obj.mDeck_ptr}
+    mMap_ptr{ge_obj.mMap_ptr},mPlayer_v{ge_obj.mPlayer_v},mDeck_ptr{ge_obj.mDeck_ptr},mNeutralPlayer{new Player(0,"Neutral",0,nullptr,nullptr)}
 {
 
 }
@@ -185,9 +185,15 @@ GameEngine::~GameEngine()
     delete mMap_ptr;
     delete mDeck_ptr;
     delete mCommandProcessor_ptr;
+    delete mNeutralPlayer;
     for(auto p : mPlayer_v)
         delete p;         
 }
+
+Player* GameEngine::getNeutralPlayer() {
+    return mNeutralPlayer;
+}
+
 
 // -- initializer functions --
 bool GameEngine::parseOptions(const std::string& s_option)
@@ -401,7 +407,7 @@ void GameEngine::assignCountries()
 
 // given that territories were already assigned elsewhere 
 void GameEngine::gamestart(){
-
+    
     
 
     std::cout << ">> Gamestart." << std::endl;
@@ -424,7 +430,8 @@ void GameEngine::gamestart(){
         for(int i : p->toDefend()){
             territory_owner_troops_mappings.push_back(std::make_tuple(i, p, 0));
         }
-
+        //add neutral player to the game
+        territory_owner_troops_mappings.push_back(std::make_tuple(0,this->getNeutralPlayer() , 0));
         setState(ASSIGN_REINFORCEMENTS); // switches to the main game state
         
     }

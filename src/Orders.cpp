@@ -327,19 +327,65 @@ ostream& operator << (ostream & out, const BombOrder & bombOrder){
 }
 
 //Implementing Blockade Order
-BlockadeOrder::BlockadeOrder(Player* player, unsigned territory_target) {
+BlockadeOrder::BlockadeOrder(Player* player, unsigned territory_target,Player* neutralPlayer) {
     this->player = player;
     this->territory_target = territory_target;
     this->orderKind = OrderKind::BLOCKADE;
+    this->neutralPlayer = neutralPlayer;
 }
 
 bool BlockadeOrder::validate() {
+        // check if deployment territory truly belongs to the player
+    bool match = false; 
+    for( unsigned int i : player->toDefend()){
+
+        if(i == territory_target){
+            match = true;
+            break;
+        }
+    }
+    if(!match){
+        std::cout << "[!] Order Validation failed: Territory assigned for deployment does not belong to player " << player->getName() << std::endl; 
+        return false;
+    }
     return true;
 }
 
 void BlockadeOrder::execute() {
-    if (validate()){
+ if (validate()) {
         std::cout << "Executing Blockade\n";
+
+        bool validOrder = false;
+
+        for (auto& mapping : territory_owner_troops_mappings) {
+            unsigned territoryId = std::get<0>(mapping);
+            Player* owner = std::get<1>(mapping);
+            unsigned& troops = std::get<2>(mapping);
+
+            if (territoryId == territory_target) {
+                if (owner == player) {
+                    // Double the number of army units
+                    troops *= 2;
+
+                    // Transfer ownership to the Neutral player
+                    std::get<1>(mapping) = neutralPlayer;
+
+                    validOrder = true;
+                    break;
+                } else {
+                    // The target territory belongs to an enemy player
+                    std::cout << "[!] Order Execution failed: Territory belongs to an enemy player." << std::endl;
+                    validOrder = false;
+                    break;
+                }
+            }
+        }
+
+        if (!validOrder) {
+            std::cout << "[!] Blockade order execution failed." << std::endl;
+        } else {
+            std::cout << "Blockade order executed successfully." << std::endl;
+        }
     }
 }
 
