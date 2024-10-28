@@ -1,0 +1,6 @@
+Command: loadmap
+Transitioned to state: MAP_LOADED
+Effect: 
+Command: validatemap
+Transitioned to state: MAP_VALIDATED
+Effect: 

@@ -81,28 +81,6 @@
       "-march=native",
       "-o",
       "./bin/project",
-      "./src/Map.cpp"
-    ],
-    "directory": "/home/yacine/programming/C++/comp345-a1",
-    "file": "/home/yacine/programming/C++/comp345-a1/src/Map.cpp",
-    "output": "/home/yacine/programming/C++/comp345-a1/bin/project"
-  },
-  {
-    "arguments": [
-      "/usr/lib64/ccache/g++",
-      "-c",
-      "-Wall",
-      "-Wpedantic",
-      "-Werror",
-      "-std=c++20",
-      "-Wextra",
-      "-g",
-      "-fsanitize=address",
-      "-O3",
-      "-pipe",
-      "-march=native",
-      "-o",
-      "./bin/project",
       "./src/MapDriver.cpp"
     ],
     "directory": "/home/yacine/programming/C++/comp345-a1",
@@ -129,28 +107,6 @@
     ],
     "directory": "/home/yacine/programming/C++/comp345-a1",
     "file": "/home/yacine/programming/C++/comp345-a1/src/Command.cpp",
-    "output": "/home/yacine/programming/C++/comp345-a1/bin/project"
-  },
-  {
-    "arguments": [
-      "/usr/lib64/ccache/g++",
-      "-c",
-      "-Wall",
-      "-Wpedantic",
-      "-Werror",
-      "-std=c++20",
-      "-Wextra",
-      "-g",
-      "-fsanitize=address",
-      "-O3",
-      "-pipe",
-      "-march=native",
-      "-o",
-      "./bin/project",
-      "./src/CommandProcessor.cpp"
-    ],
-    "directory": "/home/yacine/programming/C++/comp345-a1",
-    "file": "/home/yacine/programming/C++/comp345-a1/src/CommandProcessor.cpp",
     "output": "/home/yacine/programming/C++/comp345-a1/bin/project"
   },
   {
@@ -301,10 +257,54 @@
       "-march=native",
       "-o",
       "./bin/project",
-      "./src/Subject.cpp"
+      "./src/CommandProcessor.cpp"
     ],
     "directory": "/home/yacine/programming/C++/comp345-a1",
-    "file": "/home/yacine/programming/C++/comp345-a1/src/Subject.cpp",
+    "file": "/home/yacine/programming/C++/comp345-a1/src/CommandProcessor.cpp",
+    "output": "/home/yacine/programming/C++/comp345-a1/bin/project"
+  },
+  {
+    "arguments": [
+      "/usr/lib64/ccache/g++",
+      "-c",
+      "-Wall",
+      "-Wpedantic",
+      "-Werror",
+      "-std=c++20",
+      "-Wextra",
+      "-g",
+      "-fsanitize=address",
+      "-O3",
+      "-pipe",
+      "-march=native",
+      "-o",
+      "./bin/project",
+      "./src/Player.cpp"
+    ],
+    "directory": "/home/yacine/programming/C++/comp345-a1",
+    "file": "/home/yacine/programming/C++/comp345-a1/src/Player.cpp",
+    "output": "/home/yacine/programming/C++/comp345-a1/bin/project"
+  },
+  {
+    "arguments": [
+      "/usr/lib64/ccache/g++",
+      "-c",
+      "-Wall",
+      "-Wpedantic",
+      "-Werror",
+      "-std=c++20",
+      "-Wextra",
+      "-g",
+      "-fsanitize=address",
+      "-O3",
+      "-pipe",
+      "-march=native",
+      "-o",
+      "./bin/project",
+      "./src/Map.cpp"
+    ],
+    "directory": "/home/yacine/programming/C++/comp345-a1",
+    "file": "/home/yacine/programming/C++/comp345-a1/src/Map.cpp",
     "output": "/home/yacine/programming/C++/comp345-a1/bin/project"
   },
   {
@@ -345,10 +345,10 @@
       "-march=native",
       "-o",
       "./bin/project",
-      "./src/Player.cpp"
+      "./src/LoggingObserver.cpp"
     ],
     "directory": "/home/yacine/programming/C++/comp345-a1",
-    "file": "/home/yacine/programming/C++/comp345-a1/src/Player.cpp",
+    "file": "/home/yacine/programming/C++/comp345-a1/src/LoggingObserver.cpp",
     "output": "/home/yacine/programming/C++/comp345-a1/bin/project"
   },
   {

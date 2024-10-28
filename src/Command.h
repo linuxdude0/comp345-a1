@@ -1,20 +1,21 @@
 #ifndef COMMAND_H
 #define COMMAND_H
 
+#include "LoggingObserver.h"
 #include <string>
 
 class GameEngine;
 
 
 // -- Command base class --
-class Command
+class Command : public ILoggable, public Subject
 {
     public:
         Command();
         virtual ~Command();
-
-        virtual void executeCommand(GameEngine& ge);
-        virtual void saveEffect(const std::string& s_effect);
+        std::string stringToLog();
+        virtual void executeCommand(GameEngine& ge) = 0;
+        virtual void saveEffect(const std::string& s_effect) = 0;
         std::string getEffect();
     private:
         std::string mEffect;
@@ -26,8 +27,8 @@ class loadMapCommand : public Command
 {
     public:
         loadMapCommand(const std::string& s_argument);
-        void executeCommand(GameEngine& ge) override;
-        void saveEffect(const std::string& s_effect) override;
+        virtual void executeCommand(GameEngine& ge) override;
+        virtual void saveEffect(const std::string& s_effect) override;
     private:
         std::string mEffect;
         std::string mArgument;
@@ -36,8 +37,8 @@ class loadMapCommand : public Command
 class validateMapCommand : public Command
 {
     public:
-        void executeCommand(GameEngine& ge);
-        void saveEffect(const std::string& s_effect);
+        virtual void executeCommand(GameEngine& ge) override;
+        virtual void saveEffect(const std::string& s_effect) override;
     private:
         std::string mEffect;
 };
@@ -46,8 +47,8 @@ class addPlayerCommand : public Command
 {
     public:
         addPlayerCommand(const std::string& s_argument);
-        void executeCommand(GameEngine& ge) override;
-        void saveEffect(const std::string& s_effect) override;
+        virtual void executeCommand(GameEngine& ge) override;
+        virtual void saveEffect(const std::string& s_effect) override;
     private:
         std::string mEffect;
         std::string mArgument;
@@ -56,8 +57,8 @@ class addPlayerCommand : public Command
 class assignCountriesCommand : public Command
 {
     public:
-        void executeCommand(GameEngine& ge);
-        void saveEffect(const std::string& s_effect);
+        virtual void executeCommand(GameEngine& ge) override;
+        virtual void saveEffect(const std::string& s_effect) override;
     private:
         std::string mEffect;
 };
@@ -66,8 +67,8 @@ class assignCountriesCommand : public Command
 class winCommand : public Command
 {
     public:
-        void executeCommand(GameEngine& ge);
-        void saveEffect(const std::string& s_effect);
+        virtual void executeCommand(GameEngine& ge) override;
+        virtual void saveEffect(const std::string& s_effect) override;
     private:
         std::string mEffect;
 };
@@ -75,8 +76,8 @@ class winCommand : public Command
 class gamestartCommand : public Command{
 
     public:
-        void executeCommand(GameEngine& ge);
-        void saveEffect(const std::string& s_effect);
+        virtual void executeCommand(GameEngine& ge) override;
+        virtual void saveEffect(const std::string& s_effect) override;
     private:
         std::string mEffect;
 
@@ -85,8 +86,8 @@ class gamestartCommand : public Command{
 class quitCommand : public Command
 {
     public:
-        void executeCommand(GameEngine& ge);
-        void saveEffect(const std::string& s_effect);
+        virtual void executeCommand(GameEngine& ge) override;
+        virtual void saveEffect(const std::string& s_effect) override;
     private:
         std::string mEffect;
 };
@@ -94,8 +95,8 @@ class quitCommand : public Command
 class helpCommand : public Command
 {
     public:
-        void executeCommand(GameEngine& ge);
-        void saveEffect(const std::string& s_effect);
+        virtual void executeCommand(GameEngine& ge) override;
+        virtual void saveEffect(const std::string& s_effect) override;
     private:
         std::string mEffect;
 };

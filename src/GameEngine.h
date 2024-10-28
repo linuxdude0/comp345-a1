@@ -1,25 +1,16 @@
 #ifndef GAME_ENGINE_H
 #define GAME_ENGINE_H
 
+#include "LoggingObserver.h"
 #include "Map.h"
 #include "Player.h"
 #include "Cards.h"
 #include "CommandProcessor.h"
-#include "FileCommandProcessorAdapter.h"
 
 #include <iostream>
 #include <string>
-#include <string_view>
 #include <map>
 #include <set>
-#include <unordered_map>
-#include <functional>
-#include <memory>
-#include <limits>
-#include <random>
-#include <ranges>
-#include <chrono>
-#include <algorithm> 
 #include <cctype>    
 
 class GameEngine;
@@ -29,7 +20,7 @@ class FileCommandProcessorAdapter;
 // Game Engine class:
 //      - 
 
-class GameEngine
+class GameEngine : public ILoggable, public Subject
 {
     public:
 
@@ -51,7 +42,7 @@ class GameEngine
         // -- constructors & destructor --
         GameEngine(const std::string map_name, int argc, char* argv[]);
         GameEngine(const GameEngine&);
-        ~GameEngine();
+        virtual ~GameEngine();
 
         // -- overloaded stream input function --
         friend std::ostream& operator<<(std::ostream& out, const GameEngine& ge);
@@ -65,7 +56,7 @@ class GameEngine
         void setIsRunning(bool val);
         bool isRunning();
         CurrentState getState();
-        void setState(CurrentState state);
+        void transition(CurrentState state);
         std::vector<Player*>& getPlayersContainer();
         std::map<CurrentState, std::set<std::string>> getCommandMap();
 
@@ -109,6 +100,8 @@ class GameEngine
         void issueOrdersPhase();
         void executeOrdersPhase();
 
+        // Log functions
+        std::string stringToLog() override;
 
 
     private:

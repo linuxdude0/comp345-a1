@@ -4,7 +4,13 @@
 #include "Player.h"
 #include <algorithm>
 #include <cassert>
+#include <chrono>
+#include <limits>
+#include <random>
+#include <sstream>
 #include "Mappings.h"
+#include "LoggingObserver.h"
+#include "FileCommandProcessorAdapter.h"
 
 // -- helper functions --
 void clear_extra()
@@ -175,6 +181,7 @@ GameEngine::GameEngine(const std::string map_name, int argc, char* argv[])
 
     // initialize valid state commands
     initializeStateCommands();
+    logObserver->attachSubject(this);
 }
 
 GameEngine::GameEngine(const GameEngine& ge_obj)
@@ -226,12 +233,21 @@ void GameEngine::initializeStateCommands()
 Map& GameEngine::getMap() {return *mMap_ptr;}
 Deck& GameEngine::getDeck() {return *mDeck_ptr;}
 GameEngine::CurrentState GameEngine::getState() {return mCurrentState;}
-void GameEngine::setState(CurrentState state) {mCurrentState = state;}
+void GameEngine::transition(CurrentState state) {
+    mCurrentState = state;
+    this->notify(this);
+}
 void GameEngine::setIsRunning(bool val) {mIsRunning = val;}
 bool GameEngine::isRunning() {return mIsRunning;}
 std::string GameEngine::getMapFileName() {return mMapFileName;}
 std::vector<Player*>& GameEngine::getPlayersContainer() {return mPlayer_v;}
 std::map<GameEngine::CurrentState, std::set<std::string>> GameEngine::getCommandMap() {return stateCommandMap;}
+
+std::string GameEngine::stringToLog() {
+    std::stringstream s;
+    s << "Transitioned to state: " << this->getState();
+    return s.str();
+}
 
 void GameEngine::closeGame()
 {
@@ -302,7 +318,7 @@ void GameEngine::run()
 }
 
 // -- game commands --
-// after each command is run: switch the game's state (setState(<currentState>))
+// after each command is run: switch the game's state (transition(<currentState>))
 
 void GameEngine::loadMap(std::string map_filename)
 {   
@@ -313,13 +329,13 @@ void GameEngine::loadMap(std::string map_filename)
     map_filePath += map_filename; 
     std::cout << "map filename:" << map_filePath << std::endl;
     this->mMap_ptr = new Map(map_filePath); 
-    setState(MAP_LOADED);
+    transition(MAP_LOADED);
 }
 
 void GameEngine::validateMap()
 {
     mMap_ptr->validate();
-    setState(MAP_VALIDATED);
+    transition(MAP_VALIDATED);
 }
 
 void GameEngine::distributeTerritories(int n_playerCount, int n_totalIndexes)
@@ -397,13 +413,13 @@ void GameEngine::addPlayer(const std::string& player_name)
     std::cout << "vector size: " << mPlayer_v.size() << std::endl;
     
     distributeTerritories(mPlayer_v.size(),mMap_ptr->num_territories);
-    setState(PLAYERS_ADDED);
+    transition(PLAYERS_ADDED);
 }
 
 void GameEngine::assignCountries()
 {
     std::cout << ">> Assigned countries." << std::endl;
-    setState(GAMESTART);
+    transition(GAMESTART);
 }
 
 
@@ -436,7 +452,7 @@ void GameEngine::gamestart(){
         }
         //add neutral player to the game
         territory_owner_troops_mappings.push_back(std::make_tuple(0,this->getNeutralPlayer() , 0));
-        setState(ASSIGN_REINFORCEMENTS); // switches to the main game state
+        transition(ASSIGN_REINFORCEMENTS); // switches to the main game state
         
     }
 
@@ -577,19 +593,6 @@ unsigned chooseTerritory(GameEngine& ge, Map m, OrderKind ok, Player* player, in
         default:
             throw "huh????";
     }
-    /*for (size_t i=0; i<m.num_territories; i++) {*/
-    /*    Map::Territory t = m.getTerritory(i);*/
-    /*    std::cout << "\t" << t.index << ": " << t.name << " in continent " << m.continents[t.continent_index] << std::endl;*/
-    /*}*/
-    /*int n = -1;*/
-    /*do {*/
-    /*    std::cout << "Please write the territory number you want to target: ";*/
-    /*    std::cin >> n;*/
-    /*    if (n < 0 || n >= (int)m.num_territories) {*/
-    /*        std::cout << "Territory not found, please reenter\n";*/
-    /*    }*/
-    /*} while(n < 0 || n >= (int)m.num_territories);*/
-    /*return (unsigned)n;*/
 }
 
 void GameEngine::reinforcementPhase()
@@ -616,7 +619,7 @@ void GameEngine::reinforcementPhase()
             p->getOrderList()->executeAll();
         }
     }
-        setState(ISSUE_ORDERS);
+        transition(ISSUE_ORDERS);
 }
 
 void GameEngine::issueOrder()
@@ -694,7 +697,7 @@ void GameEngine::endIssueOrders()
 {
     clear_extra();
     std::cout << ">> Finished issuing orders." << std::endl;
-    setState(EXECUTE_ORDERS);
+    transition(EXECUTE_ORDERS);
 }
 
 void GameEngine::issueOrdersPhase()
@@ -709,7 +712,7 @@ void GameEngine::execOrder()
     {
         p->getOrderList()->executeAll();
     }
-    setState(ASSIGN_REINFORCEMENTS);
+    transition(ASSIGN_REINFORCEMENTS);
 }
 
 void GameEngine::endExecOrders()
@@ -723,7 +726,7 @@ void GameEngine::endExecOrders()
         kickLosers(); // kicks players who lost all territories from the main vector, bye bye, sucks to be you!
         fillPlayerReinforcementPools(); // fills the deployment pools in preparation for next phase;
         distributeCardsToWinners();
-        setState(ASSIGN_REINFORCEMENTS);
+        transition(ASSIGN_REINFORCEMENTS);
     }
 }
 
@@ -811,7 +814,7 @@ void GameEngine::distributeCardsToWinners(){
 }
 void GameEngine::win()
 {
-    setState(WIN);
+    transition(WIN);
 
     std::string winner = mPlayer_v.at(0)->getName(); // last player left in the array
     std::cout << "CONGRATULATIONS! PLAYER " << winner << " WON THIS GAME!" << std::endl;
@@ -833,7 +836,7 @@ void GameEngine::win()
 
 void GameEngine::replay()
 {
-    setState(START);
+    transition(START);
     reset();
     run();    
 }

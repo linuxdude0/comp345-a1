@@ -1,9 +1,10 @@
 #include "Command.h"
 #include "GameEngine.h"
+#include <sstream>
 
 Command::Command()
 {
-    
+    logObserver->attachSubject(this);
 }
 
 Command::~Command()
@@ -23,6 +24,11 @@ void Command::saveEffect(const std::string& s_effect)
     std::cout << s_effect << std::endl;
 }
 
+std::string Command::stringToLog() {
+    std::stringstream s;
+    s << "Effect: " << this->getEffect();
+    return s.str();
+}
 
 // -- loadmap command --
 loadMapCommand::loadMapCommand(const std::string& s_argument)
@@ -39,6 +45,7 @@ void loadMapCommand::executeCommand(GameEngine& ge)
 void loadMapCommand::saveEffect(const std::string& s_effect)
 {
     mEffect = s_effect;
+    this->notify(this);
 }
 
 // -- validatemap command --
@@ -50,6 +57,7 @@ void validateMapCommand::executeCommand(GameEngine& ge)
 void validateMapCommand::saveEffect(const std::string& s_effect)
 {
     mEffect = s_effect;
+    this->notify(this);
 }
 
 // -- addplayer command --
@@ -67,6 +75,7 @@ void addPlayerCommand::executeCommand(GameEngine& ge)
 void addPlayerCommand::saveEffect(const std::string& s_effect)
 {
     mEffect = s_effect;
+    this->notify(this);
 }
 
 // -- assigncountries command --
@@ -78,6 +87,7 @@ void assignCountriesCommand::executeCommand(GameEngine& ge)
 void assignCountriesCommand::saveEffect(const std::string& s_effect)
 {
     mEffect = s_effect;
+    this->notify(this);
 }
 
 // -- quit command --
@@ -89,6 +99,7 @@ void quitCommand::executeCommand(GameEngine& ge)
 void quitCommand::saveEffect(const std::string& s_effect)
 {
     mEffect = s_effect;
+    this->notify(this);
 }
 
 // -- help command --
@@ -100,8 +111,8 @@ void helpCommand::executeCommand(GameEngine& ge)
 void helpCommand::saveEffect(const std::string& s_effect)
 {
     mEffect = s_effect;
+    this->notify(this);
 }
-
 
 // MEOW
 void gamestartCommand::executeCommand(GameEngine& ge)
@@ -111,5 +122,6 @@ void gamestartCommand::executeCommand(GameEngine& ge)
 void gamestartCommand::saveEffect(const std::string& s_effect)
 {
     mEffect = s_effect;
+    this->notify(this);
 }
 

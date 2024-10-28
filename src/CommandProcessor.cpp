@@ -1,18 +1,25 @@
 #include "CommandProcessor.h"
 #include "Command.h"
 #include "GameEngine.h"
+#include <limits>
 #include <memory>
 
 // -- constructor & destructor --
 
 CommandProcessor::CommandProcessor()
 {
-
+    logObserver->attachSubject(this);
 }
         
 CommandProcessor::~CommandProcessor()
 {
 
+}
+
+std::string CommandProcessor::stringToLog() {
+    std::stringstream s;
+    s << "Command: " << this->last_command;
+    return s.str();
 }
 
 // -- accessors & mutators --
@@ -129,6 +136,9 @@ void CommandProcessor::readCommand(const std::string& s_commandName, GameEngine&
 void CommandProcessor::saveCommand(const std::string& s_commandName, std::unique_ptr<Command> s_commandPtr)
 {
     mCommandMap[s_commandName] = std::move(s_commandPtr);
+    this->last_command = s_commandName;
+    this->notify(this);
+    this->last_command = "";
 }
 
 

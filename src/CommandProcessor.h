@@ -2,6 +2,7 @@
 #define COMMAND_PROCESSOR_H
 
 #include "Command.h"
+#include "LoggingObserver.h"
 #include <unordered_map>
 #include <memory>
 #include <iostream>
@@ -17,7 +18,7 @@ class Command;
 
 using CommandMap = std::unordered_map<std::string, std::unique_ptr<Command>>; 
 
-class CommandProcessor
+class CommandProcessor : public ILoggable, public Subject
 {
     public:
         // -- constructor & destructor --
@@ -25,7 +26,7 @@ class CommandProcessor
         virtual ~CommandProcessor();
         // -- accessors & mutators --
         CommandMap& getCommandMap();
-
+        std::string stringToLog() override;
         void saveCommand(const std::string& s_commandName, std::unique_ptr<Command> s_commandPtr); // add command to the commandMap
         virtual void getCommand(GameEngine& ge); // process user input
     
@@ -36,6 +37,7 @@ class CommandProcessor
     
     private:
         CommandMap mCommandMap;
+        std::string last_command;
 };
 
 #endif // !COMMAND_PROCESSOR_H
