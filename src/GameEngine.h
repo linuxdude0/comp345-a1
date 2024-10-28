@@ -60,6 +60,7 @@ class GameEngine
         Map& getMap();
         Deck& getDeck();
         Player& getPlayer();
+        Player* getNeutralPlayer(); // New getter method
         std::string getMapFileName();
         void setIsRunning(bool val);
         bool isRunning();
@@ -124,6 +125,7 @@ class GameEngine
         std::map<CurrentState, std::set<std::string>> stateCommandMap;
         std::vector<std::string> mArgs;
         std::string filename;
+        Player* mNeutralPlayer;
 };
 
 #endif // !GAME_ENGINE_H
