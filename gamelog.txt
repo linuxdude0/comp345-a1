@@ -1,6 +1,18 @@
 Command: loadmap
 Transitioned to state: MAP_LOADED
-Effect: 
+Effect: loadmap
 Command: validatemap
 Transitioned to state: MAP_VALIDATED
-Effect: 
+Effect: validatemap
+Command: addplayer
+Transitioned to state: PLAYERS_ADDED
+Effect: addplayer
+Command: addplayer
+Transitioned to state: PLAYERS_ADDED
+Effect: addplayer
+Command: assigncountries
+Transitioned to state: GAMESTART
+Effect: assigncountries
+Command: gamestart
+Transitioned to state: ASSIGN_REINFORCEMENTS
+Transitioned to state: ASSIGN_REINFORCEMENTS

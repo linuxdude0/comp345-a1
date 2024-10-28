@@ -14,16 +14,6 @@ Command::~Command()
 
 std::string Command::getEffect() {return mEffect;}
 
-void Command::executeCommand(GameEngine& ge)
-{
-    std::cout << ge << std::endl;
-}
-
-void Command::saveEffect(const std::string& s_effect)
-{
-    std::cout << s_effect << std::endl;
-}
-
 std::string Command::stringToLog() {
     std::stringstream s;
     s << "Effect: " << this->getEffect();
@@ -45,6 +35,7 @@ void loadMapCommand::executeCommand(GameEngine& ge)
 void loadMapCommand::saveEffect(const std::string& s_effect)
 {
     mEffect = s_effect;
+    std::cout << s_effect << std::endl;
     this->notify(this);
 }
 
@@ -57,6 +48,7 @@ void validateMapCommand::executeCommand(GameEngine& ge)
 void validateMapCommand::saveEffect(const std::string& s_effect)
 {
     mEffect = s_effect;
+    std::cout << s_effect << std::endl;
     this->notify(this);
 }
 
@@ -75,6 +67,7 @@ void addPlayerCommand::executeCommand(GameEngine& ge)
 void addPlayerCommand::saveEffect(const std::string& s_effect)
 {
     mEffect = s_effect;
+    std::cout << s_effect << std::endl;
     this->notify(this);
 }
 
@@ -87,6 +80,7 @@ void assignCountriesCommand::executeCommand(GameEngine& ge)
 void assignCountriesCommand::saveEffect(const std::string& s_effect)
 {
     mEffect = s_effect;
+    std::cout << s_effect << std::endl;
     this->notify(this);
 }
 
@@ -99,6 +93,7 @@ void quitCommand::executeCommand(GameEngine& ge)
 void quitCommand::saveEffect(const std::string& s_effect)
 {
     mEffect = s_effect;
+    std::cout << s_effect << std::endl;
     this->notify(this);
 }
 
@@ -111,6 +106,7 @@ void helpCommand::executeCommand(GameEngine& ge)
 void helpCommand::saveEffect(const std::string& s_effect)
 {
     mEffect = s_effect;
+    std::cout << s_effect << std::endl;
     this->notify(this);
 }
 
@@ -122,6 +118,7 @@ void gamestartCommand::executeCommand(GameEngine& ge)
 void gamestartCommand::saveEffect(const std::string& s_effect)
 {
     mEffect = s_effect;
+    std::cout << s_effect << std::endl;
     this->notify(this);
 }
 
