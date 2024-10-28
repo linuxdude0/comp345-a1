@@ -20,7 +20,6 @@ enum class OrderKind{
 };
 
 class Order : public ILoggable, public Subject{
-
 protected:
     Player* player;
     unsigned territory_target;
@@ -107,7 +106,6 @@ public:
 };
 
 class OrderList : public ILoggable, public Subject{
-
 private:
     struct OrderListItem {
         Order* order;

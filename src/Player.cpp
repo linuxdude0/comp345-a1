@@ -176,24 +176,33 @@ bool Player::issueOrder(Order* order) {
             this->orders->add(order);
             break;
         case OrderKind::BOMB:
-            if (this->playCard(CardType::BOMB)) {
-                this->orders->add(order);
+            if (!this->playCard(CardType::BOMB)) {
+                std::cout << "[!] " << *order << "failed, no card for player [Player " << this->getName() << "]" << std::endl;
+                return false;
             }
+            this->orders->add(order);
             break;
         case OrderKind::AIRLIFT:
-            if (this->playCard(CardType::AIRLIFT)) {
-                this->orders->add(order);
+            if (!this->playCard(CardType::AIRLIFT)) {
+                std::cout << "[!] " << *order << "failed, no card for player [Player " << this->getName() << "]" << std::endl;
+                return false;
             }
+            this->orders->add(order);
             break;
         case OrderKind::BLOCKADE:
-            if (this->playCard(CardType::BLOCKADE)) {
-                this->orders->add(order);
+            if (!this->playCard(CardType::BLOCKADE)) {
+                std::cout << "[!] " << *order << "failed, no card for player [Player " << this->getName() << "]" << std::endl;
+                return false;
             }
+            this->orders->add(order);
             break;
         case OrderKind::NEGOTIATE:
-            if (this->playCard(CardType::DIPLOMACY)) {
-                this->orders->add(order);
+            if (!this->playCard(CardType::DIPLOMACY)) {
+                std::cout << "[!] " << *order << "failed, no card for player [Player " << this->getName() << "]" << std::endl;
+                return false;
+
             }
+            this->orders->add(order);
             break;
     }
     return true;

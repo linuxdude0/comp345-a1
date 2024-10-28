@@ -2,7 +2,6 @@
 #include "Map.h"
 #include "Orders.h"
 #include "Player.h"
-#include "common.h"
 #include <algorithm>
 #include <cassert>
 #include "Mappings.h"
@@ -679,7 +678,7 @@ void GameEngine::issueOrder()
                     p->issueOrder(new BombOrder(player, target));
                     break;
                 case OrderKind::BLOCKADE:
-                    p->issueOrder(new BlockadeOrder(player, target));
+                    p->issueOrder(new BlockadeOrder(player, target, this->mNeutralPlayer));
                     break;
                 case OrderKind::NEGOTIATE:
                     p->issueOrder(new NegotiateOrder(player, target));
