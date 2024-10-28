@@ -251,16 +251,16 @@ void GameEngine::updateGame()
 // -- main functions --
 void GameEngine::userQuery()
 {
+    // get commands from manual user input
     mCommandProcessor_ptr->getCommand(*this);
 }
 
 
 void GameEngine::automaticQuery()
 {
-    // here is a small gift
-    /*this->filename*/ // here ya go,  a filename for automaticQuery
-    // -- read commands from file --
-    // mCommandProcessor_ptr->
+    // read commands from file
+   mFCPA_ptr = new FileCommandProcessorAdapter(filename);
+   mFCPA_ptr->getCommand(*this); 
 }
 
 void GameEngine::reset()

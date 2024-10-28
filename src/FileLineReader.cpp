@@ -21,5 +21,14 @@ bool FileLineReader::readLineFromFile(std::string& s_line)
     {
         return true;
     }
+
+    if(mCommandsFile.eof())
+    {
+        std::cout << "[WARNING]: Reached EOF." << std::endl;
+    }
+    else if(mCommandsFile.fail())
+    {
+        std::cout << "[ERROR]: Failed to read from file." << std::endl;
+    }
     return false;
 }
