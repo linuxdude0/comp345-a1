@@ -14,7 +14,7 @@ void clear_extra()
 	std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 }
 
-int prompt_for_numeric(const std::string& message)
+int prompt_for_numeric(const std::string& message, GameEngine& ge)
 {
     // ask user for an integer input (with error checking)
     while(true)
@@ -28,6 +28,11 @@ int prompt_for_numeric(const std::string& message)
             {
             std::cerr << "ERROR: Cannot be (less than) < 0. \n";
             continue;
+        }
+        if(std::cin.eof())
+        {
+            ge.setIsRunning(false);
+            ge.closeGame();
         }
         clear_extra();
         return tEntry;
@@ -457,7 +462,7 @@ void print_table(void) {
     }
 }
 
-unsigned chooseTerritory(Map m, OrderKind ok, Player* player, int src=-1) {
+unsigned chooseTerritory(GameEngine& ge, Map m, OrderKind ok, Player* player, int src=-1) {
 #ifdef DEBUG
     std::cout << "\t\t\tsrc= " << src << "\n";
     print_table();
@@ -535,8 +540,8 @@ unsigned chooseTerritory(Map m, OrderKind ok, Player* player, int src=-1) {
             }
             int n = -1;
             do {
-                std::cout << "Please write the territory number you choose: ";
-                std::cin >> n;
+                //std::cout << "Please write the territory number you choose: ";
+                n = prompt_for_numeric("Please write the territory number you choose: ", ge);
                 if (!player->toAttackTerritory(n)) {
                     std::cout << "Territory not found, please reenter\n";
                 }
@@ -562,8 +567,7 @@ unsigned chooseTerritory(Map m, OrderKind ok, Player* player, int src=-1) {
             }
             int n = -1;
             do {
-                std::cout << "Please write the territory number you choose: ";
-                std::cin >> n;
+                n = prompt_for_numeric("Please write the territory number you choose: ", ge);
                 if (!player->ownsTerritory(n)) {
                     std::cout << "Territory not found, please reenter\n";
                 }
@@ -599,11 +603,12 @@ void GameEngine::reinforcementPhase()
         while (p->getReinforcementPool() > 0) {
             std::cout << "You need to deploy as you still have " << p->getReinforcementPool()<< " troops to deploy" << std::endl;
             std::cout << "Choose the target territory: \n";
-            unsigned territory = chooseTerritory(*this->mMap_ptr, OrderKind::DEPLOY, p);
+            // -- first *this argument is a pointer to GameEngine --
+            unsigned territory = chooseTerritory(*this,*this->mMap_ptr, OrderKind::DEPLOY, p);
             int num_troops = -1;
             do {
-                std::cout << "Please choose how many of the " << p->getReinforcementPool()<< " troops you want to deploy at " << this->mMap_ptr->getTerritory(territory).name << ": ";
-                std::cin >> num_troops;
+                std::cout << "Please choose how many of the " << p->getReinforcementPool()<< " troops you want to deploy at " << this->mMap_ptr->getTerritory(territory).name;
+                num_troops = prompt_for_numeric(": ", *this);
                 if (num_troops < 1 || num_troops > p->getReinforcementPool()) {
                     std::cout << "Wrong number of troops, please reenter" << std::endl;
                 }
@@ -634,9 +639,9 @@ void GameEngine::issueOrder()
                 case OrderKind::AIRLIFT:
                     {
                         std::cout << "Choose source territory: " << std::endl;
-                        source = chooseTerritory(*this->mMap_ptr, m_orderKind, p);
+                        source = chooseTerritory(*this, *this->mMap_ptr, m_orderKind, p);
                         std::cout << "Choose target territory: " << std::endl;
-                        target = chooseTerritory(*this->mMap_ptr, m_orderKind, p, source);
+                        target = chooseTerritory(*this, *this->mMap_ptr, m_orderKind, p, source);
                         unsigned tr = 0;
                         for (std::tuple<unsigned, Player*, unsigned> t : territory_owner_troops_mappings) {
                             if (source == std::get<0>(t)) {
@@ -644,8 +649,8 @@ void GameEngine::issueOrder()
                             }
                         }
                         do {
-                            std::cout << "Please the number of troops (you can distribute " << tr << "): ";
-                            std::cin >> num_troops;
+                            std::cout << "Please the number of troops (you can distribute " << tr;
+                            num_troops = prompt_for_numeric("):",*this);
                             if (num_troops <= 0) {
                                 std::cout << "wrong number of troops" << std::endl;
                             }
@@ -656,7 +661,7 @@ void GameEngine::issueOrder()
                 case OrderKind::BLOCKADE:
                 case OrderKind::NEGOTIATE:
                     std::cout << "Choose target territory: " << std::endl;
-                    target = chooseTerritory(*this->mMap_ptr, m_orderKind, p);
+                    target = chooseTerritory(*this, *this->mMap_ptr, m_orderKind, p);
                     break;
                 default:
                     throw "huh????";
