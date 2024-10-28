@@ -1,0 +1,6 @@
+loadmap Atlantis.map
+validatemap
+addplayer lol1
+addplayer lol2
+assigncountries
+gamestart

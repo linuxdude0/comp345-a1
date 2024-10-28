@@ -5,6 +5,7 @@
 #include "Player.h"
 #include "Cards.h"
 #include "CommandProcessor.h"
+#include "FileCommandProcessorAdapter.h"
 
 #include <iostream>
 #include <string>
