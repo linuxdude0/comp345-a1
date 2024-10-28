@@ -4,6 +4,7 @@
 #include <vector>
 #include <iostream>
 #include "Map.h"
+#include "LoggingObserver.h"
 using std::vector;
 using std::ostream;
 
@@ -18,7 +19,7 @@ enum class OrderKind{
     NEGOTIATE
 };
 
-class Order{
+class Order : public ILoggable, public Subject{
 
 protected:
     Player* player;
@@ -30,7 +31,7 @@ public:
     virtual void execute() = 0;
     friend ostream & operator << (ostream & out, const Order & order);
     virtual ~Order();
-    
+    std::string stringToLog() override;   
 };
 
 class DeployOrder : public Order {
@@ -105,7 +106,7 @@ public:
     NegotiateOrder* operator=(NegotiateOrder* order);
 };
 
-class OrderList{
+class OrderList : public ILoggable, public Subject{
 
 private:
     struct OrderListItem {
@@ -113,8 +114,7 @@ private:
         int index;
     };
     vector<OrderListItem> orders;
-
-
+    Order* last_added_order = nullptr;
 public:
     OrderList();
     OrderList(OrderList* orders);
@@ -122,11 +122,10 @@ public:
     void remove(unsigned index);
     void move(unsigned oldPosition, unsigned newPosition);
     void executeAll();
-    ~OrderList();
-
+    virtual ~OrderList();
+    std::string stringToLog() override;
     NegotiateOrder* operator=(NegotiateOrder* order);
     friend ostream & operator << (ostream & out, const OrderList & orderList);
-
 };
 
 int testOrderLists();

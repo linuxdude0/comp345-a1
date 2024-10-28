@@ -257,16 +257,16 @@ void GameEngine::updateGame()
 // -- main functions --
 void GameEngine::userQuery()
 {
+    // get commands from manual user input
     mCommandProcessor_ptr->getCommand(*this);
 }
 
 
 void GameEngine::automaticQuery()
 {
-    // here is a small gift
-    /*this->filename*/ // here ya go,  a filename for automaticQuery
-    // -- read commands from file --
-    // mCommandProcessor_ptr->
+    // read commands from file
+   mFCPA_ptr = new FileCommandProcessorAdapter(filename);
+   mFCPA_ptr->getCommand(*this); 
 }
 
 void GameEngine::reset()
@@ -518,9 +518,34 @@ unsigned chooseTerritory(Map m, OrderKind ok, Player* player, int src=-1) {
             return (unsigned)n;
         }
             break;
+        case OrderKind::BOMB: {
+            for(unsigned i: player->toAttack()) {
+                Map::Territory t = m.getTerritory(i);
+                unsigned num_troops = 0;
+                Player* p = nullptr;
+                for (std::tuple<unsigned, Player*, unsigned> tuple : territory_owner_troops_mappings) {
+                    unsigned terr = std::get<0>(tuple);
+                    if (terr == i) {
+                        num_troops = std::get<2>(tuple);
+                        p = std::get<1>(tuple);
+                        break;
+                    }
+                }
+                std::cout << "\t" << t.index << ": " << t.name << " in continent " << m.continents[t.continent_index] << " with " << num_troops << " troops, owner: " << p->getName() << std::endl;
+            }
+            int n = -1;
+            do {
+                std::cout << "Please write the territory number you choose: ";
+                std::cin >> n;
+                if (!player->toAttackTerritory(n)) {
+                    std::cout << "Territory not found, please reenter\n";
+                }
+            } while(!player->toAttackTerritory(n));
+            return (unsigned)n;
+        }
+            break;
         case OrderKind::DEPLOY: 
         case OrderKind::AIRLIFT:
-        case OrderKind::BOMB:
         case OrderKind::BLOCKADE:
         case OrderKind::NEGOTIATE: {
             for(unsigned i: player->toDefend()) {

@@ -3,11 +3,13 @@
 #include "Mappings.h"
 #include <algorithm>
 #include <cassert>
-
-extern std::vector<std::tuple<unsigned, Player*, unsigned>> territory_owner_troops_mappings;
+#include <sstream>
+#include "LoggingObserver.h"
 
 //Default constructor
-Order::Order() = default;
+Order::Order() {
+    logObserver->attachSubject(this);
+};
 
 Order::~Order() = default;
 
@@ -35,7 +37,15 @@ ostream& operator<< (ostream & out, const Order & order){
     return out;
 }
 
-OrderList::OrderList(OrderList* orders) : orders(orders->orders) {}
+std::string Order::stringToLog() {
+    std::stringstream s;   
+    s << "Executing " << *this;
+    return s.str();
+}
+
+OrderList::OrderList(OrderList* orders) : orders(orders->orders) {
+    logObserver->attachSubject(this);
+}
 
 //Implementing Deploy Order
 DeployOrder::DeployOrder(Player* player, unsigned territory_target, unsigned num_troops){
@@ -70,6 +80,7 @@ bool DeployOrder::validate() {
     return true;
 }
 
+
 void DeployOrder::execute() {
     if (validate()){
         std::cout << "Executing Deploy for Player..." << player->getName() << std::endl;
@@ -83,6 +94,7 @@ void DeployOrder::execute() {
             }
         }
         std::cout << "[ok] Deploy Executed for [Player: " << player->getName() << "] on territory " << territory_target << "with " << num_troops << " units" << std::endl;
+        this->notify(this);
     }
     else{
         std::cout << "[!] Deploy execution failed for player " << player->getName() << std::endl;
@@ -290,6 +302,7 @@ void AdvanceOrder::execute(){
     
             }
         }
+        this->notify(this);
     }
     else{
         std::cout << "[!] Advance execution failed for player " << player->getName() << std::endl;
@@ -317,6 +330,7 @@ bool BombOrder::validate() {
 void BombOrder::execute() {
     if (validate()){
         std::cout << "Executing Bomb\n";
+        this->notify(this);
     }
 }
 
@@ -386,6 +400,7 @@ void BlockadeOrder::execute() {
         } else {
             std::cout << "Blockade order executed successfully." << std::endl;
         }
+        this->notify(this);
     }
 }
 
@@ -411,6 +426,7 @@ bool AirliftOrder::validate() {
 void AirliftOrder::execute() {
     if (validate()){
         std::cout << "Executing Airlift\n";
+        this->notify(this);
     }
 }
 
@@ -434,6 +450,7 @@ bool NegotiateOrder::validate() {
 void NegotiateOrder::execute() {
     if (validate()){
         std::cout << "Executing Negotiate\n";
+        this->notify(this);
     }
 }
 ostream & operator << (ostream & out, const NegotiateOrder & negotiateOrder){
@@ -447,6 +464,9 @@ ostream & operator << (ostream & out, const NegotiateOrder & negotiateOrder){
 void OrderList::add(Order* order) {
     OrderListItem item = {order, (int)orders.size()};
     orders.push_back(item);
+    this->last_added_order=order;
+    this->notify(this);
+    this->last_added_order=nullptr;
 }
 
 //Remove an order from the list
@@ -462,10 +482,8 @@ void OrderList::remove(unsigned int index) {
 
 //Move an order in the list
 void OrderList::move(unsigned int oldPosition, unsigned int newPosition) {
-
     bool foundSource = false;
     bool foundDestination = false;
-
     int source_index = -1;
     int destination_index = -1;
     for (size_t i = 0; i < this->orders.size(); ++i){
@@ -478,7 +496,6 @@ void OrderList::move(unsigned int oldPosition, unsigned int newPosition) {
             foundDestination = true;
         }
     }
-
     if (foundSource) {
         if (foundDestination){
             int temp = orders[destination_index].index;
@@ -492,7 +509,6 @@ void OrderList::move(unsigned int oldPosition, unsigned int newPosition) {
     else {
         throw "Cannot find order";
     }
-
 }
 
 void OrderList::executeAll() {
@@ -506,7 +522,9 @@ void OrderList::executeAll() {
     }
 }
 
-OrderList::OrderList(){}
+OrderList::OrderList(){
+    logObserver->attachSubject(this);
+}
 
 OrderList::~OrderList() {
     for (size_t i = 0; i < this->orders.size(); ++i) {
@@ -516,6 +534,12 @@ OrderList::~OrderList() {
             orders[i].order = nullptr;
         }
     }
+}
+
+std::string OrderList::stringToLog() {
+    std::stringstream s;
+    s << "adding " << *this->last_added_order;
+    return s.str();
 }
 
  ostream & operator << (ostream & out, const OrderList & orderList){
