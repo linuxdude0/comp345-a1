@@ -583,7 +583,9 @@ bool NegotiateOrder::validate() {
 void NegotiateOrder::execute() {
     if (validate()){
 
+        assert(player);
         player->no_aggression_this_turn_list.push_back(targetPlayer);
+        assert(targetPlayer);
         targetPlayer->no_aggression_this_turn_list.push_back(player);
         // dont you dare do like Germany in 1939
 
@@ -654,7 +656,7 @@ void OrderList::move(unsigned int oldPosition, unsigned int newPosition) {
 void OrderList::executeNegotiateOrders() {
     for (size_t i = 0; i < this->orders.size(); ++i) {
         if (this->orders[i].order != nullptr && this->orders[i].index >= 0) {
-            if (dynamic_cast<NegotiateOrder*>(this->orders[i].order) != nullptr) {
+            if (this->orders[i].order->orderKind == OrderKind::NEGOTIATE) {
                 orders[i].order->execute();
                 orders[i].index = -1;
                 delete orders[i].order;
