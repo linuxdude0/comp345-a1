@@ -367,10 +367,10 @@ bool BombOrder::validate() {
         if(p == targetPlayer){ 
 
             std::cout << "[!] Bomb Order Validation failed for player " << player->getName() <<  ": target territory = " << territory_target << " belongs to a player " << targetPlayer->getName() << " with whom a negotiation is taking place."<<std::endl;
-
+            return false;
         }
     }
-    
+
     //All verification done
     std::cout << "[ok] Bomb Order Validation successful" << std::endl;
     return true;
