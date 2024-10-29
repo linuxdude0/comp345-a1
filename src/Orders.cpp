@@ -353,7 +353,7 @@ void BombOrder::execute() {
                 std:: cout << "[info] " << std::get<2>(territory_owner_troops_mappings[i]) << " troops in target territory" << std::endl;
                 unsigned troopsToRemove = (std::get<2>(territory_owner_troops_mappings[i]))/2;
                 std::cout << "[info] " << troopsToRemove << " troops would be removed by executing bomb order" << std::endl;
-                std::get<2>(territory_owner_troops_mappings[i]) = std::get<2>(territory_owner_troops_mappings[i]) - troopsToRemove;
+                std::get<2>(territory_owner_troops_mappings[i]) = (std::get<2>(territory_owner_troops_mappings[i]))/2;
                 std::cout << "[ok] Player : " << player ->getName() << " ; Bomb Order executed: " << troopsToRemove << " troops removed from territory " << territory_target << " and " << std::get<2>(territory_owner_troops_mappings[i]) << " troops are left in that territory" << std::endl;
                 break;
             }
