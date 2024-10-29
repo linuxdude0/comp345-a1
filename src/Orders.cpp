@@ -317,20 +317,52 @@ ostream & operator << (ostream & out, const AdvanceOrder & advanceOrder){
 }
 
 //Implementing Bomb Order
-BombOrder::BombOrder(Player* player, unsigned territory_target) {
+BombOrder::BombOrder(Player* player, unsigned territory_target, Map* map_ptr) {
     this->player = player;
     this->territory_target = territory_target;
     this->orderKind = OrderKind::BOMB;
+    this->map_ptr = map_ptr;
 }
 
 bool BombOrder::validate() {
+
+    //Verify that the target territory isn't owned by the player playing the order
+    if (player ->ownsTerritory(territory_target)){
+        std::cout << "[!] Bomb Order Validation failed for player " << player->getName() <<  ": target territory = " << territory_target << " is owned by the player" <<std::endl;
+        return false;
+    }
+
+    //Verify that the target territory is adjacent to a territory owned by the player that is playing the bomb order
+    if(!player ->toAttackTerritory(territory_target)){
+        std::cout << "[!] Bomb Order Validation failed for player " << player->getName() <<  ": target territory = " << territory_target << " is not adjacent to any territory owned by player " <<player ->getName() <<std::endl;
+        return false;
+    }
+
+    //All verification done
+    std::cout << "[ok] Bomb Order Validation successful" << std::endl;
     return true;
 }
 
 void BombOrder::execute() {
     if (validate()){
-        std::cout << "Executing Bomb\n";
+        std::cout << "Executing Bomb Order for Player [" << player->getName() << "]"<< std::endl;
+
+        //Find the target territory and remove half of the troop number
+        for (int i = 0 ; i < territory_owner_troops_mappings.size(); i++){
+            if(std::get<0>(territory_owner_troops_mappings[i]) == territory_target){
+                std:: cout << "[info] " << std::get<2>(territory_owner_troops_mappings[i]) << " troops in target territory" << std::endl;
+                unsigned troopsToRemove = (std::get<2>(territory_owner_troops_mappings[i]))/2;
+                std::cout << "[info] " << troopsToRemove << " troops would be removed by executing bomb order" << std::endl;
+                std::get<2>(territory_owner_troops_mappings[i]) = std::get<2>(territory_owner_troops_mappings[i]) - troopsToRemove;
+                std::cout << "[ok] Player : " << player ->getName() << " ; Bomb Order executed: " << troopsToRemove << " troops removed from territory " << territory_target << " and " << std::get<2>(territory_owner_troops_mappings[i]) << " troops are left in that territory" << std::endl;
+                break;
+            }
+        }
         this->notify(this);
+    }
+    else{
+        std::cout << "[!] Bomb execution failed for player " << player->getName() << std::endl;
+        return;
     }
 }
 
