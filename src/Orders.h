@@ -62,7 +62,7 @@ public:
 class BombOrder : public Order {
     Map* map_ptr;
 public:
-    BombOrder(Player* player, unsigned territory_target, Map* map_ptr);
+    BombOrder(Player* player, unsigned territory_target);
     BombOrder(BombOrder* bombOrder);
     bool validate() override;
     void execute() override;

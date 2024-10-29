@@ -317,11 +317,10 @@ ostream & operator << (ostream & out, const AdvanceOrder & advanceOrder){
 }
 
 //Implementing Bomb Order
-BombOrder::BombOrder(Player* player, unsigned territory_target, Map* map_ptr) {
+BombOrder::BombOrder(Player* player, unsigned territory_target) {
     this->player = player;
     this->territory_target = territory_target;
     this->orderKind = OrderKind::BOMB;
-    this->map_ptr = map_ptr;
 }
 
 bool BombOrder::validate() {
@@ -348,7 +347,7 @@ void BombOrder::execute() {
         std::cout << "Executing Bomb Order for Player [" << player->getName() << "]"<< std::endl;
 
         //Find the target territory and remove half of the troop number
-        for (int i = 0 ; i < territory_owner_troops_mappings.size(); i++){
+        for (unsigned i = 0 ; i < territory_owner_troops_mappings.size(); i++){
             if(std::get<0>(territory_owner_troops_mappings[i]) == territory_target){
                 std:: cout << "[info] " << std::get<2>(territory_owner_troops_mappings[i]) << " troops in target territory" << std::endl;
                 unsigned troopsToRemove = (std::get<2>(territory_owner_troops_mappings[i]))/2;
@@ -480,7 +479,7 @@ bool AirliftOrder::validate() {
 
     //Verify if each tuple match the source territory
     //When the source territory is found, set the number of troops to the one of the tuple and then exit loop
-    for (int i = 0 ; i < territory_owner_troops_mappings.size() ; i++){
+    for (unsigned i = 0 ; i < territory_owner_troops_mappings.size() ; i++){
         if(std::get<0>(territory_owner_troops_mappings[i]) == territory_source){
             troopsAvailableSource = std::get<2>(territory_owner_troops_mappings[i]);
             break;
@@ -507,7 +506,7 @@ void AirliftOrder::execute() {
 
         //Update the troops in both source and target territories
         //First find the matching tuple, then modify the number of troops by removing or adding the number of troops to be moved
-        for (int i = 0 ; i < territory_owner_troops_mappings.size() ; i++){
+        for (unsigned i = 0 ; i < territory_owner_troops_mappings.size() ; i++){
             if (std::get<0>(territory_owner_troops_mappings[i]) == territory_source){
                 std::get<2>(territory_owner_troops_mappings[i]) = std::get<2>(territory_owner_troops_mappings[i]) - num_troops;
             }
