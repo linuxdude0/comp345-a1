@@ -419,14 +419,77 @@ AirliftOrder::AirliftOrder(Player* player, unsigned territory_target, unsigned t
     this->orderKind = OrderKind::AIRLIFT;
 }
 
+//Validation for if the airlift order can be executed
 bool AirliftOrder::validate() {
+
+    //Check if the source and target territory are owned by the player
+    bool sourceTerritoryOwned = player ->ownsTerritory(territory_source);
+    bool targetTerritoryOwned = player ->ownsTerritory(territory_target);
+
+    //Check if the source and target territory are both owned by the same player that is playing the airlift card
+    if (!sourceTerritoryOwned && !targetTerritoryOwned){
+        std::cout << "[!] Airlift Order Validation failed: Player " << player -> getName() << " must own both source and target territories" << std::endl;
+        return false;
+    }
+
+    //If one of the territories is owned but not the other, will print which isn't owned
+    if(!sourceTerritoryOwned){
+        std::cout << "[!] Airlift Order Validation failed: Player " << player -> getName() << " must own source territory" << std::endl;
+        return false;
+    }
+    if(!targetTerritoryOwned){
+        std::cout << "[!] Airlift Order Validation failed: Player " << player -> getName() << " must own target territory" << std::endl;
+        return false;
+    }
+
+    //Find how many troops are in source to make sure there is enough available
+    //set to 0 for default
+    unsigned troopsAvailableSource = 0;
+
+    //Verify if each tuple match the source territory
+    //When the source territory is found, set the number of troops to the one of the tuple and then exit loop
+    for (int i = 0 ; i < territory_owner_troops_mappings.size() ; i++){
+        if(std::get<0>(territory_owner_troops_mappings[i]) == territory_source){
+            troopsAvailableSource = std::get<2>(territory_owner_troops_mappings[i]);
+            break;
+        }
+    }
+
+    //Verify if the number of troops to be moved to target is less than or equal to the available troops in the source territory
+    if (num_troops > troopsAvailableSource){
+        std::cout << "[!] Airlift Order Validation failed: Not enough troops in source territory\n" << troopsAvailableSource << " troops available in source territory " << territory_source << std::endl;
+        return false;
+    }
+
+    //All checks are cleared; validation is successful
+    std::cout << "[ok] Airlift Order Validation successful" << std::endl;
+
     return true;
 }
 
 void AirliftOrder::execute() {
     if (validate()){
-        std::cout << "Executing Airlift\n";
+        std::cout << "Executing Airlift Order for player " << player -> getName() << std::endl;
+
+        std::cout << "[info] [Player: " << player->getName() << "] : " << num_troops << " troops airlift from " << territory_source << " to " << territory_target << std::endl;
+
+        //Update the troops in both source and target territories
+        //First find the matching tuple, then modify the number of troops by removing or adding the number of troops to be moved
+        for (int i = 0 ; i < territory_owner_troops_mappings.size() ; i++){
+            if (std::get<0>(territory_owner_troops_mappings[i]) == territory_source){
+                std::get<2>(territory_owner_troops_mappings[i]) = std::get<2>(territory_owner_troops_mappings[i]) - num_troops;
+            }
+            if(std::get<0>(territory_owner_troops_mappings[i]) == territory_target){
+                std::get<2>(territory_owner_troops_mappings[i]) = std::get<2>(territory_owner_troops_mappings[i]) + num_troops;
+            }
+        }
+
+        std::cout << "[ok] Player: " << player -> getName() << "\nAirlift executed, " << num_troops << " troops moved from " << territory_source << " to " << territory_target << std::endl;
         this->notify(this);
+    }
+    else{
+        std::cout << "[!] Airlift execution failed for player " << player->getName() << std::endl;
+        return;
     }
 }
 
