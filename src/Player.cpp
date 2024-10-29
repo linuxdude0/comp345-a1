@@ -160,8 +160,11 @@ bool Player::cardToReceiveThisTurn(){return cardToIssueFlag;};
 
 
 bool Player::playCard(CardType ct) {
+    if (this->currHand == nullptr) {
+        return false;
+    }
     for(size_t i = 0; i < currHand->handCards.size(); i++){
-        if (currHand->handCards.at(i)->getType() == ct){
+        if (this->currHand->handCards.at(i) && currHand->handCards.at(i)->getType() == ct){
             currHand->handCards.at(i)->play(currDeck);
             currHand->handCards[i] = nullptr;
             return true;

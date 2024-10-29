@@ -848,8 +848,7 @@ void GameEngine::win()
     }
 }
 
-Player* GameEngine::chooseAPlayerToTarget(Player* issuing){
-
+Player* GameEngine::chooseAPlayerToTarget(Player* issuing) {
     std::string chosen;
     std::string waste;
     bool done = false;
@@ -860,14 +859,13 @@ Player* GameEngine::chooseAPlayerToTarget(Player* issuing){
             if(p == issuing){continue;}
             std::cout << counter++ << " : " << p->getName() << std::endl;
         }
-
         std::cout << "Your choice (enter full name) :" << std::endl;
         std::getline(std::cin, waste);
         std::getline(std::cin, chosen);
-
+        #ifdef DEBUG
         std::cout << chosen.size() << " ";
         std::cout << chosen;
-
+        #endif
         if(issuing->getName() != chosen){
             done = true;
         }
@@ -875,7 +873,6 @@ Player* GameEngine::chooseAPlayerToTarget(Player* issuing){
             std::cout << "[!] Cannot target yourself with a Negotiation order, make sure to choose another player instead!" << std::endl;
         }
     }while(!done);
-
     for(auto p : mPlayer_v){
         if(p->getName() == chosen){
             return p;

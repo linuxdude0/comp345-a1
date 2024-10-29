@@ -355,7 +355,7 @@ bool BombOrder::validate() {
         return false;
     }
 
-    Player* targetPlayer;
+    Player* targetPlayer = this->player;
 
     for(auto& tuple : territory_owner_troops_mappings){
         if(std::get<0>(tuple) == territory_target){
@@ -566,7 +566,7 @@ ostream& operator << (ostream & out, const AirliftOrder & airliftOrder){
 
 //Implementing Negotiate Order
 NegotiateOrder::NegotiateOrder(Player* requestingPlayer, Player* targetPlayer) {
-    this->player = player;
+    this->player = requestingPlayer;
     this->territory_target = territory_target;
     this->orderKind = OrderKind::NEGOTIATE;
     this->targetPlayer = targetPlayer;
