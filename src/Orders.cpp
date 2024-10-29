@@ -93,7 +93,7 @@ void DeployOrder::execute() {
                 player->removeFromReinforcementPool(num_troops);
             }
         }
-        std::cout << "[ok] Deploy Executed for [Player: " << player->getName() << "] on territory " << territory_target << "with " << num_troops << " units" << std::endl;
+        std::cout << "[ok] Deploy Executed for [Player: " << player->getName() << "] on territory " << territory_target << " with " << num_troops << " units" << std::endl;
         this->notify(this);
     }
     else{
@@ -219,9 +219,6 @@ bool AdvanceOrder::validate(){
         std::cout << "[!] Advance Order Validation failed:" << " source territory does not belong to player " << player->getName() << std::endl;    
         return false;
     }
-
-
-
     //  check that correct num of troops to advance
     for (const auto& tuple : territory_owner_troops_mappings){
 
@@ -258,11 +255,32 @@ bool AdvanceOrder::validate(){
         }
     }
     if(!match){
-        std::cout << "[!] Advance Order Validation failed for player " << player->getName() <<  ": target territory= " << territory_target << " is not adjacent to source =" << territory_source <<std::endl;
+        std::cout << "[!] Advance Order Validation failed for player " << player->getName() <<  ": target territory= " << territory_target << " is not adjacent to source=" << territory_source <<std::endl;
         return false;
     }
 
-    
+    // if the target doesnt belong to the player invoking -- let's check that they are not in an active negotiation, attacks would then fail! -- lev
+    if(!targetbelongsToPlayer()){
+
+        Player* targetPlayer = nullptr;
+
+        for (const auto& tuple : territory_owner_troops_mappings){
+            if(std::get<0>(tuple) == territory_target){
+                targetPlayer = std::get<1>(tuple);
+            }
+        }
+
+        for(Player* p : player->no_aggression_this_turn_list){
+
+            if(p == targetPlayer){
+                // means the invoking player is trying to attack a player with whom they have a Negotiation agreement -- lev 
+                std::cout << "[!] Advance Order Validation failed for Player " << player->getName() << ", since Player " << targetPlayer->getName() << " is in Negotiation phase with them."; 
+                return false;
+            }
+        }
+    }
+
+    // all checks passed
     return true;
 }
 
@@ -390,7 +408,7 @@ bool BlockadeOrder::validate() {
         }
     }
     if(!match){
-        std::cout << "[!] Order Validation failed: Territory assigned for deployment does not belong to player " << player->getName() << std::endl; 
+        std::cout << "[!] Blockade Order Validation failed: Territory assigned for blockading does not belong to player " << player->getName() << std::endl; 
         return false;
     }
     return true;
@@ -531,21 +549,32 @@ ostream& operator << (ostream & out, const AirliftOrder & airliftOrder){
 }
 
 //Implementing Negotiate Order
-NegotiateOrder::NegotiateOrder(Player* player, unsigned territory_target) {
+NegotiateOrder::NegotiateOrder(Player* requestingPlayer, Player* targetPlayer) {
     this->player = player;
     this->territory_target = territory_target;
     this->orderKind = OrderKind::NEGOTIATE;
+    this->targetPlayer = targetPlayer;
 }
 
 bool NegotiateOrder::validate() {
+    
+    // nothing to validate, the input already checks that requesting != target
+    // issueing will fail automatically if card not in the Hand, so, can't really check here, it's too late  -- lev
+    std::cout << "[ok] Negotiate Order Validation successful for Player: " << player->getName() << std::endl;
     return true;
 }
 
 void NegotiateOrder::execute() {
     if (validate()){
-        std::cout << "Executing Negotiate\n";
+
+        player->no_aggression_this_turn_list.push_back(targetPlayer);
+        targetPlayer->no_aggression_this_turn_list.push_back(player);
+        // dont you dare do like Germany in 1939
+
+        std::cout << "[ok] Negotiate Order executed, enacted by Player " << player->getName() <<" on Player " << targetPlayer->getName() <<". They cannot fight in this turn.";
         this->notify(this);
     }
+    else{ /*wont happen haha :p*/}
 }
 ostream & operator << (ostream & out, const NegotiateOrder & negotiateOrder){
     UNUSED(negotiateOrder);
@@ -605,9 +634,24 @@ void OrderList::move(unsigned int oldPosition, unsigned int newPosition) {
     }
 }
 
-void OrderList::executeAll() {
+// must be executed first for normal operation, because they update some flags Advance orders will check for... -- lev
+void OrderList::executeNegotiateOrders() {
     for (size_t i = 0; i < this->orders.size(); ++i) {
-        if (this->orders[i].index >= 0){
+        if (this->orders[i].order != nullptr && this->orders[i].index >= 0) {
+            if (dynamic_cast<NegotiateOrder*>(this->orders[i].order) != nullptr) {
+                orders[i].order->execute();
+                orders[i].index = -1;
+                delete orders[i].order;
+                orders[i].order = nullptr;
+            }
+        }
+    }
+}
+
+// executeNegotiateOrders() must absolutely run first, i didnt add any kinda extra checks here to avoid bloating -- lev
+void OrderList::executeAllOtherOrders() {
+    for (size_t i = 0; i < this->orders.size(); ++i) {
+        if (this->orders[i].order != nullptr && this->orders[i].index >= 0) {
             orders[i].order->execute();
             orders[i].index = -1;
             delete orders[i].order;

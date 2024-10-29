@@ -14,7 +14,8 @@ Player::Player(int playerID, string name, int startTerrIndex, Map* map, Deck* cu
     name(name),
     currMap(map),
     currDeck(currDeck),
-    cardToIssueFlag(false)
+    cardToIssueFlag(false), 
+    no_aggression_this_turn_list{}
     {
         territoriesToDefend = new vector<int>;
         territoriesToDefend->push_back(startTerrIndex);
@@ -177,28 +178,28 @@ bool Player::issueOrder(Order* order) {
             break;
         case OrderKind::BOMB:
             if (!this->playCard(CardType::BOMB)) {
-                std::cout << "[!] " << *order << "failed, no card for player [Player " << this->getName() << "]" << std::endl;
+                std::cout << "[!] " << *order << "failed, no BOMB card for player [Player " << this->getName() << "]" << std::endl;
                 return false;
             }
             this->orders->add(order);
             break;
         case OrderKind::AIRLIFT:
             if (!this->playCard(CardType::AIRLIFT)) {
-                std::cout << "[!] " << *order << "failed, no card for player [Player " << this->getName() << "]" << std::endl;
+                std::cout << "[!] " << *order << "failed, no AIRLIFT card for player [Player " << this->getName() << "]" << std::endl;
                 return false;
             }
             this->orders->add(order);
             break;
         case OrderKind::BLOCKADE:
             if (!this->playCard(CardType::BLOCKADE)) {
-                std::cout << "[!] " << *order << "failed, no card for player [Player " << this->getName() << "]" << std::endl;
+                std::cout << "[!] " << *order << "failed, no BLOCKADE card for player [Player " << this->getName() << "]" << std::endl;
                 return false;
             }
             this->orders->add(order);
             break;
         case OrderKind::NEGOTIATE:
             if (!this->playCard(CardType::DIPLOMACY)) {
-                std::cout << "[!] " << *order << "failed, no card for player [Player " << this->getName() << "]" << std::endl;
+                std::cout << "[!] " << *order << "failed, no NEGOTIATE card for player [Player " << this->getName() << "]" << std::endl;
                 return false;
 
             }

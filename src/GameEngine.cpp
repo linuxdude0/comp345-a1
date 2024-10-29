@@ -564,10 +564,10 @@ unsigned chooseTerritory(GameEngine& ge, Map m, OrderKind ok, Player* player, in
             return (unsigned)n;
         }
             break;
+        case OrderKind::NEGOTIATE:
         case OrderKind::DEPLOY: 
         case OrderKind::AIRLIFT:
-        case OrderKind::BLOCKADE:
-        case OrderKind::NEGOTIATE: {
+        case OrderKind::BLOCKADE:{
             for(unsigned i: player->toDefend()) {
                 Map::Territory t = m.getTerritory(i);
                 unsigned num_troops = 0;
@@ -616,7 +616,7 @@ void GameEngine::reinforcementPhase()
                 }
             } while(num_troops < 1 && num_troops > p->getReinforcementPool());
             p->issueOrder(new DeployOrder(p, territory, num_troops));
-            p->getOrderList()->executeAll();
+            p->getOrderList()->executeAllOtherOrders();
         }
     }
         transition(ISSUE_ORDERS);
@@ -633,6 +633,7 @@ void GameEngine::issueOrder()
             unsigned target = 0;
             unsigned source = 0;
             unsigned num_troops = 0;
+            Player* targetPlayer = nullptr;
             // ask questrions
             switch (m_orderKind) {
                 case OrderKind::DEPLOY: // here deploy is exit
@@ -659,9 +660,12 @@ void GameEngine::issueOrder()
                         } while(num_troops <=0);
                     }
                     break;
+                case OrderKind::NEGOTIATE:
+                    targetPlayer = chooseAPlayerToTarget(player);
+                    break;
                 case OrderKind::BOMB:
                 case OrderKind::BLOCKADE:
-                case OrderKind::NEGOTIATE:
+                
                     std::cout << "Choose target territory: " << std::endl;
                     target = chooseTerritory(*this, *this->mMap_ptr, m_orderKind, p);
                     break;
@@ -684,7 +688,7 @@ void GameEngine::issueOrder()
                     p->issueOrder(new BlockadeOrder(player, target, this->mNeutralPlayer));
                     break;
                 case OrderKind::NEGOTIATE:
-                    p->issueOrder(new NegotiateOrder(player, target));
+                    p->issueOrder(new NegotiateOrder(player, targetPlayer));
                     break;
                 default:
                     throw "huh????";
@@ -708,9 +712,16 @@ void GameEngine::issueOrdersPhase()
 
 void GameEngine::execOrder()
 {
+    // we must execute Negotiates first, due to the fact that Advance orders will check some flags 
+    // produced as a result of their execution --lev
     for(auto const p : mPlayer_v)
     {
-        p->getOrderList()->executeAll();
+        p->getOrderList()->executeNegotiateOrders();
+    }
+    // rest of the orders will get executed -- lev
+    for(auto const p : mPlayer_v)
+    {
+        p->getOrderList()->executeAllOtherOrders();
     }
     transition(ASSIGN_REINFORCEMENTS);
 }
@@ -723,9 +734,11 @@ void GameEngine::endExecOrders()
     }
     else{
 
+        // TODO: clear the players arrays of negotiates 
         kickLosers(); // kicks players who lost all territories from the main vector, bye bye, sucks to be you!
         fillPlayerReinforcementPools(); // fills the deployment pools in preparation for next phase;
-        distributeCardsToWinners();
+        distributeCardsToWinners(); // players who managed to capture a territory will receive a card this turn.
+        clearNegotiationAgreements(); // clears all the Negotiate flags between players, everybody can fight again next turn -- lev
         transition(ASSIGN_REINFORCEMENTS);
     }
 }
@@ -809,6 +822,7 @@ void GameEngine::distributeCardsToWinners(){
         if(currPlayer->cardToReceiveThisTurn()){
             currPlayer->getHand()->addCard(mDeck_ptr->draw()); // draw a card and clear flag
             currPlayer->clearCardToIssueFlag(); // done
+            std::cout << "[info] " << currPlayer->getName() << " just received a card for claiming a territory in the previous turn. " << std::endl;
         }
     }
 }
@@ -834,6 +848,42 @@ void GameEngine::win()
     }
 }
 
+Player* GameEngine::chooseAPlayerToTarget(Player* issuing){
+
+    std::string chosen;
+    std::string waste;
+    bool done = false;
+    do{
+        int counter = 0;
+        std::cout << ">> Which player would you like to target with a Negotiation ? " << std::endl;
+        for(auto p : mPlayer_v){
+            if(p == issuing){continue;}
+            std::cout << counter++ << " : " << p->getName() << std::endl;
+        }
+
+        std::cout << "Your choice (enter full name) :" << std::endl;
+        std::getline(std::cin, waste);
+        std::getline(std::cin, chosen);
+
+        std::cout << chosen.size() << " ";
+        std::cout << chosen;
+
+        if(issuing->getName() != chosen){
+            done = true;
+        }
+        else{
+            std::cout << "[!] Cannot target yourself with a Negotiation order, make sure to choose another player instead!" << std::endl;
+        }
+    }while(!done);
+
+    for(auto p : mPlayer_v){
+        if(p->getName() == chosen){
+            return p;
+        }            
+    }
+    return nullptr;
+};
+
 void GameEngine::replay()
 {
     transition(START);
@@ -857,4 +907,13 @@ void GameEngine::help()
     std::cout << "\tassigncountries" << std::endl;
     std::cout << "\tgamestart" << std::endl;
     std::cout << "\thelp" << std::endl;
+}
+
+void GameEngine::clearNegotiationAgreements(){
+
+    for(auto player : mPlayer_v){
+        player->no_aggression_this_turn_list.clear(); // let's go this turn is over, we can fight again
+    }
+
+    std::cout << "[info] No-Aggression (Negotiate) agreements are cleared for all players." << std::endl;
 }

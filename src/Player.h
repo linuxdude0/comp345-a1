@@ -35,7 +35,7 @@ class Player{
         Player(int, string, int, Map*, Deck*);
         Player(const Player&);
         ~Player();
-
+        vector<Player*> no_aggression_this_turn_list;
         vector<int>& toDefend();
         vector<int> toAttack();
         Hand* getHand();
@@ -57,6 +57,7 @@ class Player{
         void clearCardToIssueFlag();
         void setCardToIssueFlag();
         bool cardToReceiveThisTurn();
+    
 
 
         // overloaded stream insertion

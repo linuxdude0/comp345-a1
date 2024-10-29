@@ -98,8 +98,9 @@ public:
 
 class NegotiateOrder : public Order {
 public:
-    NegotiateOrder(Player* player, unsigned territory_target);
+    NegotiateOrder(Player* requesting, Player* target);
     NegotiateOrder(NegotiateOrder* negotiateOrder);
+    Player* targetPlayer;
     bool validate() override;
     void execute() override;
     friend ostream & operator << (ostream & out, const NegotiateOrder & negotiateOrder);
@@ -120,7 +121,8 @@ public:
     void add(Order* order);
     void remove(unsigned index);
     void move(unsigned oldPosition, unsigned newPosition);
-    void executeAll();
+    void executeAllOtherOrders();
+    void executeNegotiateOrders(); // must be executed before others
     virtual ~OrderList();
     std::string stringToLog() override;
     NegotiateOrder* operator=(NegotiateOrder* order);

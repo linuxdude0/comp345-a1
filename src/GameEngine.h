@@ -93,7 +93,9 @@ class GameEngine : public ILoggable, public Subject
         bool allConqueredByOne();
         void fillPlayerReinforcementPools();
         void distributeCardsToWinners();
-        void kickLosers(); 
+        void kickLosers();
+        Player* chooseAPlayerToTarget(Player*);
+        void clearNegotiationAgreements();
 
         // wrapper functions 
         void reinforcementPhase();
