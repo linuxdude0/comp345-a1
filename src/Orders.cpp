@@ -355,6 +355,22 @@ bool BombOrder::validate() {
         return false;
     }
 
+    Player* targetPlayer;
+
+    for(auto& tuple : territory_owner_troops_mappings){
+        if(std::get<0>(tuple) == territory_target){
+            targetPlayer = std::get<1>(tuple);
+        }
+    }
+    for(auto p : player->no_aggression_this_turn_list){
+
+        if(p == targetPlayer){ 
+
+            std::cout << "[!] Bomb Order Validation failed for player " << player->getName() <<  ": target territory = " << territory_target << " belongs to a player " << targetPlayer->getName() << " with whom a negotiation is taking place."<<std::endl;
+
+        }
+    }
+    
     //All verification done
     std::cout << "[ok] Bomb Order Validation successful" << std::endl;
     return true;
