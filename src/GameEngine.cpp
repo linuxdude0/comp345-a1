@@ -661,7 +661,7 @@ void GameEngine::issueOrder()
                     }
                     break;
                 case OrderKind::NEGOTIATE:
-                    targetPlayer = chooseAPlayerToTarget(player);
+                    targetPlayer = chooseAPlayerToTarget(player, *this);
                     break;
                 case OrderKind::BOMB:
                 case OrderKind::BLOCKADE:
@@ -688,6 +688,8 @@ void GameEngine::issueOrder()
                     p->issueOrder(new BlockadeOrder(player, target, this->mNeutralPlayer));
                     break;
                 case OrderKind::NEGOTIATE:
+                    assert(targetPlayer);
+                    assert(player);
                     p->issueOrder(new NegotiateOrder(player, targetPlayer));
                     break;
                 default:
@@ -758,7 +760,6 @@ bool GameEngine::allConqueredByOne(){
             return false; // found a different player
         }
     }
-
     return true; // all tuples have the same player
 }
 
@@ -844,37 +845,46 @@ void GameEngine::win()
     }
 }
 
-Player* GameEngine::chooseAPlayerToTarget(Player* issuing) {
-    std::string chosen;
-    std::string waste;
-    bool done = false;
+Player* GameEngine::chooseAPlayerToTarget(Player* issuing, GameEngine& ge) {
+    // std::string chosen;
+    // std::string waste;
+    Player* out = nullptr;
+    
     do{
         int counter = 0;
+        int chosenID;
         std::cout << ">> Which player would you like to target with a Negotiation ? " << std::endl;
         for(auto p : mPlayer_v){
             if(p == issuing){continue;}
-            std::cout << counter++ << " : " << p->getName() << std::endl;
+            std::cout << counter++ << " : " << p->getName() << " id = " << p->getID() <<  std::endl;
         }
-        std::cout << "Your choice (enter full name) :" << std::endl;
-        std::getline(std::cin, waste);
-        std::getline(std::cin, chosen);
+        // std::cout << "Your choice (enter i) :" << std::endl;
+        // std::getline(std::cin, waste);
+        // std::getline(std::cin, chosen);
         #ifdef DEBUG
         std::cout << chosen.size() << " ";
         std::cout << chosen;
         #endif
-        if(issuing->getName() != chosen){
-            done = true;
+
+        chosenID = prompt_for_numeric("Your choice (enter player ID): ", ge);
+        for(auto p : mPlayer_v){
+            if(p->getID() == chosenID){
+                out = p;
+            }
         }
-        else{
+
+        if(out->getID() == issuing->getID()){
+
             std::cout << "[!] Cannot target yourself with a Negotiation order, make sure to choose another player instead!" << std::endl;
         }
-    }while(!done);
-    for(auto p : mPlayer_v){
-        if(p->getName() == chosen){
-            return p;
-        }            
-    }
-    return nullptr;
+        else{
+
+            std::cout << "[info] Negotiation requested with Player " << out->getName() << std::endl;
+
+        }       
+    }while(out == nullptr);
+    
+    return out;
 };
 
 void GameEngine::replay()
