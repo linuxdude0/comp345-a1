@@ -4,13 +4,7 @@
 #include "Player.h"
 #include <algorithm>
 #include <cassert>
-#include <chrono>
-#include <limits>
-#include <random>
-#include <sstream>
 #include "Mappings.h"
-#include "LoggingObserver.h"
-#include "FileCommandProcessorAdapter.h"
 
 // -- helper functions --
 void clear_extra()
@@ -181,7 +175,6 @@ GameEngine::GameEngine(const std::string map_name, int argc, char* argv[])
 
     // initialize valid state commands
     initializeStateCommands();
-    logObserver->attachSubject(this);
 }
 
 GameEngine::GameEngine(const GameEngine& ge_obj)
@@ -233,21 +226,12 @@ void GameEngine::initializeStateCommands()
 Map& GameEngine::getMap() {return *mMap_ptr;}
 Deck& GameEngine::getDeck() {return *mDeck_ptr;}
 GameEngine::CurrentState GameEngine::getState() {return mCurrentState;}
-void GameEngine::transition(CurrentState state) {
-    mCurrentState = state;
-    this->notify(this);
-}
+void GameEngine::setState(CurrentState state) {mCurrentState = state;}
 void GameEngine::setIsRunning(bool val) {mIsRunning = val;}
 bool GameEngine::isRunning() {return mIsRunning;}
 std::string GameEngine::getMapFileName() {return mMapFileName;}
 std::vector<Player*>& GameEngine::getPlayersContainer() {return mPlayer_v;}
 std::map<GameEngine::CurrentState, std::set<std::string>> GameEngine::getCommandMap() {return stateCommandMap;}
-
-std::string GameEngine::stringToLog() {
-    std::stringstream s;
-    s << "Transitioned to state: " << this->getState();
-    return s.str();
-}
 
 void GameEngine::closeGame()
 {
@@ -318,7 +302,7 @@ void GameEngine::run()
 }
 
 // -- game commands --
-// after each command is run: switch the game's state (transition(<currentState>))
+// after each command is run: switch the game's state (setState(<currentState>))
 
 void GameEngine::loadMap(std::string map_filename)
 {   
@@ -329,13 +313,13 @@ void GameEngine::loadMap(std::string map_filename)
     map_filePath += map_filename; 
     std::cout << "map filename:" << map_filePath << std::endl;
     this->mMap_ptr = new Map(map_filePath); 
-    transition(MAP_LOADED);
+    setState(MAP_LOADED);
 }
 
 void GameEngine::validateMap()
 {
     mMap_ptr->validate();
-    transition(MAP_VALIDATED);
+    setState(MAP_VALIDATED);
 }
 
 void GameEngine::distributeTerritories(int n_playerCount, int n_totalIndexes)
@@ -413,13 +397,13 @@ void GameEngine::addPlayer(const std::string& player_name)
     std::cout << "vector size: " << mPlayer_v.size() << std::endl;
     
     distributeTerritories(mPlayer_v.size(),mMap_ptr->num_territories);
-    transition(PLAYERS_ADDED);
+    setState(PLAYERS_ADDED);
 }
 
 void GameEngine::assignCountries()
 {
     std::cout << ">> Assigned countries." << std::endl;
-    transition(GAMESTART);
+    setState(GAMESTART);
 }
 
 
@@ -451,7 +435,8 @@ void GameEngine::gamestart(){
             territory_owner_troops_mappings.push_back(std::make_tuple(i, p, 0));
         }
         //add neutral player to the game
-        transition(ASSIGN_REINFORCEMENTS); // switches to the main game state
+        territory_owner_troops_mappings.push_back(std::make_tuple(0,this->getNeutralPlayer() , 0));
+        setState(ASSIGN_REINFORCEMENTS); // switches to the main game state
         
     }
 
@@ -563,10 +548,10 @@ unsigned chooseTerritory(GameEngine& ge, Map m, OrderKind ok, Player* player, in
             return (unsigned)n;
         }
             break;
-        case OrderKind::NEGOTIATE:
         case OrderKind::DEPLOY: 
         case OrderKind::AIRLIFT:
-        case OrderKind::BLOCKADE:{
+        case OrderKind::BLOCKADE:
+        case OrderKind::NEGOTIATE: {
             for(unsigned i: player->toDefend()) {
                 Map::Territory t = m.getTerritory(i);
                 unsigned num_troops = 0;
@@ -592,6 +577,19 @@ unsigned chooseTerritory(GameEngine& ge, Map m, OrderKind ok, Player* player, in
         default:
             throw "huh????";
     }
+    /*for (size_t i=0; i<m.num_territories; i++) {*/
+    /*    Map::Territory t = m.getTerritory(i);*/
+    /*    std::cout << "\t" << t.index << ": " << t.name << " in continent " << m.continents[t.continent_index] << std::endl;*/
+    /*}*/
+    /*int n = -1;*/
+    /*do {*/
+    /*    std::cout << "Please write the territory number you want to target: ";*/
+    /*    std::cin >> n;*/
+    /*    if (n < 0 || n >= (int)m.num_territories) {*/
+    /*        std::cout << "Territory not found, please reenter\n";*/
+    /*    }*/
+    /*} while(n < 0 || n >= (int)m.num_territories);*/
+    /*return (unsigned)n;*/
 }
 
 void GameEngine::reinforcementPhase()
@@ -615,10 +613,10 @@ void GameEngine::reinforcementPhase()
                 }
             } while(num_troops < 1 && num_troops > p->getReinforcementPool());
             p->issueOrder(new DeployOrder(p, territory, num_troops));
-            p->getOrderList()->executeAllOtherOrders();
+            p->getOrderList()->executeAll();
         }
     }
-        transition(ISSUE_ORDERS);
+        setState(ISSUE_ORDERS);
 }
 
 void GameEngine::issueOrder()
@@ -632,7 +630,6 @@ void GameEngine::issueOrder()
             unsigned target = 0;
             unsigned source = 0;
             unsigned num_troops = 0;
-            Player* targetPlayer = nullptr;
             // ask questrions
             switch (m_orderKind) {
                 case OrderKind::DEPLOY: // here deploy is exit
@@ -659,12 +656,9 @@ void GameEngine::issueOrder()
                         } while(num_troops <=0);
                     }
                     break;
-                case OrderKind::NEGOTIATE:
-                    targetPlayer = chooseAPlayerToTarget(player, *this);
-                    break;
                 case OrderKind::BOMB:
                 case OrderKind::BLOCKADE:
-                
+                case OrderKind::NEGOTIATE:
                     std::cout << "Choose target territory: " << std::endl;
                     target = chooseTerritory(*this, *this->mMap_ptr, m_orderKind, p);
                     break;
@@ -687,9 +681,7 @@ void GameEngine::issueOrder()
                     p->issueOrder(new BlockadeOrder(player, target, this->mNeutralPlayer));
                     break;
                 case OrderKind::NEGOTIATE:
-                    assert(targetPlayer);
-                    assert(player);
-                    p->issueOrder(new NegotiateOrder(player, targetPlayer));
+                    p->issueOrder(new NegotiateOrder(player, target));
                     break;
                 default:
                     throw "huh????";
@@ -702,7 +694,7 @@ void GameEngine::endIssueOrders()
 {
     clear_extra();
     std::cout << ">> Finished issuing orders." << std::endl;
-    transition(EXECUTE_ORDERS);
+    setState(EXECUTE_ORDERS);
 }
 
 void GameEngine::issueOrdersPhase()
@@ -713,17 +705,11 @@ void GameEngine::issueOrdersPhase()
 
 void GameEngine::execOrder()
 {
-    // we must execute Negotiates first, due to the fact that Advance orders will check some flags 
-    // produced as a result of their execution --lev
     for(auto const p : mPlayer_v)
     {
-        p->getOrderList()->executeNegotiateOrders();
+        p->getOrderList()->executeAll();
     }
-    // rest of the orders will get executed -- lev
-    for(auto const p : mPlayer_v)
-    {
-        p->getOrderList()->executeAllOtherOrders();
-    }
+    setState(ASSIGN_REINFORCEMENTS);
 }
 
 void GameEngine::endExecOrders()
@@ -733,12 +719,11 @@ void GameEngine::endExecOrders()
         win();
     }
     else{
-        // TODO: clear the players arrays of negotiates 
+
         kickLosers(); // kicks players who lost all territories from the main vector, bye bye, sucks to be you!
         fillPlayerReinforcementPools(); // fills the deployment pools in preparation for next phase;
-        distributeCardsToWinners(); // players who managed to capture a territory will receive a card this turn.
-        clearNegotiationAgreements(); // clears all the Negotiate flags between players, everybody can fight again next turn -- lev
-        transition(ASSIGN_REINFORCEMENTS);
+        distributeCardsToWinners();
+        setState(ASSIGN_REINFORCEMENTS);
     }
 }
 
@@ -753,11 +738,12 @@ void GameEngine::executeOrdersPhase()
 bool GameEngine::allConqueredByOne(){
 
     Player* firstPlayer = std::get<1>(territory_owner_troops_mappings[0]);
-    for (auto& entry : territory_owner_troops_mappings) {
+    for (const auto& entry : territory_owner_troops_mappings) {
         if (std::get<1>(entry) != firstPlayer) {
             return false; // found a different player
         }
     }
+
     return true; // all tuples have the same player
 }
 
@@ -772,6 +758,9 @@ void GameEngine::fillPlayerReinforcementPools(){
         int curr_owned_terrs = static_cast<int>(currPlayer->toDefend().size());
         total_fresh_troops += (curr_owned_terrs) / 3; //  (# of territories owned divided by 3, rounded down) as per assignment
         
+
+        // TODO: (?) need a method from Map class that checks if a player owns a whole continent, if so returns the bonus for all continents owned
+        // then we add this number to the fresh troops
 
         unsigned currOwned[MAX_TERRITORIES];
         for(std::vector<int>::size_type i = 0; i < currPlayer->toDefend().size(); ++i) {
@@ -817,14 +806,15 @@ void GameEngine::distributeCardsToWinners(){
         if(currPlayer->cardToReceiveThisTurn()){
             currPlayer->getHand()->addCard(mDeck_ptr->draw()); // draw a card and clear flag
             currPlayer->clearCardToIssueFlag(); // done
-            std::cout << "[info] " << currPlayer->getName() << " just received a card for claiming a territory in the previous turn. " << std::endl;
         }
     }
 }
 void GameEngine::win()
 {
-    transition(WIN);
-    std::cout << "CONGRATULATIONS! PLAYER " << std::get<1>(territory_owner_troops_mappings[0])->getName() << " WON THIS GAME!" << std::endl;
+    setState(WIN);
+
+    std::string winner = mPlayer_v.at(0)->getName(); // last player left in the array
+    std::cout << "CONGRATULATIONS! PLAYER " << winner << " WON THIS GAME!" << std::endl;
     std::cout << ">> Play again? (replay/quit)" << std::endl;
     while(true)
     {
@@ -841,51 +831,9 @@ void GameEngine::win()
     }
 }
 
-Player* GameEngine::chooseAPlayerToTarget(Player* issuing, GameEngine& ge) {
-    // std::string chosen;
-    // std::string waste;
-    Player* out = nullptr;
-    
-    do{
-        int counter = 0;
-        int chosenID;
-        std::cout << ">> Which player would you like to target with a Negotiation ? " << std::endl;
-        for(auto p : mPlayer_v){
-            if(p == issuing){continue;}
-            std::cout << counter++ << " : " << p->getName() << " id = " << p->getID() <<  std::endl;
-        }
-        // std::cout << "Your choice (enter i) :" << std::endl;
-        // std::getline(std::cin, waste);
-        // std::getline(std::cin, chosen);
-        #ifdef DEBUG
-        std::cout << chosen.size() << " ";
-        std::cout << chosen;
-        #endif
-
-        chosenID = prompt_for_numeric("Your choice (enter player ID): ", ge);
-        for(auto p : mPlayer_v){
-            if(p->getID() == chosenID){
-                out = p;
-            }
-        }
-
-        if(out->getID() == issuing->getID()){
-
-            std::cout << "[!] Cannot target yourself with a Negotiation order, make sure to choose another player instead!" << std::endl;
-        }
-        else{
-
-            std::cout << "[info] Negotiation requested with Player " << out->getName() << std::endl;
-
-        }       
-    }while(out == nullptr);
-    
-    return out;
-};
-
 void GameEngine::replay()
 {
-    transition(START);
+    setState(START);
     reset();
     run();    
 }
@@ -906,13 +854,4 @@ void GameEngine::help()
     std::cout << "\tassigncountries" << std::endl;
     std::cout << "\tgamestart" << std::endl;
     std::cout << "\thelp" << std::endl;
-}
-
-void GameEngine::clearNegotiationAgreements(){
-
-    for(auto player : mPlayer_v){
-        player->no_aggression_this_turn_list.clear(); // let's go this turn is over, we can fight again
-    }
-
-    std::cout << "[info] No-Aggression (Negotiate) agreements are cleared for all players." << std::endl;
 }
