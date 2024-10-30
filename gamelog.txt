@@ -1,0 +1,225 @@
+Command: loadmap
+Transitioned to state: MAP_LOADED
+Effect: loadmap
+Command: validatemap
+Transitioned to state: MAP_VALIDATED
+Effect: validatemap
+Command: addplayer
+Transitioned to state: PLAYERS_ADDED
+Effect: addplayer
+Command: addplayer
+Transitioned to state: PLAYERS_ADDED
+Effect: addplayer
+Command: assigncountries
+Transitioned to state: GAMESTART
+Effect: assigncountries
+Command: gamestart
+Transitioned to state: ASSIGN_REINFORCEMENTS
+Transitioned to state: ASSIGN_REINFORCEMENTS
+adding Deploy Order
+Executing Deploy Order
+adding Deploy Order
+Executing Deploy Order
+adding Deploy Order
+Executing Deploy Order
+Transitioned to state: ISSUE_ORDERS
+adding Advance Order
+Transitioned to state: EXECUTE_ORDERS
+Executing Advance Order
+Transitioned to state: ASSIGN_REINFORCEMENTS
+adding Deploy Order
+Executing Deploy Order
+adding Deploy Order
+Executing Deploy Order
+Transitioned to state: ISSUE_ORDERS
+adding Advance Order
+Transitioned to state: EXECUTE_ORDERS
+Executing Advance Order
+Transitioned to state: ASSIGN_REINFORCEMENTS
+adding Deploy Order
+Executing Deploy Order
+adding Deploy Order
+Executing Deploy Order
+Transitioned to state: ISSUE_ORDERS
+adding Advance Order
+adding Advance Order
+Transitioned to state: EXECUTE_ORDERS
+Executing Advance Order
+Transitioned to state: ASSIGN_REINFORCEMENTS
+adding Deploy Order
+Executing Deploy Order
+adding Deploy Order
+Executing Deploy Order
+Transitioned to state: ISSUE_ORDERS
+adding Advance Order
+adding Advance Order
+adding Advance Order
+adding Advance Order
+adding Advance Order
+Transitioned to state: EXECUTE_ORDERS
+Executing Advance Order
+Executing Advance Order
+Executing Advance Order
+Executing Advance Order
+Executing Advance Order
+Transitioned to state: ASSIGN_REINFORCEMENTS
+adding Deploy Order
+Executing Deploy Order
+adding Deploy Order
+Executing Deploy Order
+Transitioned to state: ISSUE_ORDERS
+adding Advance Order
+adding Advance Order
+adding Advance Order
+adding Advance Order
+Transitioned to state: EXECUTE_ORDERS
+Executing Advance Order
+Executing Advance Order
+Executing Advance Order
+Transitioned to state: ASSIGN_REINFORCEMENTS
+adding Deploy Order
+Executing Deploy Order
+adding Deploy Order
+Executing Deploy Order
+adding Deploy Order
+Executing Deploy Order
+Transitioned to state: ISSUE_ORDERS
+adding Advance Order
+adding Advance Order
+adding Advance Order
+adding Advance Order
+adding Advance Order
+Transitioned to state: EXECUTE_ORDERS
+Executing Advance Order
+Executing Advance Order
+Executing Advance Order
+Executing Advance Order
+Executing Advance Order
+Transitioned to state: ASSIGN_REINFORCEMENTS
+adding Deploy Order
+Executing Deploy Order
+adding Deploy Order
+Executing Deploy Order
+Transitioned to state: ISSUE_ORDERS
+adding Advance Order
+adding Advance Order
+adding Advance Order
+Transitioned to state: EXECUTE_ORDERS
+Executing Advance Order
+Executing Advance Order
+Transitioned to state: ASSIGN_REINFORCEMENTS
+adding Deploy Order
+Executing Deploy Order
+adding Deploy Order
+Executing Deploy Order
+Transitioned to state: ISSUE_ORDERS
+adding Advance Order
+adding Advance Order
+Transitioned to state: EXECUTE_ORDERS
+Executing Advance Order
+Executing Advance Order
+Transitioned to state: ASSIGN_REINFORCEMENTS
+adding Deploy Order
+Executing Deploy Order
+adding Deploy Order
+Executing Deploy Order
+Transitioned to state: ISSUE_ORDERS
+adding Advance Order
+adding Advance Order
+adding Advance Order
+adding Advance Order
+Transitioned to state: EXECUTE_ORDERS
+Executing Advance Order
+Executing Advance Order
+Executing Advance Order
+Transitioned to state: ASSIGN_REINFORCEMENTS
+adding Deploy Order
+Executing Deploy Order
+adding Deploy Order
+Executing Deploy Order
+adding Deploy Order
+Executing Deploy Order
+adding Deploy Order
+Executing Deploy Order
+adding Deploy Order
+Executing Deploy Order
+Transitioned to state: ISSUE_ORDERS
+adding Advance Order
+adding Advance Order
+adding Advance Order
+Transitioned to state: EXECUTE_ORDERS
+Executing Advance Order
+Executing Advance Order
+Transitioned to state: ASSIGN_REINFORCEMENTS
+adding Deploy Order
+Executing Deploy Order
+adding Deploy Order
+Executing Deploy Order
+adding Deploy Order
+Executing Deploy Order
+adding Deploy Order
+Executing Deploy Order
+Transitioned to state: ISSUE_ORDERS
+adding Advance Order
+adding Advance Order
+Transitioned to state: EXECUTE_ORDERS
+Executing Advance Order
+Executing Advance Order
+Transitioned to state: ASSIGN_REINFORCEMENTS
+adding Deploy Order
+Executing Deploy Order
+adding Deploy Order
+Executing Deploy Order
+adding Deploy Order
+Executing Deploy Order
+adding Deploy Order
+Executing Deploy Order
+Transitioned to state: ISSUE_ORDERS
+adding Advance Order
+adding Advance Order
+adding Advance Order
+adding Advance Order
+adding Advance Order
+adding Advance Order
+Transitioned to state: EXECUTE_ORDERS
+Executing Advance Order
+Executing Advance Order
+Executing Advance Order
+Executing Advance Order
+Executing Advance Order
+Executing Advance Order
+Transitioned to state: ASSIGN_REINFORCEMENTS
+adding Deploy Order
+Executing Deploy Order
+adding Deploy Order
+Executing Deploy Order
+Transitioned to state: ISSUE_ORDERS
+adding Advance Order
+adding Advance Order
+adding Advance Order
+adding Advance Order
+adding Advance Order
+adding Advance Order
+adding Advance Order
+adding Advance Order
+Transitioned to state: EXECUTE_ORDERS
+Executing Advance Order
+Executing Advance Order
+Executing Advance Order
+Executing Advance Order
+Executing Advance Order
+Executing Advance Order
+Executing Advance Order
+Transitioned to state: ASSIGN_REINFORCEMENTS
+adding Deploy Order
+Executing Deploy Order
+adding Deploy Order
+Executing Deploy Order
+Transitioned to state: ISSUE_ORDERS
+adding Advance Order
+adding Advance Order
+Transitioned to state: EXECUTE_ORDERS
+Executing Advance Order
+Executing Advance Order
+Transitioned to state: WIN
+Transitioned to state: START

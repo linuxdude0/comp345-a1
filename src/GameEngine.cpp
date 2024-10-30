@@ -451,7 +451,6 @@ void GameEngine::gamestart(){
             territory_owner_troops_mappings.push_back(std::make_tuple(i, p, 0));
         }
         //add neutral player to the game
-        territory_owner_troops_mappings.push_back(std::make_tuple(0,this->getNeutralPlayer() , 0));
         transition(ASSIGN_REINFORCEMENTS); // switches to the main game state
         
     }
@@ -725,7 +724,6 @@ void GameEngine::execOrder()
     {
         p->getOrderList()->executeAllOtherOrders();
     }
-    transition(ASSIGN_REINFORCEMENTS);
 }
 
 void GameEngine::endExecOrders()
@@ -735,7 +733,11 @@ void GameEngine::endExecOrders()
         win();
     }
     else{
+<<<<<<< Updated upstream
 
+=======
+        // TODO: clear the players arrays of negotiates 
+>>>>>>> Stashed changes
         kickLosers(); // kicks players who lost all territories from the main vector, bye bye, sucks to be you!
         fillPlayerReinforcementPools(); // fills the deployment pools in preparation for next phase;
         distributeCardsToWinners(); // players who managed to capture a territory will receive a card this turn.
@@ -755,7 +757,7 @@ void GameEngine::executeOrdersPhase()
 bool GameEngine::allConqueredByOne(){
 
     Player* firstPlayer = std::get<1>(territory_owner_troops_mappings[0]);
-    for (const auto& entry : territory_owner_troops_mappings) {
+    for (auto& entry : territory_owner_troops_mappings) {
         if (std::get<1>(entry) != firstPlayer) {
             return false; // found a different player
         }
@@ -826,9 +828,7 @@ void GameEngine::distributeCardsToWinners(){
 void GameEngine::win()
 {
     transition(WIN);
-
-    std::string winner = mPlayer_v.at(0)->getName(); // last player left in the array
-    std::cout << "CONGRATULATIONS! PLAYER " << winner << " WON THIS GAME!" << std::endl;
+    std::cout << "CONGRATULATIONS! PLAYER " << std::get<1>(territory_owner_troops_mappings[0])->getName() << " WON THIS GAME!" << std::endl;
     std::cout << ">> Play again? (replay/quit)" << std::endl;
     while(true)
     {
