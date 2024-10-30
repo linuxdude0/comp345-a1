@@ -94,7 +94,7 @@ class GameEngine : public ILoggable, public Subject
         void fillPlayerReinforcementPools();
         void distributeCardsToWinners();
         void kickLosers();
-        Player* chooseAPlayerToTarget(Player*);
+        Player* chooseAPlayerToTarget(Player*, GameEngine&);
         void clearNegotiationAgreements();
 
         // wrapper functions 

@@ -355,7 +355,7 @@ bool BombOrder::validate() {
         return false;
     }
 
-    Player* targetPlayer = this->player;
+    Player* targetPlayer;
 
     for(auto& tuple : territory_owner_troops_mappings){
         if(std::get<0>(tuple) == territory_target){
@@ -576,6 +576,7 @@ bool NegotiateOrder::validate() {
     
     // nothing to validate, the input already checks that requesting != target
     // issueing will fail automatically if card not in the Hand, so, can't really check here, it's too late  -- lev
+    assert(player);
     std::cout << "[ok] Negotiate Order Validation successful for Player: " << player->getName() << std::endl;
     return true;
 }
@@ -589,7 +590,7 @@ void NegotiateOrder::execute() {
         targetPlayer->no_aggression_this_turn_list.push_back(player);
         // dont you dare do like Germany in 1939
 
-        std::cout << "[ok] Negotiate Order executed, enacted by Player " << player->getName() <<" on Player " << targetPlayer->getName() <<". They cannot fight in this turn.";
+        std::cout << "[ok] Negotiate Order executed, enacted by Player " << player->getName() <<" on Player " << targetPlayer->getName() <<". They cannot fight in this turn."<<std::endl;
         this->notify(this);
     }
     else{ /*wont happen haha :p*/}
@@ -657,6 +658,7 @@ void OrderList::executeNegotiateOrders() {
     for (size_t i = 0; i < this->orders.size(); ++i) {
         if (this->orders[i].order != nullptr && this->orders[i].index >= 0) {
             if (this->orders[i].order->orderKind == OrderKind::NEGOTIATE) {
+                assert(orders[i].order);
                 orders[i].order->execute();
                 orders[i].index = -1;
                 delete orders[i].order;
@@ -669,7 +671,8 @@ void OrderList::executeNegotiateOrders() {
 // executeNegotiateOrders() must absolutely run first, i didnt add any kinda extra checks here to avoid bloating -- lev
 void OrderList::executeAllOtherOrders() {
     for (size_t i = 0; i < this->orders.size(); ++i) {
-        if (this->orders[i].order != nullptr && this->orders[i].index >= 0) {
+        if (this->orders[i].order != nullptr && this->orders[i].index >= 0){
+            assert(orders[i].order);
             orders[i].order->execute();
             orders[i].index = -1;
             delete orders[i].order;
