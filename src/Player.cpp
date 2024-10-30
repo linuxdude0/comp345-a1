@@ -2,6 +2,8 @@
 #include "Cards.h"
 #include "Orders.h"
 #include <algorithm>
+#include <set>
+#include <vector>
 #include "Mappings.h"
 
 using std::string;
@@ -53,25 +55,21 @@ vector<int>& Player::toDefend(){ return *territoriesToDefend;}
     returns a vector of all the adjacent territories to the territories currently owned by the player
 */
 vector<int> Player::toAttack(){
-    vector<int> can_attack{};
+    vector<int> empty{};
     if (this->territoriesToDefend->size() == 0){
-        return can_attack;
+        return empty;
     }
-    
+    std::set<unsigned> to_attack_territories;
     for (int terrID : *(this->territoriesToDefend)){
         
         Map::Territory ownedTerr = this->currMap->getTerritory(terrID);
-        
-        for(size_t i = 0; i < ownedTerr.num_adjacent_territories; i++){
-
-            int candidateTerr = ownedTerr.adjacent_territories_indexes[i];
-
-            // check that not in the owned territories already
-            if(std::find(this->territoriesToDefend->begin(), this->territoriesToDefend->end(), candidateTerr) == this->territoriesToDefend->end()){
-                can_attack.push_back(candidateTerr);
+        for (size_t i=0; i<ownedTerr.num_adjacent_territories; i++) {
+            if (!this->ownsTerritory(ownedTerr.adjacent_territories_indexes[i])) {
+                to_attack_territories.insert(ownedTerr.adjacent_territories_indexes[i]);
             }
         }
     }
+    vector<int> can_attack(to_attack_territories.begin(), to_attack_territories.end());
     return can_attack;
 }
 
