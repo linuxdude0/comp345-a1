@@ -355,7 +355,7 @@ bool BombOrder::validate() {
         return false;
     }
 
-    Player* targetPlayer;
+    Player* targetPlayer = nullptr;
 
     for(auto& tuple : territory_owner_troops_mappings){
         if(std::get<0>(tuple) == territory_target){
