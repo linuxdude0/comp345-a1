@@ -734,7 +734,6 @@ void GameEngine::endExecOrders()
     }
     else{
 
-        // TODO: clear the players arrays of negotiates 
         kickLosers(); // kicks players who lost all territories from the main vector, bye bye, sucks to be you!
         fillPlayerReinforcementPools(); // fills the deployment pools in preparation for next phase;
         distributeCardsToWinners(); // players who managed to capture a territory will receive a card this turn.
@@ -774,9 +773,6 @@ void GameEngine::fillPlayerReinforcementPools(){
         int curr_owned_terrs = static_cast<int>(currPlayer->toDefend().size());
         total_fresh_troops += (curr_owned_terrs) / 3; //  (# of territories owned divided by 3, rounded down) as per assignment
         
-
-        // TODO: (?) need a method from Map class that checks if a player owns a whole continent, if so returns the bonus for all continents owned
-        // then we add this number to the fresh troops
 
         unsigned currOwned[MAX_TERRITORIES];
         for(std::vector<int>::size_type i = 0; i < currPlayer->toDefend().size(); ++i) {
