@@ -13,6 +13,7 @@ class CommandProcessingDriver
     private:
         GameEngine* game_engine_ptr;
         CommandProcessor* command_processor_ptr;
+        std::string filename;
 };
 
 #endif

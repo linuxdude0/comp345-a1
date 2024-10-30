@@ -240,6 +240,7 @@ void GameEngine::transition(CurrentState state) {
 void GameEngine::setIsRunning(bool val) {mIsRunning = val;}
 bool GameEngine::isRunning() {return mIsRunning;}
 std::string GameEngine::getMapFileName() {return mMapFileName;}
+std::string GameEngine::getCommandsFileName() {return filename;}
 std::vector<Player*>& GameEngine::getPlayersContainer() {return mPlayer_v;}
 std::map<GameEngine::CurrentState, std::set<std::string>> GameEngine::getCommandMap() {return stateCommandMap;}
 

@@ -7,6 +7,7 @@ void CommandProcessingDriver::testCommandProcessor(const std::string& arg)
 
     else if(arg == "-file")
     {
-        FileCommandProcessorAdapter
+        FileCommandProcessorAdapter* FCPA = new FileCommandProcessorAdapter(game_engine_ptr->getCommandsFileName());
+        FCPA->getCommand(*game_engine_ptr);
     }
 }

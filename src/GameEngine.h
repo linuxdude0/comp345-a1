@@ -53,6 +53,7 @@ class GameEngine : public ILoggable, public Subject
         Player& getPlayer();
         Player* getNeutralPlayer(); // New getter method
         std::string getMapFileName();
+        std::string getCommandsFileName();
         void setIsRunning(bool val);
         bool isRunning();
         CurrentState getState();
