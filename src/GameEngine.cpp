@@ -1,4 +1,5 @@
 #include "GameEngine.h"
+#include "GameEngineDriver.h"
 #include "Map.h"
 #include "Orders.h"
 #include "Player.h"
@@ -10,6 +11,7 @@
 #include <sstream>
 #include "Mappings.h"
 #include "LoggingObserver.h"
+#include "LoggingObserverDriver.h"
 #include "FileCommandProcessorAdapter.h"
 
 // -- helper functions --
@@ -59,7 +61,6 @@ std::string prompt_for_string(const std::string& message)
         // continue looping until user enters correct input
         std::cout << message;
         std::getline(std::cin, sInput);
-
         if(std::cin.fail())
         {
             std::cin.clear();
@@ -122,7 +123,6 @@ std::ostream& operator<<(std::ostream& out, const GameEngine& ge)
     out << "-- Warzone Game Engine --\n"
     << "Map: " << ge.mMapFileName << "\n"
     << "Current state: " << ge.mCurrentState << "\n";
-
     return out; 
 }
 
@@ -154,19 +154,15 @@ GameEngine& GameEngine::operator=(const GameEngine& ge)
     mMap_ptr = ge.mMap_ptr;
     mPlayer_v = ge.mPlayer_v;
     mDeck_ptr = ge.mDeck_ptr;
-
     return *this;
 }
 
-
 // -- constructor, copy constructor & destructor --
-GameEngine::GameEngine(const std::string map_name, int argc, char* argv[])
+GameEngine::GameEngine(const std::string map_name, int argc, const char** argv)
     : mCurrentState{CurrentState::START}, mMapFileName{map_name},mNeutralPlayer{new Player(0,"Neutral",0,nullptr,nullptr)}
 {
     mMap_ptr = nullptr;
     // push arguments to args list
-
-
     string file="-file";
     for(int i{0}; i<argc; ++i) {
         if (file == argv[i] && i+1<argc) {
@@ -174,11 +170,9 @@ GameEngine::GameEngine(const std::string map_name, int argc, char* argv[])
         }
         mArgs.push_back(argv[i]);
     }
-
     mIsRunning = true;
     this->mDeck_ptr = new Deck();
     this->mCommandProcessor_ptr = new CommandProcessor();
-
     // initialize valid state commands
     initializeStateCommands();
     logObserver->attachSubject(this);
@@ -205,6 +199,14 @@ Player* GameEngine::getNeutralPlayer() {
     return mNeutralPlayer;
 }
 
+void testAll(void) {
+    std::cout << "hello" << std::endl;
+    testStartupPhase();
+    testMainGameLoop();
+    testOrderExecution();
+    testLoggingObserver();
+    /*testCommandProcessor(const std::string& arg);*/
+}
 
 // -- initializer functions --
 bool GameEngine::parseOptions(const std::string& s_option)
@@ -314,6 +316,13 @@ void GameEngine::run()
         while(isRunning())
         {
             automaticQuery();
+        }
+    }
+    else if(parseOptions("-test")) 
+    {
+        while(isRunning())
+        {
+            userQuery();
         }
     }
 }

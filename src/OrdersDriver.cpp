@@ -1,4 +1,5 @@
 #include "Orders.h"
+#include "GameEngine.h"
 
 int testOrderLists(){
 
@@ -44,3 +45,16 @@ int testOrderLists(){
     std::cout << "==================END TEST ORDER LIST==================" << std::endl;
     return 1;
 }
+
+void testOrderExecution() {
+    int argc = 2;
+    const char* argv[3] = {
+        "",
+        "-file",
+        "test_commands.txt",
+    };
+    GameEngine* ge = new GameEngine("./maps/Atlantis.map", argc, argv);
+    ge->run();
+    delete ge;
+}
+

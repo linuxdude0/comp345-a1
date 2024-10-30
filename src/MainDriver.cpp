@@ -24,7 +24,7 @@ int main(int argc, char* argv[]) {
 	// testCard();
 	// testOrderLists();
 
-	GameEngine* game = new GameEngine("./maps/Atlantis.map", argc, argv);
+	GameEngine* game = new GameEngine("./maps/Atlantis.map", argc, (const char**)argv);
 	game->run();
 	delete game;
 	//testGameEngine("./maps/Atlantis.map");

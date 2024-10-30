@@ -40,7 +40,7 @@ class GameEngine : public ILoggable, public Subject
         friend std::ostream& operator<<(std::ostream& out, const CurrentState value);
         
         // -- constructors & destructor --
-        GameEngine(const std::string map_name, int argc, char* argv[]);
+        GameEngine(const std::string map_name, int argc, const char** argv);
         GameEngine(const GameEngine&);
         virtual ~GameEngine();
 
@@ -103,6 +103,7 @@ class GameEngine : public ILoggable, public Subject
         void issueOrdersPhase();
         void executeOrdersPhase();
 
+
         // Log functions
         std::string stringToLog() override;
 
@@ -123,6 +124,8 @@ class GameEngine : public ILoggable, public Subject
         std::string filename;
         Player* mNeutralPlayer;
 };
+
+void testAll(void);
 
 #endif // !GAME_ENGINE_H
 

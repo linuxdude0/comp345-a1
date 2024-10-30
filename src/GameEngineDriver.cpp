@@ -17,3 +17,27 @@ void testGameEngine(const std::string& map_fileName)
     std::cout << gameEngineTest << std::endl;
     std::cout << "==================END TEST GAME ENGINE==================" << std::endl;
 }
+
+void testStartupPhase(void) {
+    int argc = 2;
+    const char* argv[3] = {
+        "",
+        "-console",
+    };
+    GameEngine* ge = new GameEngine("./maps/Atlantis.map", argc, argv);
+    ge->run();
+    delete ge;
+}
+
+void testMainGameLoop(void) {
+    int argc = 2;
+    const char* argv[3] = {
+        "",
+        "-file",
+        "test_commands.txt",
+    };
+    GameEngine* ge = new GameEngine("./maps/Atlantis.map", argc, argv);
+    ge->run();
+    delete ge;
+}
+
