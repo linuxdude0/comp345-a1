@@ -11,7 +11,8 @@
 #include <string>
 #include <map>
 #include <set>
-#include <cctype>    
+#include <cctype>
+#include <filesystem>    
 
 class GameEngine;
 class CommandProcessor;

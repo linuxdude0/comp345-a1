@@ -337,9 +337,18 @@ void GameEngine::loadMap(std::string map_filename)
     map_filename.erase(std::remove_if(map_filename.begin(),map_filename.end(), ::isspace), map_filename.end());
     std::string map_filePath = "./maps/";
     map_filePath += map_filename; 
-    std::cout << "map filename:" << map_filePath << std::endl;
-    this->mMap_ptr = new Map(map_filePath); 
-    transition(MAP_LOADED);
+    if(!std::filesystem::exists(map_filePath))
+    {
+        std::cout << "[ERROR]: File does not exists, exiting." << std::endl;
+        this->setIsRunning(false);
+        this->closeGame();
+    }
+    else
+    {
+        std::cout << "map filename:" << map_filePath << std::endl;
+        this->mMap_ptr = new Map(map_filePath); 
+        transition(MAP_LOADED);
+    }
 }
 
 void GameEngine::validateMap()
