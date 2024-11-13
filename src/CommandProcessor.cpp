@@ -22,6 +22,12 @@ std::string CommandProcessor::stringToLog() {
     return s.str();
 }
 
+bool CommandProcessor::isEmptyOrWhitespace(const std::string& s_input)
+{
+    // checks if the input string is either empty or contains only whitespaces
+    return s_input.empty() || std::all_of(s_input.begin(), s_input.end(), isspace);
+}
+
 // -- accessors & mutators --
 CommandMap& CommandProcessor::getCommandMap() { return mCommandMap; }
 
@@ -65,10 +71,12 @@ void CommandProcessor::getCommand(GameEngine& ge)
 
         i_stream >> s_command;
         std::getline(i_stream, s_argument); // get remaining input from user as command argument
+
+
         // -- main cases --
         if(s_command == "loadmap")
         {
-            if(!s_argument.empty())
+            if(!isEmptyOrWhitespace(s_argument))
             {
                 saveCommand(s_command,std::make_unique<loadMapCommand>(s_argument));
             }
@@ -84,7 +92,7 @@ void CommandProcessor::getCommand(GameEngine& ge)
         
         else if(s_command == "addplayer")
         {
-            if(!s_argument.empty())
+            if(!isEmptyOrWhitespace(s_argument))
             {
                 saveCommand(s_command,std::make_unique<addPlayerCommand>(s_argument));
             }

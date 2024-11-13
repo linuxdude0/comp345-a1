@@ -8,6 +8,8 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <algorithm>
+
 
 
 // -- following the adapter design pattern: --
@@ -27,6 +29,8 @@ class CommandProcessor : public ILoggable, public Subject
         // -- accessors & mutators --
         CommandMap& getCommandMap();
         std::string stringToLog() override;
+        bool isEmptyOrWhitespace(const std::string& s_input);
+
         void saveCommand(const std::string& s_commandName, std::unique_ptr<Command> s_commandPtr); // add command to the commandMap
         virtual void getCommand(GameEngine& ge); // process user input
     
