@@ -437,8 +437,16 @@ void GameEngine::addPlayer(const std::string& player_name)
 
 void GameEngine::assignCountries()
 {
-    std::cout << ">> Assigned countries." << std::endl;
-    transition(GAMESTART);
+    if(this->mPlayer_v.size() >= 2 && this->mPlayer_v.size() <= 6)
+    {
+        std::cout << ">> Assigned countries." << std::endl;
+        transition(GAMESTART);
+    }
+    else
+    {
+        std::cout << "[WARNING]: Total player count must be 2-6 players. Total: " + this->mPlayer_v.size() << std::endl;
+        transition(PLAYERS_ADDED); // go back to previous state
+    }
 }
 
 

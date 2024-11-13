@@ -25,12 +25,30 @@ Player::Player(int playerID, string name, int startTerrIndex, Map* map, Deck* cu
         orders = new OrderList();
     };
 
+// мяу: constructor with PlayerStrategy
+Player::Player(int playerID, string name, int startTerrIndex, Map* map, Deck* currDeck, PlayerStrategy* ps):
+    reinforcementPool{0},
+    playerID(playerID),
+    name(name),
+    currMap(map),
+    currDeck(currDeck),
+    cardToIssueFlag(false), 
+    no_aggression_this_turn_list{}
+    {
+        playerStrat = ps;
+        territoriesToDefend = new vector<int>;
+        territoriesToDefend->push_back(startTerrIndex);
+        currHand = new Hand(currDeck);
+        orders = new OrderList();
+    };
+
 // copy constructor
 Player::Player(const Player& other):
     playerID(other.playerID),
     name(other.name), 
     currMap(other.currMap),
-    currDeck(other.currDeck)
+    currDeck(other.currDeck),
+    playerStrat(other.playerStrat)
     {
     
         territoriesToDefend = new vector<int>(*other.territoriesToDefend );
