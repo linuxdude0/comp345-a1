@@ -4,6 +4,8 @@
 #include "Mappings.h"
 #include <set>
 #include <limits>
+#include <cmath>
+#include <algorithm>
 
 class PlayerStrategy
 {
@@ -27,8 +29,8 @@ class NeutralStrategy : public PlayerStrategy
 {
     public:
         bool issueOrder(Player* p, Order* order);
-        std::vector<int> toAttack();
-        std::vector<int>& toDefend();
+        std::vector<int> toAttack(Player* p);
+        std::vector<int>& toDefend(Player* p);
 };
 
 class AggressiveStrategy : public PlayerStrategy
@@ -58,7 +60,7 @@ class CheaterStrategy : public PlayerStrategy
 {
     public:
         bool issueOrder(Player* p, Order* order);
-        std::vector<int> toAttack();
-        std::vector<int>& toDefend();
+        std::vector<int> toAttack(Player* p);
+        std::vector<int>& toDefend(Player* p);
 };
 #endif // !PLAYER_STRATEGY
