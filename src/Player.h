@@ -21,9 +21,10 @@ Player:
     issueOrder() -- creates an order object, adds to the list of orders
 
 */
-class Player{
+class Player{ 
 
-    private:
+    public:
+
         int reinforcementPool;
         int playerID;
         string name;
@@ -34,9 +35,8 @@ class Player{
         Deck* currDeck;
         bool playCard(CardType ct);
         bool cardToIssueFlag;
-        PlayerStrategy* playerStrat; // мяу 
+        PlayerStrategy* playerStrat;
 
-    public:
         Player(int, string, int, Map*, Deck*);
         Player(int, string, int, Map*, Deck*, PlayerStrategy*); // мяу: alternative constructor that demands for a player strategy in the constructor
         Player(const Player&);

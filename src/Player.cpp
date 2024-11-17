@@ -66,30 +66,11 @@ Player::~Player(){
 }
 
 
-vector<int>& Player::toDefend(){ return *territoriesToDefend;}
-
-
+vector<int>& Player::toDefend(){ return this->playerStrat->toDefend(this);}
 /*
     returns a vector of all the adjacent territories to the territories currently owned by the player
 */
-vector<int> Player::toAttack(){
-    vector<int> empty{};
-    if (this->territoriesToDefend->size() == 0){
-        return empty;
-    }
-    std::set<unsigned> to_attack_territories;
-    for (int terrID : *(this->territoriesToDefend)){
-        
-        Map::Territory ownedTerr = this->currMap->getTerritory(terrID);
-        for (size_t i=0; i<ownedTerr.num_adjacent_territories; i++) {
-            if (!this->ownsTerritory(ownedTerr.adjacent_territories_indexes[i])) {
-                to_attack_territories.insert(ownedTerr.adjacent_territories_indexes[i]);
-            }
-        }
-    }
-    vector<int> can_attack(to_attack_territories.begin(), to_attack_territories.end());
-    return can_attack;
-}
+vector<int> Player::toAttack(){return this->playerStrat->toAttack(this);}
 
 void Player::clearCardToIssueFlag(){cardToIssueFlag = false;};
 void Player::setCardToIssueFlag(){cardToIssueFlag = true;};
@@ -111,43 +92,7 @@ bool Player::playCard(CardType ct) {
     return false;
 }
 
-bool Player::issueOrder(Order* order) {
-    switch (order->orderKind) {
-        case OrderKind::DEPLOY:
-        case OrderKind::ADVANCE:
-            this->orders->add(order);
-            break;
-        case OrderKind::BOMB:
-            if (!this->playCard(CardType::BOMB)) {
-                std::cout << "[!] " << *order << "failed, no BOMB card for player [Player " << this->getName() << "]" << std::endl;
-                return false;
-            }
-            this->orders->add(order);
-            break;
-        case OrderKind::AIRLIFT:
-            if (!this->playCard(CardType::AIRLIFT)) {
-                std::cout << "[!] " << *order << "failed, no AIRLIFT card for player [Player " << this->getName() << "]" << std::endl;
-                return false;
-            }
-            this->orders->add(order);
-            break;
-        case OrderKind::BLOCKADE:
-            if (!this->playCard(CardType::BLOCKADE)) {
-                std::cout << "[!] " << *order << "failed, no BLOCKADE card for player [Player " << this->getName() << "]" << std::endl;
-                return false;
-            }
-            this->orders->add(order);
-            break;
-        case OrderKind::NEGOTIATE:
-            if (!this->playCard(CardType::DIPLOMACY)) {
-                std::cout << "[!] " << *order << "failed, no NEGOTIATE card for player [Player " << this->getName() << "]" << std::endl;
-                return false;
-            }
-            this->orders->add(order);
-            break;
-    }
-    return true;
-}
+bool Player::issueOrder(Order* order) {return this->playerStrat->issueOrder(this, order);}
 
 bool Player::ownsTerritory(unsigned index) {
     for (unsigned i : *this->territoriesToDefend) {
