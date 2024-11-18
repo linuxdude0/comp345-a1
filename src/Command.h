@@ -15,7 +15,7 @@
 #define TOURNAMENT_MIN_NUM_GAMES_PER_MAP    1
 
 #define TOURNAMENT_MAX_TURNS_PER_GAME       50
-#define TOURNAMENT_MIN_TURNS_PER_GAME       50
+#define TOURNAMENT_MIN_TURNS_PER_GAME       10
 
 class GameEngine;
 

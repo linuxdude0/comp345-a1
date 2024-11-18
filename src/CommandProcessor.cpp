@@ -250,6 +250,7 @@ void CommandProcessor::getCommand(GameEngine& ge)
                 err = "-D not within range";
                 goto error;
             }
+            char_index+=2;
             for (; char_index < s_argument.length(); char_index++) {
                 if (!isspace(s_argument[char_index])) {
                     err = "extra string after command is over";
@@ -265,7 +266,7 @@ void CommandProcessor::getCommand(GameEngine& ge)
                 std::cout << "\t" << player_strategy_strings[static_cast<unsigned>(player_strats[i])] << std::endl;
             }
             std::cout << "number of games: " << num_games << std::endl;
-            std::cout << "max turns" << max_turns << std::endl;
+            std::cout << "max turns: " << max_turns << std::endl;
             continue;
         error:
             std::cout << "[ERROR]: " << err << std::endl;
@@ -280,7 +281,7 @@ void CommandProcessor::getCommand(GameEngine& ge)
                 std::cout << "\t" << player_strategy_strings[static_cast<unsigned>(player_strats[i])] << std::endl;
             }
             std::cout << "number of games: " << num_games << std::endl;
-            std::cout << "max turns" << max_turns << std::endl;
+            std::cout << "max turns: " << max_turns << std::endl;
             continue;
         }
         else if(s_command == "validatemap")
