@@ -1,6 +1,17 @@
 #include "PlayerStrategy.h"
+#include <set>
+#include <limits>
+#include <cmath>
+#include <algorithm>
+#include "common.h"
 
-
+const char* player_strategy_strings[] = {
+    "HUMAN_STRATEGY",
+    "NEUTRAL_STRATEGY",
+    "AGGRESSIVE_STRATEGY",
+    "BENEVOLENT_STRATEGY",
+    "CHEATING_STRATEGY",
+};
  
 // -- human strategy --
 bool HumanStrategy::issueOrder(Player* p, Order* order){
@@ -66,7 +77,7 @@ std::vector<int>& HumanStrategy::toDefend(Player* p) {
 
 // -- neutral strategy --
 bool NeutralStrategy::issueOrder(Player* p, Order* order){ 
-    
+    UNUSED(order);
     /*nothing here*/
     // jus deploy? 
 
@@ -76,6 +87,7 @@ bool NeutralStrategy::issueOrder(Player* p, Order* order){
 
     return true;
 }
+
 std::vector<int> NeutralStrategy::toAttack(Player* p){ 
     vector<int> empty{};
     if (p->territoriesToDefend->size() == 0){
@@ -99,7 +111,7 @@ std::vector<int>& NeutralStrategy::toDefend(Player* p){return *(p->territoriesTo
 
 // -- aggressive strategy --
 bool AggressiveStrategy::issueOrder(Player* p, Order* o){
-    
+    UNUSED(o);
     // 1---- first we need to deploy everything
 
     // nothing to attack, deploy to territory belonging to self with highest number of troops
@@ -235,7 +247,7 @@ std::vector<int>& AggressiveStrategy::toDefend(Player* p){
     return *(p->territoriesToDefend);
 }
 unsigned AggressiveStrategy::getMostDefendedEnemyTerr(Player* p){
-
+    UNUSED(p);
     unsigned max = 0;
     unsigned enemy = 0;
     for(auto& entry : territory_owner_troops_mappings){
@@ -272,6 +284,7 @@ unsigned AggressiveStrategy::currStationedAt(unsigned terr_index){
 // -- benevolent strategy --
 bool BenevolentStrategy::issueOrder(Player* p,Order* order) {
 
+    UNUSED(order);
     // deploys only on its weakest territories
     // never attacks
     // uses only peaceful cards if any --> Diplomacy card afaik

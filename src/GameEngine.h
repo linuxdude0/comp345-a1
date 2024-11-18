@@ -1,6 +1,7 @@
 #ifndef GAME_ENGINE_H
 #define GAME_ENGINE_H
 
+#include "Command.h"
 #include "LoggingObserver.h"
 #include "Map.h"
 #include "Player.h"
@@ -83,6 +84,7 @@ class GameEngine : public ILoggable, public Subject
         void addPlayer(const std::string& player_name);
         void assignCountries();
         void gamestart(); //meow meow meow
+        bool tournament(std::string map_file, PlayerStrategyEnum player_strategies[TOURNAMENT_MAX_PLAYER_STRATEGIES],size_t num_player_strategies, size_t max_turns_per_game);
         void issueOrder();
         void execOrder();
         void endExecOrders();

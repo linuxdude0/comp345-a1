@@ -2,7 +2,20 @@
 #define COMMAND_H
 
 #include "LoggingObserver.h"
+#include "PlayerStrategy.h"
 #include <string>
+
+#define TOURNAMENT_MAX_MAP_FILES            5
+#define TOURNAMENT_MIN_MAP_FILES            1
+
+#define TOURNAMENT_MAX_PLAYER_STRATEGIES    4
+#define TOURNAMENT_MIN_PLAYER_STRATEGIES    2
+
+#define TOURNAMENT_MAX_NUM_GAMES_PER_MAP    5
+#define TOURNAMENT_MIN_NUM_GAMES_PER_MAP    1
+
+#define TOURNAMENT_MAX_TURNS_PER_GAME       50
+#define TOURNAMENT_MIN_TURNS_PER_GAME       50
 
 class GameEngine;
 
@@ -22,6 +35,28 @@ class Command : public ILoggable, public Subject
 };
 
 // -- All derived command classes (for the game engine) --
+
+class tournamentCommand : public Command 
+{
+    public:
+        tournamentCommand(
+            std::string map_files[TOURNAMENT_MAX_MAP_FILES],
+            size_t num_map_files,
+            PlayerStrategyEnum player_strategies[TOURNAMENT_MAX_PLAYER_STRATEGIES],
+            size_t num_player_strategies,
+            size_t num_games_per_map,
+            size_t max_turns_per_game
+        );
+        virtual void executeCommand(GameEngine& ge) override;
+        virtual void saveEffect(const std::string& s_effect) override;
+    private:
+        std::string map_files[TOURNAMENT_MAX_MAP_FILES];
+        size_t num_map_files;
+        PlayerStrategyEnum player_strategies[TOURNAMENT_MAX_PLAYER_STRATEGIES];
+        size_t num_player_strategies;
+        size_t num_games_per_map;
+        size_t max_turns_per_game;
+};
 
 class loadMapCommand : public Command
 {

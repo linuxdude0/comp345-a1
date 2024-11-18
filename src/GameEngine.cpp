@@ -1,4 +1,5 @@
 #include "GameEngine.h"
+#include "Command.h"
 #include "GameEngineDriver.h"
 #include "Map.h"
 #include "Orders.h"
@@ -13,6 +14,7 @@
 #include "LoggingObserver.h"
 #include "LoggingObserverDriver.h"
 #include "FileCommandProcessorAdapter.h"
+#include "PlayerStrategy.h"
 
 // -- helper functions --
 void clear_extra()
@@ -224,7 +226,7 @@ bool GameEngine::parseOptions(const std::string& s_option)
 
 void GameEngine::initializeStateCommands()
 {
-    stateCommandMap[START] = {"loadmap", "help", "quit"};
+    stateCommandMap[START] = {"tournament", "loadmap", "help", "quit"};
     stateCommandMap[MAP_LOADED] = {"validatemap", "help", "quit"};
     stateCommandMap[MAP_VALIDATED] = {"addplayer", "help", "quit"};
     stateCommandMap[PLAYERS_ADDED] = {"addplayer","assigncountries", "help", "quit"};
@@ -444,7 +446,7 @@ void GameEngine::assignCountries()
     }
     else
     {
-        std::cout << "[WARNING]: Total player count must be 2-6 players. Total: " + this->mPlayer_v.size() << std::endl;
+        std::cout << "[WARNING]: Total player count must be 2-6 players. Total: " << this->mPlayer_v.size() << std::endl;
         transition(PLAYERS_ADDED); // go back to previous state
     }
 }
@@ -909,6 +911,12 @@ Player* GameEngine::chooseAPlayerToTarget(Player* issuing, GameEngine& ge) {
     
     return out;
 };
+
+bool GameEngine::tournament(std::string map_file, PlayerStrategyEnum player_strategies[TOURNAMENT_MAX_PLAYER_STRATEGIES],size_t num_player_strategies, size_t max_turns_per_game) {
+    this->loadMap(map_file);
+    this->addPlayer("j");
+    return true;
+}
 
 void GameEngine::replay()
 {

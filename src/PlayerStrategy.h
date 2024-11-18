@@ -1,12 +1,7 @@
 #ifndef PLAYER_STRATEGY
 #define PLAYER_STRATEGY
-#include "Player.h"
-#include "Mappings.h"
-#include <set>
-#include <limits>
-#include <cmath>
-#include <algorithm>
 
+#include "Mappings.h"
 class PlayerStrategy
 {
     // -- abstract player strategy class --
@@ -14,6 +9,17 @@ class PlayerStrategy
         virtual bool issueOrder(Player*, Order*) = 0;
         virtual std::vector<int> toAttack(Player*) = 0;
         virtual std::vector<int>& toDefend(Player*) = 0;
+};
+
+extern const char* player_strategy_strings[5];
+
+enum class PlayerStrategyEnum {
+    HUMAN_STRATEGY,
+    NEUTRAL_STRATEGY,
+    AGGRESSIVE_STRATEGY,
+    BENEVOLENT_STRATEGY,
+    CHEATING_STRATEGY,
+    STRATEGIES_MAX,
 };
 
 // -- concrete player strategy classes --

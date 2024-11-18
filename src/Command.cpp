@@ -1,5 +1,7 @@
 #include "Command.h"
 #include "GameEngine.h"
+#include "common.h"
+#include <cassert>
 #include <sstream>
 
 Command::Command()
@@ -9,7 +11,7 @@ Command::Command()
 
 Command::~Command()
 {
-
+    
 }
 
 std::string Command::getEffect() {return mEffect;}
@@ -18,6 +20,51 @@ std::string Command::stringToLog() {
     std::stringstream s;
     s << "Effect: " << this->getEffect();
     return s.str();
+}
+
+// -- tournament command --
+tournamentCommand::tournamentCommand(
+    std::string map_files[TOURNAMENT_MAX_MAP_FILES],
+    size_t num_map_files,
+    PlayerStrategyEnum player_strategies[TOURNAMENT_MAX_PLAYER_STRATEGIES],
+    size_t num_player_strategies,
+    size_t num_games_per_map,
+    size_t max_turns_per_game
+) {
+    assert(BETWEEN(num_map_files, TOURNAMENT_MIN_MAP_FILES, TOURNAMENT_MAX_MAP_FILES));
+    assert(BETWEEN(num_player_strategies, TOURNAMENT_MIN_PLAYER_STRATEGIES, TOURNAMENT_MAX_PLAYER_STRATEGIES));
+    assert(BETWEEN(num_games_per_map, TOURNAMENT_MIN_NUM_GAMES_PER_MAP, TOURNAMENT_MAX_NUM_GAMES_PER_MAP));
+    assert(BETWEEN(max_turns_per_game, TOURNAMENT_MIN_TURNS_PER_GAME, TOURNAMENT_MAX_TURNS_PER_GAME));
+    for (size_t i=0; i<num_map_files; i++) {
+        this->map_files[i]=map_files[i];
+    }
+    for (size_t i=0; i<num_player_strategies; i++) {
+        this->player_strategies[i]=player_strategies[i];
+    }
+    this->num_player_strategies = num_player_strategies;
+    this->num_games_per_map = num_games_per_map;
+    this->max_turns_per_game = max_turns_per_game;
+    this->num_map_files = num_map_files;
+}
+
+void tournamentCommand::executeCommand(GameEngine& ge) {
+    for (size_t map_num=0; map_num<this->num_map_files; map_num++) {
+        for (size_t game_num=0; game_num<this->num_games_per_map; game_num++) {
+            if(!ge.tournament(this->map_files[map_num], this->player_strategies, this->num_player_strategies, this->max_turns_per_game)) {
+                std::cout << "Tournament failed: Map: " << this->map_files[map_num] << "Player types: ";
+                for (size_t i=0; i<this->num_player_strategies; i++) {
+                    std::cout << player_strategy_strings[static_cast<unsigned>(this->player_strategies[i])] << " ";
+                }
+                std::cout << "max turns: " << this->max_turns_per_game << std::endl;
+            }
+        }
+    }
+}
+
+void tournamentCommand::saveEffect(const std::string& s_effect) {
+    mEffect = s_effect;
+    std::cout << s_effect << std::endl;
+    this->notify(this);
 }
 
 // -- loadmap command --
