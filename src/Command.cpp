@@ -50,6 +50,7 @@ tournamentCommand::tournamentCommand(
 void tournamentCommand::executeCommand(GameEngine& ge) {
     for (size_t map_num=0; map_num<this->num_map_files; map_num++) {
         for (size_t game_num=0; game_num<this->num_games_per_map; game_num++) {
+            std::cout << "execute" << std::endl;
             if(!ge.tournament(this->map_files[map_num], this->player_strategies, this->num_player_strategies, this->max_turns_per_game)) {
                 std::cout << "Tournament failed: Map: " << this->map_files[map_num] << "Player types: ";
                 for (size_t i=0; i<this->num_player_strategies; i++) {

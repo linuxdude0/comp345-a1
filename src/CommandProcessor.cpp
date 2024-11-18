@@ -65,7 +65,6 @@ void CommandProcessor::getCommand(GameEngine& ge)
             std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
             std::cout << ">> [ERROR]: Invalid input, please try again." << std::endl;
         }
-
         // -- split up the command and arguments --
         std::istringstream i_stream(sCommand);
         std::string s_command;
@@ -92,6 +91,7 @@ void CommandProcessor::getCommand(GameEngine& ge)
         else if(s_command == "tournament")
         {
             std::string err = "";
+            bool isErr = false;
             size_t char_index = 0;
             std::string map_strings[TOURNAMENT_MAX_MAP_FILES]{};
             PlayerStrategyEnum player_strats[TOURNAMENT_MAX_PLAYER_STRATEGIES]{};
@@ -105,10 +105,12 @@ void CommandProcessor::getCommand(GameEngine& ge)
                 }
             }
             if (char_index+2 >= s_argument.length()) {
+                isErr = true;
                 err = "missing all args";
                 goto error;
             }
             if (s_argument[char_index] != '-' || s_argument[char_index+1] != 'M') {
+                isErr = true;
                 err = "-M is written incorrectely";
                 goto error;
             }
@@ -120,6 +122,7 @@ void CommandProcessor::getCommand(GameEngine& ge)
             }
             for (;char_index < s_argument.length() && s_argument[char_index] != '-'; num_maps++) {
                 if (num_maps >= TOURNAMENT_MAX_MAP_FILES) {
+                    isErr = true;
                     err = "Too many maps";
                     goto error;
                 }
@@ -137,14 +140,17 @@ void CommandProcessor::getCommand(GameEngine& ge)
                 }
             }
             if (num_maps < TOURNAMENT_MIN_MAP_FILES) {
+                isErr = true;
                 err = "Too little maps";
                 goto error;
             }
             if (char_index+2 >= s_argument.length()) {
+                isErr = true;
                 err = "missing -P -G and -D args";
                 goto error;
             }
             if (s_argument[char_index] != '-' || s_argument[char_index+1] != 'P') {
+                isErr = true;
                 err = "-P is written incorrectely";
                 goto error;
             }
@@ -156,6 +162,7 @@ void CommandProcessor::getCommand(GameEngine& ge)
             }
             for (;char_index < s_argument.length() && s_argument[char_index] != '-'; num_player_types++) {
                 if (num_player_types >= TOURNAMENT_MAX_PLAYER_STRATEGIES) {
+                    isErr = true;
                     err = "Too many player strats";
                     goto error;
                 }
@@ -174,6 +181,7 @@ void CommandProcessor::getCommand(GameEngine& ge)
                     }
                 }
                 if (!found) {
+                    isErr = true;
                     err = "wrong player strat:" + s;
                     goto error;
                 }
@@ -184,14 +192,17 @@ void CommandProcessor::getCommand(GameEngine& ge)
                 }
             }
             if (num_player_types < TOURNAMENT_MIN_PLAYER_STRATEGIES) {
+                isErr = true;
                 err = "Too little player strats";
                 goto error;
             }
             if (char_index+2 >= s_argument.length()) {
+                isErr = true;
                 err = "missing -G and -D args";
                 goto error;
             }
             if (s_argument[char_index] != '-' || s_argument[char_index+1] != 'G') {
+                isErr = true;
                 err = "-G is written incorrectely";
                 goto error;
             }
@@ -202,15 +213,18 @@ void CommandProcessor::getCommand(GameEngine& ge)
                 }
             }
             if (char_index+1 >= s_argument.length()) {
+                isErr = true;
                 err = "missing -G number";
                 goto error;
             }
             if (!isdigit(s_argument[char_index])) {
+                isErr = true;
                 err = "-G number is not a number";
                 goto error;
             }
             num_games = s_argument[char_index++]-'0';
             if (!isspace(s_argument[char_index]) || !BETWEEN(num_games, TOURNAMENT_MIN_NUM_GAMES_PER_MAP, TOURNAMENT_MAX_NUM_GAMES_PER_MAP)) {
+                isErr = true;
                 err = "Wrong number of games";
                 goto error;
             }
@@ -220,10 +234,12 @@ void CommandProcessor::getCommand(GameEngine& ge)
                 }
             }
             if (char_index+2 >= s_argument.length()) {
+                isErr = true;
                 err = "missing -D args";
                 goto error;
             }
             if (s_argument[char_index] != '-' || s_argument[char_index+1] != 'D') {
+                isErr = true;
                 err = "-D is written incorrectely";
                 goto error;
             }
@@ -234,25 +250,30 @@ void CommandProcessor::getCommand(GameEngine& ge)
                 }
             }
             if (char_index+1 >= s_argument.length()) {
+                isErr = true;
                 err = "missing -D number";
                 goto error;
             }
             if (!isdigit(s_argument[char_index]) || !isdigit(s_argument[char_index+1])) {
+                isErr = true;
                 err = "Wrong digit for -D option";
                 goto error;
             }
             if (char_index+3 < s_argument.length() && !isspace(s_argument[char_index+2])) {
+                isErr = true;
                 err = "-D number too big";
                 goto error;
             }
             max_turns = (s_argument[char_index]-'0')*10+(s_argument[char_index+1]-'0');
             if (!BETWEEN(max_turns, TOURNAMENT_MIN_TURNS_PER_GAME, TOURNAMENT_MAX_TURNS_PER_GAME)) {
+                isErr = true;
                 err = "-D not within range";
                 goto error;
             }
             char_index+=2;
             for (; char_index < s_argument.length(); char_index++) {
                 if (!isspace(s_argument[char_index])) {
+                    isErr = true;
                     err = "extra string after command is over";
                     goto error;
                 }
@@ -267,26 +288,26 @@ void CommandProcessor::getCommand(GameEngine& ge)
             }
             std::cout << "number of games: " << num_games << std::endl;
             std::cout << "max turns: " << max_turns << std::endl;
-            continue;
+            saveCommand(s_command,std::make_unique<tournamentCommand>(map_strings, num_maps, player_strats, num_player_types, num_games, max_turns));
         error:
-            std::cout << "[ERROR]: " << err << std::endl;
-            std::cout << "Args: " << s_argument << std::endl;
-            std::cout << "USAGE: tournament -M <listofmapfiles> -P <listofplayerstrategies> -G <numberofgames> -D <maxnumberofturns>" << std::endl;
-            std::cout << "Maps: " << std::endl;
-            for (size_t i=0; i< num_maps; i++) {
-                std::cout << "\t" << map_strings[i] << std::endl;
+            if (isErr) {
+                std::cout << "[ERROR]: " << err << std::endl;
+                std::cout << "Args: " << s_argument << std::endl;
+                std::cout << "USAGE: tournament -M <listofmapfiles> -P <listofplayerstrategies> -G <numberofgames> -D <maxnumberofturns>" << std::endl;
+                std::cout << "Maps: " << std::endl;
+                for (size_t i=0; i< num_maps; i++) {
+                    std::cout << "\t" << map_strings[i] << std::endl;
+                }
+                std::cout << "Player types: " << std::endl;
+                for (size_t i=0; i< num_player_types; i++) {
+                    std::cout << "\t" << player_strategy_strings[static_cast<unsigned>(player_strats[i])] << std::endl;
+                }
+                std::cout << "number of games: " << num_games << std::endl;
+                std::cout << "max turns: " << max_turns << std::endl;
             }
-            std::cout << "Player types: " << std::endl;
-            for (size_t i=0; i< num_player_types; i++) {
-                std::cout << "\t" << player_strategy_strings[static_cast<unsigned>(player_strats[i])] << std::endl;
-            }
-            std::cout << "number of games: " << num_games << std::endl;
-            std::cout << "max turns: " << max_turns << std::endl;
-            continue;
         }
         else if(s_command == "validatemap")
             saveCommand(s_command,std::make_unique<validateMapCommand>());
-        
         else if(s_command == "addplayer")
         {
             if(!isEmptyOrWhitespace(s_argument))
