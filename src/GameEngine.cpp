@@ -411,7 +411,7 @@ void GameEngine::distributeTerritories(int n_playerCount, int n_totalIndexes)
     // -- [!!]TODO fix bug where each new range skips an index for some reason... --
 }
 
-void GameEngine::addPlayer(const std::string& player_name)
+void GameEngine::addPlayer(const std::string& player_name, PlayerStrategyEnum player_strat)
 {
     // create new player, associate random territory index and give player a Card Deck object
 
@@ -428,7 +428,16 @@ void GameEngine::addPlayer(const std::string& player_name)
     Player *mPlayer_ptr;
     std::string s_name = player_name;
     std::cout << ">> Territory given: " << n_territoryIndex << std::endl;
-    mPlayer_ptr = new Player(n_playerId,s_name,n_territoryIndex,mMap_ptr,mDeck_ptr);
+    PlayerStrategy* player_strats = nullptr;
+    switch (player_strat) {
+        case PlayerStrategyEnum::HUMAN_STRATEGY: player_strats = new HumanStrategy(); break;
+        case PlayerStrategyEnum::NEUTRAL_STRATEGY: player_strats = new NeutralStrategy(); break;
+        case PlayerStrategyEnum::AGGRESSIVE_STRATEGY: player_strats = new AggressiveStrategy(); break;
+        case PlayerStrategyEnum::CHEATING_STRATEGY: player_strats = new CheaterStrategy(); break;
+        case PlayerStrategyEnum::BENEVOLENT_STRATEGY: player_strats = new BenevolentStrategy(); break;
+        case PlayerStrategyEnum::STRATEGIES_MAX: break;
+    }
+    mPlayer_ptr = new Player(n_playerId,s_name,n_territoryIndex,mMap_ptr,mDeck_ptr, player_strats);
     mPlayer_v.push_back(mPlayer_ptr); // insert players into a vector container
     n_playerId ++;
     std::cout << "vector size: " << mPlayer_v.size() << std::endl;
@@ -913,8 +922,29 @@ Player* GameEngine::chooseAPlayerToTarget(Player* issuing, GameEngine& ge) {
 };
 
 bool GameEngine::tournament(std::string map_file, PlayerStrategyEnum player_strategies[TOURNAMENT_MAX_PLAYER_STRATEGIES],size_t num_player_strategies, size_t max_turns_per_game) {
+    std::cout << "New tournament" << std::endl;
     this->loadMap(map_file);
-    this->addPlayer("j");
+    for(auto p : mPlayer_v) {
+        delete p;
+    }
+    mPlayer_v.clear();
+    unsigned num_strats[static_cast<unsigned>(PlayerStrategyEnum::STRATEGIES_MAX)]{};
+    for (size_t i=0; i<num_player_strategies; i++) {
+        std::stringstream s;
+        s << player_strategy_strings[static_cast<unsigned>(player_strategies[i])] << "_" << num_strats[static_cast<unsigned>(player_strategies[i])];
+        this->addPlayer(s.str(), player_strategies[i]);
+        num_strats[static_cast<unsigned>(player_strategies[i])]++;
+    }
+    /*for (size_t i=0; i<max_turns_per_game; i++) {*/
+    /*    for (Player* p : this->mPlayer_v) {*/
+    /**/
+    /*    }*/
+    /*}*/
+    for(auto p : mPlayer_v) {
+        delete p;
+    }
+    mPlayer_v.clear();
+    std::cout << "END New tournament" << std::endl;
     return true;
 }
 

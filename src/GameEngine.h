@@ -25,7 +25,6 @@ class FileCommandProcessorAdapter;
 class GameEngine : public ILoggable, public Subject
 {
     public:
-
         enum CurrentState
         {
             START,
@@ -81,7 +80,7 @@ class GameEngine : public ILoggable, public Subject
         // -- game commands --
         void loadMap(std::string map_filename);
         void validateMap();
-        void addPlayer(const std::string& player_name);
+        void addPlayer(const std::string& player_name, PlayerStrategyEnum player_strat);
         void assignCountries();
         void gamestart(); //meow meow meow
         bool tournament(std::string map_file, PlayerStrategyEnum player_strategies[TOURNAMENT_MAX_PLAYER_STRATEGIES],size_t num_player_strategies, size_t max_turns_per_game);

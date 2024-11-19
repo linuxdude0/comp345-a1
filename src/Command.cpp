@@ -109,7 +109,7 @@ addPlayerCommand::addPlayerCommand(const std::string& s_argument)
 
 void addPlayerCommand::executeCommand(GameEngine& ge)
 {
-    ge.addPlayer(mArgument);
+    ge.addPlayer(mArgument, PlayerStrategyEnum::HUMAN_STRATEGY);
 }
 
 void addPlayerCommand::saveEffect(const std::string& s_effect)
