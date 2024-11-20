@@ -663,76 +663,87 @@ void GameEngine::issueOrder()
 {
     OrderKind m_orderKind;
     for(Player* const p : mPlayer_v){
-        do {
-            std::cout << "[Player: " << p->getName() << "] is issuing orders" << std::endl;
-            m_orderKind = prompt_order_kind("Enter the order to issue (1-6): ");
-            Player* player = p;
-            unsigned target = 0;
-            unsigned source = 0;
-            unsigned num_troops = 0;
-            Player* targetPlayer = nullptr;
-            // ask questrions
-            switch (m_orderKind) {
-                case OrderKind::DEPLOY: // here deploy is exit
-                    break;
-                case OrderKind::ADVANCE:
-                case OrderKind::AIRLIFT:
-                    {
-                        std::cout << "Choose source territory: " << std::endl;
-                        source = chooseTerritory(*this, *this->mMap_ptr, m_orderKind, p);
-                        std::cout << "Choose target territory: " << std::endl;
-                        target = chooseTerritory(*this, *this->mMap_ptr, m_orderKind, p, source);
-                        unsigned tr = 0;
-                        for (std::tuple<unsigned, Player*, unsigned> t : territory_owner_troops_mappings) {
-                            if (source == std::get<0>(t)) {
-                                tr = std::get<2>(t);
+
+        // -- if it is a human player's turn, proceed with manual prompts --
+        if(dynamic_cast<HumanStrategy*>(p->playerStrat))
+        {
+            do {
+                std::cout << "[Player: " << p->getName() << "] is issuing orders" << std::endl;
+                m_orderKind = prompt_order_kind("Enter the order to issue (1-6): ");
+                Player* player = p;
+                unsigned target = 0;
+                unsigned source = 0;
+                unsigned num_troops = 0;
+                Player* targetPlayer = nullptr;
+                // ask questrions
+                switch (m_orderKind) {
+                    case OrderKind::DEPLOY: // here deploy is exit
+                        break;
+                    case OrderKind::ADVANCE:
+                    case OrderKind::AIRLIFT:
+                        {
+                            std::cout << "Choose source territory: " << std::endl;
+                            source = chooseTerritory(*this, *this->mMap_ptr, m_orderKind, p);
+                            std::cout << "Choose target territory: " << std::endl;
+                            target = chooseTerritory(*this, *this->mMap_ptr, m_orderKind, p, source);
+                            unsigned tr = 0;
+                            for (std::tuple<unsigned, Player*, unsigned> t : territory_owner_troops_mappings) {
+                                if (source == std::get<0>(t)) {
+                                    tr = std::get<2>(t);
+                                }
                             }
+                            do {
+                                std::cout << "Please the number of troops (you can distribute " << tr;
+                                num_troops = prompt_for_numeric("):",*this);
+                                if (num_troops <= 0) {
+                                    std::cout << "wrong number of troops" << std::endl;
+                                }
+                            } while(num_troops <=0);
                         }
-                        do {
-                            std::cout << "Please the number of troops (you can distribute " << tr;
-                            num_troops = prompt_for_numeric("):",*this);
-                            if (num_troops <= 0) {
-                                std::cout << "wrong number of troops" << std::endl;
-                            }
-                        } while(num_troops <=0);
-                    }
-                    break;
-                case OrderKind::NEGOTIATE:
-                    targetPlayer = chooseAPlayerToTarget(player, *this);
-                    break;
-                case OrderKind::BOMB:
-                case OrderKind::BLOCKADE:
-                
-                    std::cout << "Choose target territory: " << std::endl;
-                    target = chooseTerritory(*this, *this->mMap_ptr, m_orderKind, p);
-                    break;
-                default:
-                    throw "huh????";
-            }
-            switch (m_orderKind) {
-                case OrderKind::DEPLOY: // here deploy is exit
-                    break;
-                case OrderKind::ADVANCE:
-                    p->issueOrder(new AdvanceOrder(player, target, source, num_troops, mMap_ptr));
-                    break;
-                case OrderKind::AIRLIFT:
-                    p->issueOrder(new AirliftOrder(player, target, source, num_troops));
-                    break;
-                case OrderKind::BOMB:
-                    p->issueOrder(new BombOrder(player, target));
-                    break;
-                case OrderKind::BLOCKADE:
-                    p->issueOrder(new BlockadeOrder(player, target, this->mNeutralPlayer));
-                    break;
-                case OrderKind::NEGOTIATE:
-                    assert(targetPlayer);
-                    assert(player);
-                    p->issueOrder(new NegotiateOrder(player, targetPlayer));
-                    break;
-                default:
-                    throw "huh????";
-            }
-        } while(m_orderKind != OrderKind::DEPLOY);
+                        break;
+                    case OrderKind::NEGOTIATE:
+                        targetPlayer = chooseAPlayerToTarget(player, *this);
+                        break;
+                    case OrderKind::BOMB:
+                    case OrderKind::BLOCKADE:
+                    
+                        std::cout << "Choose target territory: " << std::endl;
+                        target = chooseTerritory(*this, *this->mMap_ptr, m_orderKind, p);
+                        break;
+                    default:
+                        throw "huh????";
+                }
+                switch (m_orderKind) {
+                    case OrderKind::DEPLOY: // here deploy is exit
+                        break;
+                    case OrderKind::ADVANCE:
+                        p->issueOrder(new AdvanceOrder(player, target, source, num_troops, mMap_ptr));
+                        break;
+                    case OrderKind::AIRLIFT:
+                        p->issueOrder(new AirliftOrder(player, target, source, num_troops));
+                        break;
+                    case OrderKind::BOMB:
+                        p->issueOrder(new BombOrder(player, target));
+                        break;
+                    case OrderKind::BLOCKADE:
+                        p->issueOrder(new BlockadeOrder(player, target, this->mNeutralPlayer));
+                        break;
+                    case OrderKind::NEGOTIATE:
+                        assert(targetPlayer);
+                        assert(player);
+                        p->issueOrder(new NegotiateOrder(player, targetPlayer));
+                        break;
+                    default:
+                        throw "huh????";
+                }
+            } while(m_orderKind != OrderKind::DEPLOY);
+        }
+        else
+        {
+            // -- automatically run orders if computer player --
+            p->playerStrat->issueOrder(p,nullptr);
+        }
+
     }
 }
 
@@ -957,36 +968,16 @@ bool GameEngine::tournament(std::string map_file, PlayerStrategyEnum player_stra
     for (size_t i=0; i<max_turns_per_game && mCurrentState != WIN; i++) {
         for (Player* p : this->mPlayer_v) {
 
-            // need to automate reinforcementPhase() for each player strategy 
             if(dynamic_cast<HumanStrategy*>(p->playerStrat))
             {
                 reinforcementPhase();
                 issueOrdersPhase();
                 executeOrdersPhase();  
             }
-            else if(dynamic_cast<AggressiveStrategy*>(p->playerStrat))
+            else
             {
-                reinforcementPhase();
                 p->playerStrat->issueOrder(p,nullptr);
-                executeOrdersPhase();  
-            }
-            else if(dynamic_cast<NeutralStrategy*>(p->playerStrat))
-            {
-                reinforcementPhase();
-                p->playerStrat->issueOrder(p,nullptr);
-                executeOrdersPhase();  
-            }
-            else if(dynamic_cast<BenevolentStrategy*>(p->playerStrat))
-            {
-                reinforcementPhase();
-                p->playerStrat->issueOrder(p,nullptr);
-                executeOrdersPhase();  
-            }
-            else if(dynamic_cast<CheaterStrategy*>(p->playerStrat))
-            {
-                reinforcementPhase();
-                p->playerStrat->issueOrder(p,nullptr);
-                executeOrdersPhase();  
+                executeOrdersPhase();
             }
         }
     }
@@ -995,6 +986,7 @@ bool GameEngine::tournament(std::string map_file, PlayerStrategyEnum player_stra
     }
     mPlayer_v.clear();
     std::cout << "END New tournament" << std::endl;
+    clear_extra(); // clear buffer since tournament command is input again for some reason
     return true;
 }
 

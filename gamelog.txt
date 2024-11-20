@@ -6,13 +6,99 @@ Transitioned to state: GAMESTART
 Transitioned to state: ASSIGN_REINFORCEMENTS
 Transitioned to state: ASSIGN_REINFORCEMENTS
 adding Deploy Order
-adding Bomb Order
 Executing Deploy Order
+Transitioned to state: ASSIGN_REINFORCEMENTS
 adding Deploy Order
 Executing Deploy Order
-Transitioned to state: ISSUE_ORDERS
+Transitioned to state: ASSIGN_REINFORCEMENTS
 adding Deploy Order
 adding Advance Order
 Executing Deploy Order
 Executing Advance Order
 Transitioned to state: ASSIGN_REINFORCEMENTS
+adding Deploy Order
+Executing Deploy Order
+Transitioned to state: ASSIGN_REINFORCEMENTS
+adding Deploy Order
+adding Advance Order
+adding Advance Order
+Executing Deploy Order
+Executing Advance Order
+Executing Advance Order
+Transitioned to state: ASSIGN_REINFORCEMENTS
+adding Deploy Order
+Executing Deploy Order
+Transitioned to state: ASSIGN_REINFORCEMENTS
+adding Deploy Order
+adding Advance Order
+adding Advance Order
+Executing Deploy Order
+Executing Advance Order
+Executing Advance Order
+Transitioned to state: ASSIGN_REINFORCEMENTS
+adding Deploy Order
+Executing Deploy Order
+Transitioned to state: ASSIGN_REINFORCEMENTS
+adding Deploy Order
+adding Advance Order
+adding Advance Order
+Executing Deploy Order
+Executing Advance Order
+Executing Advance Order
+Transitioned to state: ASSIGN_REINFORCEMENTS
+adding Deploy Order
+Executing Deploy Order
+Transitioned to state: ASSIGN_REINFORCEMENTS
+adding Deploy Order
+adding Bomb Order
+adding Advance Order
+adding Advance Order
+Executing Deploy Order
+Executing Advance Order
+Executing Advance Order
+Transitioned to state: ASSIGN_REINFORCEMENTS
+adding Deploy Order
+Executing Deploy Order
+Transitioned to state: ASSIGN_REINFORCEMENTS
+adding Deploy Order
+adding Advance Order
+adding Advance Order
+Executing Deploy Order
+Executing Advance Order
+Executing Advance Order
+Transitioned to state: ASSIGN_REINFORCEMENTS
+adding Deploy Order
+Executing Deploy Order
+Transitioned to state: ASSIGN_REINFORCEMENTS
+adding Deploy Order
+adding Advance Order
+adding Advance Order
+Executing Deploy Order
+Executing Advance Order
+Executing Advance Order
+Transitioned to state: ASSIGN_REINFORCEMENTS
+adding Deploy Order
+Executing Deploy Order
+Transitioned to state: ASSIGN_REINFORCEMENTS
+adding Deploy Order
+adding Advance Order
+adding Advance Order
+Executing Deploy Order
+Executing Advance Order
+Executing Advance Order
+Transitioned to state: ASSIGN_REINFORCEMENTS
+adding Deploy Order
+Executing Deploy Order
+Transitioned to state: ASSIGN_REINFORCEMENTS
+adding Deploy Order
+adding Bomb Order
+adding Advance Order
+adding Advance Order
+Executing Deploy Order
+Executing Advance Order
+Executing Advance Order
+Transitioned to state: ASSIGN_REINFORCEMENTS
+adding Deploy Order
+Executing Deploy Order
+Transitioned to state: ASSIGN_REINFORCEMENTS
+Effect: tournament
