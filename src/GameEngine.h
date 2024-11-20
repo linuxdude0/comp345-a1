@@ -85,6 +85,7 @@ class GameEngine : public ILoggable, public Subject
         void gamestart(); //meow meow meow
         bool tournament(std::string map_file, PlayerStrategyEnum player_strategies[TOURNAMENT_MAX_PLAYER_STRATEGIES],size_t num_player_strategies, size_t max_turns_per_game);
         void issueOrder();
+        void issueOrderAuto(); // cirno gaming
         void execOrder();
         void endExecOrders();
         void endIssueOrders();

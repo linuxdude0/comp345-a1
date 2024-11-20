@@ -736,6 +736,7 @@ void GameEngine::issueOrder()
     }
 }
 
+
 void GameEngine::endIssueOrders()
 {
     clear_extra();
@@ -935,11 +936,60 @@ bool GameEngine::tournament(std::string map_file, PlayerStrategyEnum player_stra
         this->addPlayer(s.str(), player_strategies[i]);
         num_strats[static_cast<unsigned>(player_strategies[i])]++;
     }
-    /*for (size_t i=0; i<max_turns_per_game; i++) {*/
-    /*    for (Player* p : this->mPlayer_v) {*/
-    /**/
-    /*    }*/
-    /*}*/
+    
+    // -- set everything up before running main game phase --
+    this->assignCountries();
+    for(Player* p : mPlayer_v){
+
+        p->addToReinforcementPool(50);
+        std::cout << ">> Player " << p->getName() << " just received 50 units." << std::endl;
+        
+        p->getHand()->addCard(this->mDeck_ptr->draw());
+        p->getHand()->addCard(this->mDeck_ptr->draw());
+        std::cout << ">> Player " << p->getName() << " just received 2 cards" << std::endl;
+        
+        for(int i : p->toDefend()){
+            territory_owner_troops_mappings.push_back(std::make_tuple(i, p, 0));
+        }
+        transition(ASSIGN_REINFORCEMENTS); // switches to the main game state 
+    }
+
+    for (size_t i=0; i<max_turns_per_game && mCurrentState != WIN; i++) {
+        for (Player* p : this->mPlayer_v) {
+
+            // need to automate reinforcementPhase() for each player strategy 
+            if(dynamic_cast<HumanStrategy*>(p->playerStrat))
+            {
+                reinforcementPhase();
+                issueOrdersPhase();
+                executeOrdersPhase();  
+            }
+            else if(dynamic_cast<AggressiveStrategy*>(p->playerStrat))
+            {
+                reinforcementPhase();
+                p->playerStrat->issueOrder(p,nullptr);
+                executeOrdersPhase();  
+            }
+            else if(dynamic_cast<NeutralStrategy*>(p->playerStrat))
+            {
+                reinforcementPhase();
+                p->playerStrat->issueOrder(p,nullptr);
+                executeOrdersPhase();  
+            }
+            else if(dynamic_cast<BenevolentStrategy*>(p->playerStrat))
+            {
+                reinforcementPhase();
+                p->playerStrat->issueOrder(p,nullptr);
+                executeOrdersPhase();  
+            }
+            else if(dynamic_cast<CheaterStrategy*>(p->playerStrat))
+            {
+                reinforcementPhase();
+                p->playerStrat->issueOrder(p,nullptr);
+                executeOrdersPhase();  
+            }
+        }
+    }
     for(auto p : mPlayer_v) {
         delete p;
     }
