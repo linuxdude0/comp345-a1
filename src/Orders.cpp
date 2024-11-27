@@ -1,4 +1,5 @@
 #include "Orders.h"
+#include "Command.h"
 #include "common.h"
 #include "Mappings.h"
 #include <algorithm>
@@ -131,7 +132,6 @@ bool AdvanceOrder::fight(){
 
     std::tuple<unsigned, Player*, unsigned>* source = nullptr; 
     std::tuple<unsigned, Player*, unsigned>* target = nullptr;
-
     // let's get those map entries... 
     for(auto& smth : territory_owner_troops_mappings){
         if(std::get<0>(smth) == territory_source){
@@ -310,7 +310,16 @@ void AdvanceOrder::execute(){
         }
         //else fight mechanics and buncha problems...
         else{
-
+            for(auto& smth : territory_owner_troops_mappings){
+                if(std::get<0>(smth) == territory_target){
+                    if(std::get<1>(smth)->playerStrat->player_strat == PlayerStrategyEnum::NEUTRAL_STRATEGY) {
+                        std::get<1>(smth)->playerStrat = new AggressiveStrategy();
+                        std::get<1>(smth)->playerStrat->player_strat = PlayerStrategyEnum::NEUTRAL_STRATEGY;
+                        std::cout << "[INFO] [Neutral Player: got provocked, bad idea....]" << std::endl; 
+                        break;
+                    }
+                }
+            }
             bool won = fight();
             if(won){
                 std::cout << "[ok] [Player: " << player->getName() << "] captured a new territory " << territory_target << std::endl; 
@@ -379,7 +388,16 @@ bool BombOrder::validate() {
 void BombOrder::execute() {
     if (validate()){
         std::cout << "Executing Bomb Order for Player [" << player->getName() << "]"<< std::endl;
-
+        for(auto& smth : territory_owner_troops_mappings){
+            if(std::get<0>(smth) == territory_target){
+                if(std::get<1>(smth)->playerStrat->player_strat == PlayerStrategyEnum::NEUTRAL_STRATEGY) {
+                    std::get<1>(smth)->playerStrat = new AggressiveStrategy();
+                    std::get<1>(smth)->playerStrat->player_strat = PlayerStrategyEnum::NEUTRAL_STRATEGY;
+                    std::cout << "[INFO] [Neutral Player got provocked, bad idea....]" << std::endl; 
+                    break;
+                }
+            }
+        }
         //Find the target territory and remove half of the troop number
         for (unsigned i = 0 ; i < territory_owner_troops_mappings.size(); i++){
             if(std::get<0>(territory_owner_troops_mappings[i]) == territory_target){

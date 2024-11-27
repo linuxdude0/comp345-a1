@@ -3,6 +3,7 @@
 #include "common.h"
 #include <cassert>
 #include <cctype>
+#include <iomanip>
 #include <sstream>
 
 Command::Command()
@@ -62,13 +63,13 @@ void tournamentCommand::executeCommand(GameEngine& ge) {
     }
     s << "\nG: " << this->num_games_per_map << "\nD: " << this->max_turns_per_game << "\n";
     s << "Results: " << "\n";
-    s << "\t|";
+    s << std::setw(20) << " " << " |";
     for (size_t i=0; i<this->num_games_per_map; i++) {
-        s << "\tGame " << i+1 << "\t|";
+        s << std::setw(20) << "Game " << i+1 << "  |";
     }
     s << "\n";
     for (size_t map_num=0; map_num<this->num_map_files; map_num++) {
-        s << map_files[map_num] << "\t|";
+        s <<std::setw(20) << map_files[map_num] << " |";
         for (size_t game_num=0; game_num<this->num_games_per_map; game_num++) {
             std::cout << "\t!!execute!!" << std::endl;
             PlayerStrategyEnum winner = PlayerStrategyEnum::STRATEGIES_MAX;
@@ -81,7 +82,7 @@ void tournamentCommand::executeCommand(GameEngine& ge) {
                 continue;
             }
             std::cout << "\t!!END execute!!" << std::endl;
-            s << "\t" << player_strategy_strings[static_cast<unsigned>(winner)] << "\t|";
+            s << std::setw(20) << player_strategy_strings[static_cast<unsigned>(winner)] << "   |";
         }
         s << "\n";
     }
