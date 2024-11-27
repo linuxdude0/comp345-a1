@@ -123,6 +123,7 @@ public:
     void move(unsigned oldPosition, unsigned newPosition);
     void executeAllOtherOrders();
     void executeNegotiateOrders(); // must be executed before others
+    void executeDeployOrders();
     virtual ~OrderList();
     std::string stringToLog() override;
     NegotiateOrder* operator=(NegotiateOrder* order);

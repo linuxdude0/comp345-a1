@@ -105,6 +105,7 @@ class GameEngine : public ILoggable, public Subject
         void reinforcementPhase();
         void issueOrdersPhase();
         void executeOrdersPhase();
+        void testPlayerStrategies();
 
 
         // Log functions

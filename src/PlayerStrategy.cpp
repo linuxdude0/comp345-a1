@@ -335,6 +335,7 @@ unsigned BenevolentStrategy::getOwnWeakestTerr(Player* p){
                 if(std::get<2>(entry) < troops_stationed){
                     weakest = std::get<0>(entry);
                     troops_stationed = std::get<2>(entry);
+                    break;
                 }
             }
         }
@@ -357,6 +358,7 @@ void BenevolentStrategy::tryToNegotiate(Player* p){
                 if(std::get<1>(entry) != p){
 
                     p->orders->add(new NegotiateOrder(p, std::get<1>(entry)));
+                    break;
                 }
             }
         }
@@ -411,6 +413,8 @@ bool CheaterStrategy::issueOrder(Player* p,Order* order){
         for(auto& entry : territory_owner_troops_mappings){
 
             if(std::get<0>(entry) == static_cast<unsigned>(stealable_terr)){
+            
+            
                 Player* victim = std::get<1>(entry);
                 vector<int>& losersTerrs = victim->toDefend();
                 losersTerrs.erase(std::remove(losersTerrs.begin(), losersTerrs.end(), std::get<0>(entry)), losersTerrs.end()); // remove terr from the victim's list
@@ -418,6 +422,9 @@ bool CheaterStrategy::issueOrder(Player* p,Order* order){
                 std::get<2>(entry) = 0; // set current troops stationed to 0
                 p->toDefend().push_back(stealable_terr); // put it in the owned terrs
                 p->setCardToIssueFlag(); // flag to issue a card at the end of this turn, given that a territory was captured
+            
+                std::cout << "[info] Hey, " << victim->getName() << " it seems that a cheater (who could it be?) stole your territory = " << stealable_terr << " such is life..." << std::endl;
+
             }
 
         }

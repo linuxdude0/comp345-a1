@@ -60,15 +60,15 @@ bool DeployOrder::validate() {
     // 
     // check if deployment territory truly belongs to the player
     bool match = false; 
-    for( unsigned int i : player->toDefend()){
+    for(int i : player->toDefend()){
 
-        if(i == territory_target){
+        if(static_cast<unsigned>(i) == territory_target){
             match = true;
             break;
         }
     }
     if(!match){
-        std::cout << "[!] Order Validation failed: Territory assigned for deployment does not belong to player " << player->getName() << std::endl; 
+        std::cout << "[!] Order Validation failed: Territory assigned for deployment (" << territory_target << ")  does not belong to player " << player->getName() << std::endl; 
         return false;
     }
 
@@ -653,11 +653,26 @@ void OrderList::move(unsigned int oldPosition, unsigned int newPosition) {
     }
 }
 
+
 // must be executed first for normal operation, because they update some flags Advance orders will check for... -- lev
 void OrderList::executeNegotiateOrders() {
     for (size_t i = 0; i < this->orders.size(); ++i) {
         if (this->orders[i].order != nullptr && this->orders[i].index >= 0) {
             if (this->orders[i].order->orderKind == OrderKind::NEGOTIATE) {
+                assert(orders[i].order);
+                orders[i].order->execute();
+                orders[i].index = -1;
+                delete orders[i].order;
+                orders[i].order = nullptr;
+            }
+        }
+    }
+}
+
+void OrderList::executeDeployOrders() {
+    for (size_t i = 0; i < this->orders.size(); ++i) {
+        if (this->orders[i].order != nullptr && this->orders[i].index >= 0) {
+            if (this->orders[i].order->orderKind == OrderKind::DEPLOY) {
                 assert(orders[i].order);
                 orders[i].order->execute();
                 orders[i].index = -1;

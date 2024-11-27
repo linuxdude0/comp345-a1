@@ -324,7 +324,8 @@ void GameEngine::run()
     {
         while(isRunning())
         {
-            userQuery();
+
+            testPlayerStrategies();
         }
     }
 }
@@ -636,24 +637,26 @@ void GameEngine::reinforcementPhase()
 {    
     // iterate over each player in player vector
     for(Player* const p : mPlayer_v)
-    {
-        // ask each player to enter order to issue of their choosing
-        std::cout << "Deployment phase for Player:[" << p->getName() << "]" << std::endl;
-        while (p->getReinforcementPool() > 0) {
-            std::cout << "You need to deploy as you still have " << p->getReinforcementPool()<< " troops to deploy" << std::endl;
-            std::cout << "Choose the target territory: \n";
-            // -- first *this argument is a pointer to GameEngine --
-            unsigned territory = chooseTerritory(*this,*this->mMap_ptr, OrderKind::DEPLOY, p);
-            int num_troops = -1;
-            do {
-                std::cout << "Please choose how many of the " << p->getReinforcementPool()<< " troops you want to deploy at " << this->mMap_ptr->getTerritory(territory).name;
-                num_troops = prompt_for_numeric(": ", *this);
-                if (num_troops < 1 || num_troops > p->getReinforcementPool()) {
-                    std::cout << "Wrong number of troops, please reenter" << std::endl;
-                }
-            } while(num_troops < 1 && num_troops > p->getReinforcementPool());
-            p->issueOrder(new DeployOrder(p, territory, num_troops));
-            p->getOrderList()->executeAllOtherOrders();
+    {   
+        if(dynamic_cast<HumanStrategy*>(p->playerStrat)){
+            // ask each player to enter order to issue of their choosing
+            std::cout << "Deployment phase for Player:[" << p->getName() << "]" << std::endl;
+            while (p->getReinforcementPool() > 0) {
+                std::cout << "You need to deploy as you still have " << p->getReinforcementPool()<< " troops to deploy" << std::endl;
+                std::cout << "Choose the target territory: \n";
+                // -- first *this argument is a pointer to GameEngine --
+                unsigned territory = chooseTerritory(*this,*this->mMap_ptr, OrderKind::DEPLOY, p);
+                int num_troops = -1;
+                do {
+                    std::cout << "Please choose how many of the " << p->getReinforcementPool()<< " troops you want to deploy at " << this->mMap_ptr->getTerritory(territory).name;
+                    num_troops = prompt_for_numeric(": ", *this);
+                    if (num_troops < 1 || num_troops > p->getReinforcementPool()) {
+                        std::cout << "Wrong number of troops, please reenter" << std::endl;
+                    }
+                } while(num_troops < 1 && num_troops > p->getReinforcementPool());
+                p->issueOrder(new DeployOrder(p, territory, num_troops));
+                p->getOrderList()->executeAllOtherOrders();
+            }
         }
     }
         transition(ISSUE_ORDERS);
@@ -742,6 +745,7 @@ void GameEngine::issueOrder()
         {
             // -- automatically run orders if computer player --
             p->playerStrat->issueOrder(p,nullptr);
+
         }
 
     }
@@ -763,6 +767,13 @@ void GameEngine::issueOrdersPhase()
 
 void GameEngine::execOrder()
 {
+
+    for(auto const p : mPlayer_v){
+
+        p->getOrderList()->executeDeployOrders();
+
+    }
+
     // we must execute Negotiates first, due to the fact that Advance orders will check some flags 
     // produced as a result of their execution --lev
     for(auto const p : mPlayer_v)
@@ -1029,4 +1040,18 @@ void GameEngine::clearNegotiationAgreements(){
     }
 
     std::cout << "[info] No-Aggression (Negotiate) agreements are cleared for all players." << std::endl;
+}
+
+void GameEngine::testPlayerStrategies(){
+
+    loadMap("Atlantis.map");
+    validateMap();
+    addPlayer("Neutral Guy", PlayerStrategyEnum::NEUTRAL_STRATEGY);
+    addPlayer("Aggressive Guy", PlayerStrategyEnum::AGGRESSIVE_STRATEGY);
+    addPlayer("Benevolent Guy", PlayerStrategyEnum::BENEVOLENT_STRATEGY);
+    addPlayer("Cheater Guy", PlayerStrategyEnum::CHEATING_STRATEGY);
+    assignCountries();
+    gamestart();
+
+
 }
