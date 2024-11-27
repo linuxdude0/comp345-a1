@@ -6,14 +6,20 @@
 #include "common.h"
 
 const char* player_strategy_strings[] = {
-    "HUMAN_STRATEGY",
-    "NEUTRAL_STRATEGY",
-    "AGGRESSIVE_STRATEGY",
-    "BENEVOLENT_STRATEGY",
-    "CHEATING_STRATEGY",
+    "Human",
+    "Neutral",
+    "Aggressive",
+    "Benevolent",
+    "Cheater",
+    "Draw",
 };
  
 // -- human strategy --
+
+HumanStrategy::HumanStrategy() {
+    this->player_strat = PlayerStrategyEnum::HUMAN_STRATEGY;
+}
+
 bool HumanStrategy::issueOrder(Player* p, Order* order){
     
     switch (order->orderKind) {
@@ -76,6 +82,13 @@ std::vector<int>& HumanStrategy::toDefend(Player* p) {
 }
 
 // -- neutral strategy --
+
+
+NeutralStrategy::NeutralStrategy() {
+    this->player_strat = PlayerStrategyEnum::NEUTRAL_STRATEGY;
+}
+
+
 bool NeutralStrategy::issueOrder(Player* p, Order* order){ 
     UNUSED(order);
     /*nothing here*/
@@ -110,6 +123,11 @@ std::vector<int>& NeutralStrategy::toDefend(Player* p){return *(p->territoriesTo
 
 
 // -- aggressive strategy --
+
+AggressiveStrategy::AggressiveStrategy() {
+    this->player_strat = PlayerStrategyEnum::AGGRESSIVE_STRATEGY;
+}
+
 bool AggressiveStrategy::issueOrder(Player* p, Order* o){
     UNUSED(o);
     // 1---- first we need to deploy everything
@@ -282,6 +300,12 @@ unsigned AggressiveStrategy::currStationedAt(unsigned terr_index){
 
 
 // -- benevolent strategy --
+
+BenevolentStrategy::BenevolentStrategy() {
+    this->player_strat = PlayerStrategyEnum::BENEVOLENT_STRATEGY;
+}
+
+
 bool BenevolentStrategy::issueOrder(Player* p,Order* order) {
 
     UNUSED(order);
@@ -365,8 +389,13 @@ std::vector<int>& BenevolentStrategy::toDefend(Player* p){
 
 // -- cheater strategy --
 
-bool CheaterStrategy::issueOrder(Player* p,Order* order){
+CheaterStrategy::CheaterStrategy() {
+    this->player_strat = PlayerStrategyEnum::CHEATING_STRATEGY;
+}
 
+
+bool CheaterStrategy::issueOrder(Player* p,Order* order){
+    UNUSED(order);
     // every turn conquers all adjacent to his
     
     //dump the deployments

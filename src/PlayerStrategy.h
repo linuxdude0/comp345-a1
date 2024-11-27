@@ -2,16 +2,7 @@
 #define PLAYER_STRATEGY
 
 #include "Mappings.h"
-class PlayerStrategy
-{
-    // -- abstract player strategy class --
-    public:
-        virtual bool issueOrder(Player*, Order*) = 0;
-        virtual std::vector<int> toAttack(Player*) = 0;
-        virtual std::vector<int>& toDefend(Player*) = 0;
-};
 
-extern const char* player_strategy_strings[5];
 
 enum class PlayerStrategyEnum {
     HUMAN_STRATEGY,
@@ -22,10 +13,23 @@ enum class PlayerStrategyEnum {
     STRATEGIES_MAX,
 };
 
+class PlayerStrategy
+{
+    // -- abstract player strategy class --
+    public:
+        PlayerStrategyEnum player_strat;
+        virtual bool issueOrder(Player*, Order*) = 0;
+        virtual std::vector<int> toAttack(Player*) = 0;
+        virtual std::vector<int>& toDefend(Player*) = 0;
+};
+
+extern const char* player_strategy_strings[6];
+
 // -- concrete player strategy classes --
 class HumanStrategy : public PlayerStrategy
 {
     public:
+        HumanStrategy();
         bool issueOrder(Player* p, Order* order);
         std::vector<int> toAttack(Player* p);
         std::vector<int>& toDefend(Player* p);
@@ -34,6 +38,7 @@ class HumanStrategy : public PlayerStrategy
 class NeutralStrategy : public PlayerStrategy
 {
     public:
+        NeutralStrategy();
         bool issueOrder(Player* p, Order* order);
         std::vector<int> toAttack(Player* p);
         std::vector<int>& toDefend(Player* p);
@@ -42,6 +47,7 @@ class NeutralStrategy : public PlayerStrategy
 class AggressiveStrategy : public PlayerStrategy
 {
     public:
+        AggressiveStrategy();
         bool issueOrder(Player* p, Order* o); // just call with Order = null here
         std::vector<int> toAttack(Player* p);
         std::vector<int>& toDefend(Player* p);
@@ -54,6 +60,7 @@ class AggressiveStrategy : public PlayerStrategy
 class BenevolentStrategy : public PlayerStrategy
 {
     public:
+        BenevolentStrategy();
         bool issueOrder(Player* p, Order* order);
         std::vector<int> toAttack(Player* p);
         std::vector<int>& toDefend(Player* p);
@@ -65,6 +72,7 @@ class BenevolentStrategy : public PlayerStrategy
 class CheaterStrategy : public PlayerStrategy
 {
     public:
+        CheaterStrategy();
         bool issueOrder(Player* p, Order* order);
         std::vector<int> toAttack(Player* p);
         std::vector<int>& toDefend(Player* p);

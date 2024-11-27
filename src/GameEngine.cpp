@@ -665,7 +665,7 @@ void GameEngine::issueOrder()
     for(Player* const p : mPlayer_v){
 
         // -- if it is a human player's turn, proceed with manual prompts --
-        if(dynamic_cast<HumanStrategy*>(p->playerStrat))
+        if(p->playerStrat->player_strat == PlayerStrategyEnum::HUMAN_STRATEGY)
         {
             do {
                 std::cout << "[Player: " << p->getName() << "] is issuing orders" << std::endl;
@@ -933,13 +933,15 @@ Player* GameEngine::chooseAPlayerToTarget(Player* issuing, GameEngine& ge) {
     return out;
 };
 
-bool GameEngine::tournament(std::string map_file, PlayerStrategyEnum player_strategies[TOURNAMENT_MAX_PLAYER_STRATEGIES],size_t num_player_strategies, size_t max_turns_per_game) {
+bool GameEngine::tournament(std::string map_file, PlayerStrategyEnum player_strategies[TOURNAMENT_MAX_PLAYER_STRATEGIES],size_t num_player_strategies, size_t max_turns_per_game, PlayerStrategyEnum* winner) {
+    assert(winner);
     std::cout << "New tournament" << std::endl;
     this->loadMap(map_file);
     for(auto p : mPlayer_v) {
         delete p;
     }
     mPlayer_v.clear();
+    territory_owner_troops_mappings.clear();
     unsigned num_strats[static_cast<unsigned>(PlayerStrategyEnum::STRATEGIES_MAX)]{};
     for (size_t i=0; i<num_player_strategies; i++) {
         std::stringstream s;
@@ -967,26 +969,31 @@ bool GameEngine::tournament(std::string map_file, PlayerStrategyEnum player_stra
 
     for (size_t i=0; i<max_turns_per_game && mCurrentState != WIN; i++) {
         for (Player* p : this->mPlayer_v) {
-
-            if(dynamic_cast<HumanStrategy*>(p->playerStrat))
-            {
-                reinforcementPhase();
-                issueOrdersPhase();
-                executeOrdersPhase();  
+            p->playerStrat->issueOrder(p,nullptr);
+            execOrder();
+            if(allConqueredByOne()){
+                *winner = std::get<1>(territory_owner_troops_mappings[0])->playerStrat->player_strat;
+                transition(WIN);
             }
-            else
-            {
-                p->playerStrat->issueOrder(p,nullptr);
-                executeOrdersPhase();
+            else{
+                // TODO: clear the players arrays of negotiates 
+                kickLosers(); // kicks players who lost all territories from the main vector, bye bye, sucks to be you!
+                fillPlayerReinforcementPools(); // fills the deployment pools in preparation for next phase;
+                distributeCardsToWinners(); // players who managed to capture a territory will receive a card this turn.
+                clearNegotiationAgreements(); // clears all the Negotiate flags between players, everybody can fight again next turn -- lev
+                transition(ASSIGN_REINFORCEMENTS);
             }
         }
+    }
+    if (mCurrentState != WIN) {
+        *winner = PlayerStrategyEnum::STRATEGIES_MAX; // this means draw
     }
     for(auto p : mPlayer_v) {
         delete p;
     }
     mPlayer_v.clear();
-    std::cout << "END New tournament" << std::endl;
-    clear_extra(); // clear buffer since tournament command is input again for some reason
+    std::cout << "END New tournament\n\n" << std::endl;
+    /*clear_extra(); // clear buffer since tournament command is input again for some reason*/
     return true;
 }
 

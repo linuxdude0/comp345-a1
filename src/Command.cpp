@@ -35,6 +35,7 @@ tournamentCommand::tournamentCommand(
     assert(BETWEEN(num_player_strategies, TOURNAMENT_MIN_PLAYER_STRATEGIES, TOURNAMENT_MAX_PLAYER_STRATEGIES));
     assert(BETWEEN(num_games_per_map, TOURNAMENT_MIN_NUM_GAMES_PER_MAP, TOURNAMENT_MAX_NUM_GAMES_PER_MAP));
     assert(BETWEEN(max_turns_per_game, TOURNAMENT_MIN_TURNS_PER_GAME, TOURNAMENT_MAX_TURNS_PER_GAME));
+    logObserver->attachSubject(this);
     for (size_t i=0; i<num_map_files; i++) {
         this->map_files[i]=map_files[i];
     }
@@ -48,18 +49,44 @@ tournamentCommand::tournamentCommand(
 }
 
 void tournamentCommand::executeCommand(GameEngine& ge) {
+    std::stringstream s{};
+    s << "Tournament mode:\n"
+      << "M: ";
+    for (size_t i=0; i<this->num_map_files; i++) {
+        s << map_files[i] << ", ";
+    }
+    s << "\nP: ";
+    for (size_t i=0; i<this->num_player_strategies; i++) {
+        s << player_strategy_strings[static_cast<unsigned>(this->player_strategies[i])] << ", ";
+    }
+    s << "\nG: " << this->num_games_per_map << "\nD: " << this->max_turns_per_game << "\n";
+    s << "Results: " << "\n";
+    s << "\t|";
+    for (size_t i=0; i<this->num_games_per_map; i++) {
+        s << "\tGame " << i+1 << "\t|";
+    }
+    s << "\n";
     for (size_t map_num=0; map_num<this->num_map_files; map_num++) {
+        s << map_files[map_num] << "\t|";
         for (size_t game_num=0; game_num<this->num_games_per_map; game_num++) {
-            std::cout << "execute" << std::endl;
-            if(!ge.tournament(this->map_files[map_num], this->player_strategies, this->num_player_strategies, this->max_turns_per_game)) {
+            std::cout << "\t!!execute!!" << std::endl;
+            PlayerStrategyEnum winner = PlayerStrategyEnum::STRATEGIES_MAX;
+            if(!ge.tournament(this->map_files[map_num], this->player_strategies, this->num_player_strategies, this->max_turns_per_game, &winner)) {
                 std::cout << "Tournament failed: Map: " << this->map_files[map_num] << "Player types: ";
                 for (size_t i=0; i<this->num_player_strategies; i++) {
                     std::cout << player_strategy_strings[static_cast<unsigned>(this->player_strategies[i])] << " ";
                 }
                 std::cout << "max turns: " << this->max_turns_per_game << std::endl;
+                continue;
             }
+            std::cout << "\t!!END execute!!" << std::endl;
+            s << "\t" << player_strategy_strings[static_cast<unsigned>(winner)] << "\t|";
         }
+        s << "\n";
     }
+    std::cout << s.str() << std::endl;
+    this->saveEffect(s.str());
+    ge.transition(GameEngine::START);
 }
 
 void tournamentCommand::saveEffect(const std::string& s_effect) {
