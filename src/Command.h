@@ -86,6 +86,17 @@ class addPlayerCommand : public Command
         std::string mArgument;
 };
 
+class addBotCommand : public Command
+{
+    public:
+        addBotCommand(const std::string& s_argument);
+        virtual void executeCommand(GameEngine& ge) override;
+        virtual void saveEffect(const std::string& s_effect) override;
+    private:
+        std::string mArgument;
+};
+
+
 class assignCountriesCommand : public Command
 {
     public:

@@ -321,6 +321,19 @@ void CommandProcessor::getCommand(GameEngine& ge)
                 continue;
             }
         }
+        else if(s_command == "addbot")
+        {
+            if(!isEmptyOrWhitespace(s_argument))
+            {
+                saveCommand(s_command,std::make_unique<addBotCommand>(s_argument));
+            }
+            else
+            {
+                std::cout << "[ERROR]: args needed." << std::endl;
+                std::cout << "usage: addplayer <player type> <player name>" << std::endl;
+                continue;
+            }
+        }
         else if(s_command == "assigncountries")
             saveCommand(s_command,std::make_unique<assignCountriesCommand>());
         else if(s_command == "gamestart") // MEOW

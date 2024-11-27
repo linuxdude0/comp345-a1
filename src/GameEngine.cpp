@@ -194,7 +194,7 @@ GameEngine::~GameEngine()
     delete mCommandProcessor_ptr;
     delete mNeutralPlayer;
     for(auto p : mPlayer_v)
-        delete p;         
+        delete p;
 }
 
 Player* GameEngine::getNeutralPlayer() {
@@ -228,8 +228,8 @@ void GameEngine::initializeStateCommands()
 {
     stateCommandMap[START] = {"tournament", "loadmap", "help", "quit"};
     stateCommandMap[MAP_LOADED] = {"validatemap", "help", "quit"};
-    stateCommandMap[MAP_VALIDATED] = {"addplayer", "help", "quit"};
-    stateCommandMap[PLAYERS_ADDED] = {"addplayer","assigncountries", "help", "quit"};
+    stateCommandMap[MAP_VALIDATED] = {"addplayer", "addbot", "help", "quit"};
+    stateCommandMap[PLAYERS_ADDED] = {"addplayer","addbot", "assigncountries", "help", "quit"};
     stateCommandMap[GAMESTART] = {"gamestart", "help", "quit"}; // meow
 }
 
@@ -437,11 +437,11 @@ void GameEngine::addPlayer(const std::string& player_name, PlayerStrategyEnum pl
         case PlayerStrategyEnum::BENEVOLENT_STRATEGY: player_strats = new BenevolentStrategy(); break;
         case PlayerStrategyEnum::STRATEGIES_MAX: break;
     }
+    assert(player_strats);
     mPlayer_ptr = new Player(n_playerId,s_name,n_territoryIndex,mMap_ptr,mDeck_ptr, player_strats);
     mPlayer_v.push_back(mPlayer_ptr); // insert players into a vector container
     n_playerId ++;
     std::cout << "vector size: " << mPlayer_v.size() << std::endl;
-    
     distributeTerritories(mPlayer_v.size(),mMap_ptr->num_territories);
     transition(PLAYERS_ADDED);
 }

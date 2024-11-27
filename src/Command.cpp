@@ -2,6 +2,7 @@
 #include "GameEngine.h"
 #include "common.h"
 #include <cassert>
+#include <cctype>
 #include <sstream>
 
 Command::Command()
@@ -145,6 +146,67 @@ void addPlayerCommand::saveEffect(const std::string& s_effect)
     std::cout << s_effect << std::endl;
     this->notify(this);
 }
+
+
+addBotCommand::addBotCommand(const std::string& s_argument)
+    :mArgument{s_argument}
+{
+    // default constructor
+}
+
+void addBotCommand::executeCommand(GameEngine& ge)
+{
+    size_t i=0;
+    for (; i<mArgument.length(); i++) {
+        if (!isspace(mArgument[i])) {
+            break;
+        }
+    }
+    std::string player_type = "";
+    for (; i<mArgument.length(); i++) {
+        if (isspace(mArgument[i])) {
+            break;
+        }
+        player_type+=mArgument[i];
+    }
+    for (; i<mArgument.length(); i++) {
+        if (!isspace(mArgument[i])) {
+            break;
+        }
+    }
+    std::string player_name = "";
+    for (; i<mArgument.length(); i++) {
+        if (isspace(mArgument[i])) {
+            break;
+        }
+        player_name+=mArgument[i];
+    }
+    PlayerStrategyEnum pt = PlayerStrategyEnum::STRATEGIES_MAX;
+    for (size_t j=0; j<static_cast<unsigned>(PlayerStrategyEnum::STRATEGIES_MAX); j++) {
+        if (player_type == player_strategy_strings[j]) {
+            pt = static_cast<PlayerStrategyEnum>(j);
+            break;
+        }
+    }
+    if (pt == PlayerStrategyEnum::HUMAN_STRATEGY) {
+        std::cout << "only bots allowed" << std::endl;
+        return;
+    }
+    if(pt == PlayerStrategyEnum::STRATEGIES_MAX) {
+        std::cout << "type not found" << std::endl;
+        return;
+    }
+    std::cout << player_strategy_strings[static_cast<unsigned>(pt)];
+    ge.addPlayer(player_name, pt);
+}
+
+void addBotCommand::saveEffect(const std::string& s_effect)
+{
+    mEffect = s_effect;
+    std::cout << s_effect << std::endl;
+    this->notify(this);
+}
+
 
 // -- assigncountries command --
 void assignCountriesCommand::executeCommand(GameEngine& ge)
