@@ -63,13 +63,13 @@ void tournamentCommand::executeCommand(GameEngine& ge) {
     }
     s << "\nG: " << this->num_games_per_map << "\nD: " << this->max_turns_per_game << "\n";
     s << "Results: " << "\n";
-    s << std::setw(20) << " " << " |";
+    s << std::setw(15) << " " << " |";
     for (size_t i=0; i<this->num_games_per_map; i++) {
-        s << std::setw(20) << "Game " << i+1 << "  |";
+        s << std::setw(15) << "Game " << i+1 << "  |";
     }
     s << "\n";
     for (size_t map_num=0; map_num<this->num_map_files; map_num++) {
-        s <<std::setw(20) << map_files[map_num] << " |";
+        s <<std::setw(15) << map_files[map_num] << " |";
         for (size_t game_num=0; game_num<this->num_games_per_map; game_num++) {
             std::cout << "\t!!execute!!" << std::endl;
             PlayerStrategyEnum winner = PlayerStrategyEnum::STRATEGIES_MAX;
@@ -82,11 +82,10 @@ void tournamentCommand::executeCommand(GameEngine& ge) {
                 continue;
             }
             std::cout << "\t!!END execute!!" << std::endl;
-            s << std::setw(20) << player_strategy_strings[static_cast<unsigned>(winner)] << "   |";
+            s << std::setw(15) << player_strategy_strings[static_cast<unsigned>(winner)] << "   |";
         }
         s << "\n";
     }
-    std::cout << s.str() << std::endl;
     this->saveEffect(s.str());
     ge.transition(GameEngine::START);
 }
